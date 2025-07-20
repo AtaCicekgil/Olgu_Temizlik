@@ -1,0 +1,296 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Performance optimizations */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Optimize initial rendering */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  /* Reduce repaints */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Prevent layout shifts during initial load */
+  overflow-x: hidden;
+  /* Optimize scrolling */
+  overscroll-behavior: none;
+}
+
+/* Critical performance optimizations for first scroll */
+.scroll-container {
+  /* Enable hardware acceleration for scrolling */
+  transform: translateZ(0);
+  -webkit-overflow-scrolling: touch;
+  /* Optimize scroll performance */
+  scroll-behavior: smooth;
+  contain: layout style paint;
+  /* Reduce repaints during scroll */
+  backface-visibility: hidden;
+}
+
+/* Optimize transforms and animations */
+.will-change-transform {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.will-change-scroll {
+  will-change: scroll-position;
+  contain: layout style paint;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .motion-container {
+    transform: none !important;
+  }
+}
+
+/* Optimize image rendering and compression */
+img {
+  image-rendering: optimizeSpeed;
+  /* Prevent layout shifts */
+  height: auto;
+  max-width: 100%;
+  /* Optimize loading */
+  loading: lazy;
+  decoding: async;
+}
+
+/* Critical images load faster */
+img[loading="eager"] {
+  image-rendering: optimizeQuality;
+}
+
+/* Lazy images optimize for speed */
+img[loading="lazy"] {
+  image-rendering: optimizeSpeed;
+}
+
+/* Hardware acceleration for smooth animations */
+.transform {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
+}
+
+/* Optimize hover states - only on devices that support hover */
+@media (hover: hover) and (pointer: fine) {
+  .hover\:scale-105:hover {
+    transform: scale(1.02) translateZ(0);
+  }
+  
+  .hover\:-translate-y-1:hover {
+    transform: translateY(-0.125rem) translateZ(0);
+  }
+  
+  .group-hover\:scale-102:hover {
+    transform: scale(1.02) translateZ(0);
+  }
+}
+
+/* Optimize animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px) translateZ(0); opacity: 0; }
+  to { transform: translateY(0) translateZ(0); opacity: 1; }
+}
+
+/* Prevent layout shifts */
+.aspect-ratio-16-9 {
+  aspect-ratio: 16 / 9;
+}
+
+.aspect-ratio-4-3 {
+  aspect-ratio: 4 / 3;
+}
+
+.aspect-ratio-3-2 {
+  aspect-ratio: 3 / 2;
+}
+
+.aspect-ratio-4-5 {
+  aspect-ratio: 4 / 5;
+}
+
+/* Optimize scrolling performance */
+.scroll-smooth {
+  scroll-behavior: smooth;
+  contain: layout style paint;
+}
+
+/* GPU acceleration for animations */
+.gpu-accelerated {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+  contain: layout style paint;
+}
+
+/* Optimize intersection observer targets */
+.intersection-target {
+  contain: layout style paint;
+  content-visibility: auto;
+}
+
+/* Optimize framer-motion containers */
+.motion-container {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: layout style paint;
+}
+
+/* Critical loading optimizations */
+.critical-resource {
+  /* Prioritize critical resources */
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+  contain: layout style paint;
+}
+
+/* Optimize background images */
+.bg-optimized {
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  contain: layout style paint;
+}
+
+/* Optimize text rendering */
+.text-optimized {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  contain: layout style;
+}
+
+/* Optimize layout for first paint */
+.layout-optimized {
+  contain: layout style;
+  content-visibility: auto;
+}
+
+/* Image compression and optimization utilities */
+.image-optimized {
+  image-rendering: optimizeSpeed;
+  contain: layout style paint;
+}
+
+/* Lazy loading optimization */
+.lazy-image {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  contain: layout style paint;
+}
+
+.lazy-image.loaded {
+  opacity: 1;
+}
+
+/* Progressive image loading */
+.progressive-image {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(2px);
+  transition: filter 0.2s ease-in-out;
+  contain: layout style paint;
+}
+
+.progressive-image.loaded {
+  filter: blur(0);
+}
+
+/* Text truncation utility */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Optimize button interactions */
+button, .btn {
+  contain: layout style;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Optimize grid layouts */
+.grid {
+  contain: layout style;
+}
+
+/* Optimize flex layouts */
+.flex {
+  contain: layout style;
+}
+
+/* Prevent text and image selection */
+.select-none {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+
+/* Prevent image dragging and context menu */
+.pointer-events-none {
+  pointer-events: none;
+}
+
+/* Disable image selection and dragging globally for before/after images */
+.before-after-image {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+}
+
+/* Prevent context menu on images */
+.no-context-menu {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
