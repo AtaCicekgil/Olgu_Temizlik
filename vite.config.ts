@@ -7,6 +7,9 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+    base: '/',
+  // diğer ayarların
+});
   build: {
     rollupOptions: {
       output: {
