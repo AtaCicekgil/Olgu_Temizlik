@@ -6,7 +6,7 @@ const beforeAfterImages = [
   {
     id: 1,
     title: 'Profesyonel Halı Temizliği',
-    before: '/gallery/before-after/before1.jpg',
+    before: '/gallery/before-after/before1.webp',
     after: '/gallery/before-after/after1.jpg',
     description: 'Alanında uzman ekibimiz ile profesyonel temizlik sonrası ilk günkü haline döndü'
   },
