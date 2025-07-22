@@ -6,15 +6,15 @@ const beforeAfterImages = [
   {
     id: 1,
     title: 'Profesyonel Halı Temizliği',
-    before: '/gallery/before-after/before1.webp',
-    after: '/gallery/before-after/after1.webp',
+    before: '/gallery/before-after/before1.jpg',
+    after: '/gallery/before-after/after1.jpg',
     description: 'Alanında uzman ekibimiz ile profesyonel temizlik sonrası ilk günkü haline döndü'
   },
   {
     id: 2,
     title: 'Derin Temizlik Sonuçları',
-    before: '/gallery/before-after/before2.webp',
-    after: '/gallery/before-after/after2.webp',
+    before: '/gallery/before-after/before2.jpg',
+    after: '/gallery/before-after/after2.jpg',
     description: 'Zorlu lekeler ve derin kirlilik profesyonel yöntemlerle tamamen giderildi'
   }
 ];
