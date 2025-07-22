@@ -28,8 +28,8 @@ const ServiceDetail: React.FC = () => {
   const serviceImages = {
     'hali-yikama': '/gallery/hali-yikama/haliyikama.webp',
     'koltuk-yikama': '/gallery/koltuk-yikama/koltukyikama.webp',
-    'perde-temizligi': '/gallery/perde-temizligi/storperdeyikama.webp',
-    'ozel-hizmetler': '/gallery/ozel-hizmetler/lekecikarma.jpg',
+    'perde-temizligi': '/gallery/perde-temizligi/storyikama.webp',
+    'ozel-hizmetler': '/gallery/ozel-hizmetler/lekecikarma.webp',
     'yorgan-battaniye': '/gallery/yorgan-yikama/yorganyikama.webp',
     'yatak-temizligi': '/gallery/yatak-yikama/yatakyikama.webp',
     'yerinde-hali-yikama': '/gallery/yerinde-yikama/yerindeyikama.webp',
