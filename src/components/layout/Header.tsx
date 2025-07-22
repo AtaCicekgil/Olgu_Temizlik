@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, User, Calendar } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import Button from '../common/Button';
-import Title from './Title';  // doğru yoldan import et!
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -31,7 +30,7 @@ const Header: React.FC = () => {
               alt="Olgu Temizlik Logo"
               className="h-12 w-12 object-contain"
             />
-            <Title>Olgu Temizlik</Title>  {/* Burada span yerine Title kullanıldı */}
+            <span className="text-2xl font-bold text-gray-900">Olgu Temizlik</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -138,4 +137,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default React.memo(Header);  // Header'ı da React.memo ile sarmaladık
+export default Header;
