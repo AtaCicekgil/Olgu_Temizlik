@@ -20,7 +20,7 @@ const testimonials: Testimonial[] = [
     rating: 5,
     text: 'geçen gün güneşlik ve perdelerimi temizletmeye verdim ve mutfağımdaki perde yağ lekesi olmuştu ve perdem geldiğinde bembeyaz geldi inanılmazsınız sonuna kadar helal olsun 👏👏👏',
     translatedText: 'I gave my blinds and curtains to be cleaned the other day and the curtain in my kitchen was stained with oil and when my curtain came it came white.',
-    image: '/comment/yorum02.jpg'
+    image: '/comment/yorum02.webp'
   },
   {
     id: 3,
@@ -29,7 +29,7 @@ const testimonials: Testimonial[] = [
     rating: 5,
     text: 'Perdelerimi ve halılarımı farklı zamanlarda verdim ikisinden de çok memnun kaldım. Ayrıca hızlı ve şeffaf bir işleyiş modeli var gidip halılarınızı yıkanırken görebilirsiniz.',
     translatedText: 'I gave my curtains and carpets at different times, I was very pleased with both. In addition, there is a fast and transparent working model and you can go and see your carpets while washing.',
-    image: '/comment/yorum04.jpg'
+    image: '/comment/yorum04.webp'
   },
   {
     id: 4,
@@ -38,7 +38,7 @@ const testimonials: Testimonial[] = [
     rating: 5,
     text: 'Profesyonelce tertemiz yaptılar işlerini.',
     translatedText: 'They did their job professionally and cleanly.',
-    image: '/comment/yorum05.jpg'
+    image: '/comment/yorum05.webp'
   },
   {
     id: 5,
@@ -47,7 +47,7 @@ const testimonials: Testimonial[] = [
     rating: 4,
     text: 'Hızlı ve güzel geldi, emeğinize sağlık.',
     translatedText: 'It came fast and beautiful, thank you for your effort.',
-    image: '/comment/yorum06.jpg'
+    image: '/comment/yorum06.webp'
   },
   {
     id: 6,
@@ -56,8 +56,44 @@ const testimonials: Testimonial[] = [
     rating: 5,
     text: 'Daha önce başka firmalarda yıkanan halılarımızda saçlar kalırdı, bu sefer öyle güzel yıkanmış ki hem çok temiz araları hem de saçlardan eser kalmamış. Çok beğendik 👏',
     translatedText: 'There used to be hair on our carpets that were washed in other companies before, this time it was washed so well that it was both very clean in between and there was no trace of hair left. We loved it 👏',
-    image: '/comment/yorum07.jpg'
-  }
+    image: '/comment/yorum07.webp'
+  },
+    {
+    id: 7,
+    name: 'Aydın Demirci',
+    date: '14 Haz',
+    rating: 5,
+    text: 'bende belik birçoğunuz gibi tavsiye üzerine kendileri ile iletişim kurdum. Sağolsunlar adresimden teslim aldılar halılarımı. Maksimum 3 gün içerisinde teslim edileceği söylendi, 3 günün sonunda teslimat için aradılar fakat ben evde değildim. Şuan alamayacağımı söylediğimde siz gün içerisinde bir saat belirleyin o saatte tekrar gelelim dediler. Aynen öyle oldu dediğim saatte tekrar geldiler ve halılarımı teslim ettiler. Bence teşekkürü hak ettiler. Bence işin en önemli kısmı kişiye dayalı (müşteri odakı) çalışıyor olmaları benim için en önemli konu bu tekrar teşekkür ediyorum kendilerine',
+    translatedText: "Like many of you, I contacted them based on their recommendations. Thankfully, they picked up my rugs from my address. They said they would deliver them within a maximum of three days, but they called me to arrange delivery at the end of the three days, but I wasn't home. When I told them I couldn't pick them up right now, they said, 'I'll pick up a time during the day and come back at that time.' That's exactly what happened. They came back at the appointed time and delivered my rugs. I think they deserve a thank you. I think the most important aspect of their business is their customer-focused approach. This is the most important thing for me. Thank you again.",
+    image: '/comment/yorum08.webp'
+  },
+   {
+    id: 8,
+    name: 'Dilek Yilmaz',
+    date: '17 Haz',
+    rating: 5,
+    text: 'İlk kez denedik ama bundan sonra tek tercihimiz diyebilirim. Eve gelen halıları tanıyamadım tertemiz olmuş ve ev mis gibi kokuyor tesekkurler ellerinize saglik',
+    translatedText: "we tried it for the first time, but from now on, I can say that it is our only choice. I couldn't recognize the carpets that came to the house, it was clean and the house smells like sweet, thank you, health to your hands",
+    image: '/comment/yorum09.webp'
+  },
+     {
+    id: 9,
+    name: 'Sevinç Arıcı',
+    date: '18 Haz',
+    rating: 5,
+    text: 'Bugün koltuklar, yataklar ve halı yıkama yaptırdık. Kesinlikle tavsiye ederim. Çok profesyonel ve titiz çalıştılar. Evinize güvenle alabileceğiniz, işinde profesyonel insanlar. Herkese tavsiye ederim.🙏',
+    translatedText: "Today we had sofas, beds and carpet cleaning done. I would definitely recommend. They worked very professionally and meticulously. Professional people in their business that you can safely take to your home. I recommend it to everyone 🙏",
+    image: '/comment/yorum10.webp'
+  },
+       {
+    id: 10,
+    name: 'Cem Karbuz',
+    date: '18 Haz',
+    rating: 5,
+    text: 'Gözünüz kapalı halılarınızı teslim edebilirsiniz. Tertemiz şekilde aldım halılarımı. Hem işlerinde çok iyiler hem de güleryüzlü ve saygılılar. Tekrar ellerinize sağlık.',
+    translatedText: "You can deliver your blindfolded carpets. I bought my carpets in immaculate condition. They are very good at their job, and they are smiling and respectful. Good luck to your hands again.",
+    image: '/comment/yorum11.webp'
+  },
 ];
 
 const CustomerTestimonialsSlider: React.FC = () => {

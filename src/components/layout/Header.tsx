@@ -26,7 +26,7 @@ const Header: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img
-              src="/logo.png"
+              src="/logo.avif"
               alt="Olgu Temizlik Logo"
               className="h-12 w-12 object-contain"
             />
