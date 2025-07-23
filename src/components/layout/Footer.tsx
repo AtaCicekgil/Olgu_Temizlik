@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <img
-                src="/logo.avif"
+                src="/logo.webp"
                 alt="Olgu Temizlik Logo"
                 className="h-10 w-10 object-contain"
               />
