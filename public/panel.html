@@ -274,8 +274,15 @@ body {
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   transition: box-shadow 0.15s;
+  border-left: 3px solid var(--border);
 }
 .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.card[data-durum="alinacak"]  { border-left-color: #3b82f6; }
+.card[data-durum="alindi"]    { border-left-color: #10b981; }
+.card[data-durum="yikanıyor"] { border-left-color: #8b5cf6; }
+.card[data-durum="hazir"]     { border-left-color: #0e9f6e; }
+.card[data-durum="dagitimda"] { border-left-color: #f59e0b; }
+.card[data-durum="teslim"]    { border-left-color: #94a3b8; }
 
 .card-header {
   padding: 13px 16px;
@@ -824,7 +831,8 @@ body {
 
 .dp-day { font-size: 9px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; line-height: 1; margin-bottom: 3px; }
 .dp-num { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1; }
-.dp-count { font-size: 9px; margin-top: 3px; color: var(--text3); line-height: 1; }
+.dp-count { font-size: 9px; margin-top: 3px; color: var(--text3); line-height: 1; min-height: 10px; }
+.date-pill.has-order .dp-count { color: var(--blue); font-weight: 700; }
 
 .date-strip-today-btn {
   flex-shrink: 0;
@@ -2637,7 +2645,7 @@ function buildDateStrip() {
     return `<button type="button" class="${cls}" data-date="${ds}" onclick="selectDate('${ds}')" id="dp-${ds}">
       <span class="dp-day">${dayName}</span>
       <span class="dp-num">${d.getDate()}</span>
-      <span class="dp-count">${count > 0 ? count + ' sip.' : ''}</span>
+      <span class="dp-count">${count > 0 ? count + '●' : ''}</span>
     </button>`;
   }).join('');
 
@@ -3504,6 +3512,7 @@ function updateBadges() {
   c.odenmedi = data.siparisler.filter(s=>s.durum==='teslim'&&!s.odendi).length;
   c.koltuk   = data.siparisler.filter(s=>s.servisTip==='koltuk'&&s.durum!=='teslim').length;
   Object.keys(c).forEach(d=>{ const el=document.getElementById('b-'+d); if(el) el.textContent=c[d]||''; });
+  updateMbnBadges();
 }
 
 function renderPage(id) {
@@ -3743,7 +3752,7 @@ function siparisKarti(s, ctx) {
     <div style="font-size:11px;color:var(--text2);margin:8px 0;display:flex;flex-wrap:wrap;gap:10px;">
       ${s.tarih?`<span>📥 Alındı: <b>${s.tarih}</b></span>`:''}
       ${s.teslimTarihi?`<span>📦 Teslim: <b>${s.teslimTarihi}</b></span>`:''}
-      ${s.odendi&&s.odemeTarih?`<span>💰 Ödeme: <b>${new Date(s.odemeTarih).toLocaleDateString('tr-TR')}</b></span>`:''}
+      ${s.odendi&&s.odemeTarih?`<span>💰 Ödeme: <b>${new Date(s.odemeTarih.split('T')[0]+'T12:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})}</b></span>`:''}
       ${s.odendi&&s.odemeyontemi?`<span>${s.odemeyontemi==='havale'?'🏦 IBAN':'💵 Nakit'}</span>`:''}
     </div>`;
 
@@ -3752,7 +3761,9 @@ function siparisKarti(s, ctx) {
   const servisIcon = isKoltuk ? '🛋️' : '🪢';
   const odemeRenk = s.odendi ? 'var(--green)' : (s.durum==='teslim' ? 'var(--red)' : 'var(--blue)');
 
-  return `<div class="card" style="${isKoltuk?'border-left:3px solid #7e3af2;':''}">
+  const durum_renk = {alinacak:'#3b82f6',alindi:'#10b981','yikanıyor':'#8b5cf6',hazir:'#0e9f6e',dagitimda:'#f59e0b',teslim:'#94a3b8'};
+  const leftColor = isKoltuk ? '#7e3af2' : (durum_renk[s.durum] || 'var(--border)');
+  return `<div class="card" data-durum="${s.durum}" style="border-left:3px solid ${leftColor};">
     <div class="card-header" onclick="openKartDetay('${s.id}')">
       <div style="flex:1;min-width:0;">
         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px;">
@@ -6635,6 +6646,129 @@ if(!girisKontrol()){}  // giriş ekranı bekler
 </script>
 
 <style>
+/* MOBİL ALT NAV */
+#mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 64px;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  z-index: 450;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 4px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.mbn-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 8px 4px;
+  border-radius: 12px;
+  transition: all 0.15s;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+}
+.mbn-btn:active { transform: scale(0.92); }
+.mbn-icon { font-size: 20px; line-height: 1; }
+.mbn-label { font-size: 9px; font-weight: 600; color: var(--text3); letter-spacing: 0.2px; }
+.mbn-btn.active .mbn-label { color: var(--blue); }
+.mbn-btn.active .mbn-icon { filter: none; }
+.mbn-badge {
+  position: absolute;
+  top: 6px; right: calc(50% - 18px);
+  background: #ef4444;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  line-height: 1;
+}
+/* FAB + butonu */
+#fab-plus {
+  position: fixed;
+  bottom: 80px;
+  right: 16px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: none;
+  box-shadow: 0 4px 16px rgba(26,86,219,0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 300;
+  color: #fff;
+  cursor: pointer;
+  z-index: 451;
+  transition: transform 0.15s, box-shadow 0.15s;
+  line-height: 1;
+}
+#fab-plus:active { transform: scale(0.9); }
+/* FAB menü */
+#fab-menu {
+  position: fixed;
+  bottom: 140px;
+  right: 16px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 451;
+}
+.fab-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.fab-menu-label {
+  background: rgba(15,23,42,0.85);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+}
+.fab-menu-circle {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  flex-shrink: 0;
+}
+/* Mobilde içerik altına boşluk */
+@media (max-width: 768px) {
+  #mobile-bottom-nav { display: flex; }
+  #fab-plus { display: flex; }
+  .main { padding-bottom: 80px !important; }
+  #fab-home { display: none; }
+}
+
+/* ESKİ FAB */
 #fab-home {
   position: fixed;
   bottom: 20px;
@@ -6661,6 +6795,44 @@ if(!girisKontrol()){}  // giriş ekranı bekler
 }
 </style>
 
+<!-- MOBİL ALT NAVİGASYON -->
+<nav id="mobile-bottom-nav">
+  <button class="mbn-btn active" id="mbn-dashboard" onclick="mbnGo('dashboard')">
+    <span class="mbn-icon">🏠</span>
+    <span class="mbn-label">Ana Sayfa</span>
+  </button>
+  <button class="mbn-btn" id="mbn-siparisler" onclick="mbnGo('alinacak')">
+    <span class="mbn-icon">📋</span>
+    <span class="mbn-label">Siparişler</span>
+    <span class="mbn-badge" id="mbn-b-siparis" style="display:none"></span>
+  </button>
+  <button class="mbn-btn" id="mbn-rota" onclick="mbnGo('rota')">
+    <span class="mbn-icon">🗺️</span>
+    <span class="mbn-label">Rota</span>
+  </button>
+  <button class="mbn-btn" id="mbn-musteriler" onclick="mbnGo('musteriler')">
+    <span class="mbn-icon">👥</span>
+    <span class="mbn-label">Müşteriler</span>
+  </button>
+  <button class="mbn-btn" id="mbn-ayarlar" onclick="mbnGo('ayarlar')">
+    <span class="mbn-icon">⚙️</span>
+    <span class="mbn-label">Ayarlar</span>
+  </button>
+</nav>
+
+<!-- FAB + BUTONU -->
+<button id="fab-plus" onclick="toggleFabMenu()">+</button>
+<div id="fab-menu">
+  <div class="fab-menu-item">
+    <span class="fab-menu-label">Yeni Sipariş</span>
+    <div class="fab-menu-circle" onclick="closeFabMenu();openYeniSiparis()">📋</div>
+  </div>
+  <div class="fab-menu-item">
+    <span class="fab-menu-label">Yeni Müşteri</span>
+    <div class="fab-menu-circle" onclick="closeFabMenu();openModal('modal-musteri')">👤</div>
+  </div>
+</div>
+
 <button id="fab-home" onclick="fabHome()" title="Ana Sayfa">🏠</button>
 
 <script>
@@ -6669,6 +6841,45 @@ function fabHome() {
   if (wizard && wizard.classList.contains('open')) closeWizard();
   document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
   showPage('dashboard');
+}
+
+let fabMenuOpen = false;
+function toggleFabMenu() {
+  fabMenuOpen = !fabMenuOpen;
+  const menu = document.getElementById('fab-menu');
+  const btn = document.getElementById('fab-plus');
+  menu.style.display = fabMenuOpen ? 'flex' : 'none';
+  btn.style.transform = fabMenuOpen ? 'rotate(45deg)' : '';
+  btn.style.background = fabMenuOpen ? '#0f172a' : 'var(--blue)';
+}
+function closeFabMenu() {
+  fabMenuOpen = false;
+  document.getElementById('fab-menu').style.display = 'none';
+  const btn = document.getElementById('fab-plus');
+  btn.style.transform = '';
+  btn.style.background = 'var(--blue)';
+}
+
+function mbnGo(page) {
+  closeFabMenu();
+  showPage(page);
+  // aktif butonu güncelle
+  const map = {dashboard:'mbn-dashboard', alinacak:'mbn-siparisler', alindi:'mbn-siparisler',
+    yikanıyor:'mbn-siparisler', hazir:'mbn-siparisler', dagitimda:'mbn-siparisler',
+    teslim:'mbn-siparisler', rota:'mbn-rota', musteriler:'mbn-musteriler',
+    ayarlar:'mbn-ayarlar', kasa:'mbn-ayarlar', silinenler:'mbn-ayarlar'};
+  document.querySelectorAll('.mbn-btn').forEach(b => b.classList.remove('active'));
+  const activeId = map[page];
+  if (activeId) document.getElementById(activeId)?.classList.add('active');
+}
+
+function updateMbnBadges() {
+  const aktif = data.siparisler.filter(s => !['teslim'].includes(s.durum)).length;
+  const el = document.getElementById('mbn-b-siparis');
+  if (el) {
+    el.textContent = aktif > 0 ? aktif : '';
+    el.style.display = aktif > 0 ? 'flex' : 'none';
+  }
 }
 </script>
 
