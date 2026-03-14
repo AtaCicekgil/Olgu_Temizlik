@@ -2874,10 +2874,30 @@ async function _loadFromSupabase() {
     }
     if (cinsler?.length) {
       const katSira = ['Halı','Koltuk','Perde','Kuru Temizleme','Bakım Hizmetleri'];
+      const haliSira = [
+        // MAKİNE YAPIMI
+        'Makine','Akrilik','Shaggy','Samur/Bez Taban','Peluş','Patchwork',
+        // YÜN & DOĞAL
+        'Makine Yün','Viskon','Bambu','Jüt','Step','Step Shaggy',
+        // TÜRK YÖRESELİ
+        'El Dokuma','Dokuma Kilim','Kök Boyalı','Isparta','Demirci',
+        'Yağcıbedir','Milas','Uşak','Gördes','Ladik','Kula','Bergama',
+        'Yöresel Anadolu','Bünyan','Yörük',
+        // YABANCI
+        'İran','Nepal','Hint Kilimi','Afgan','Çin','Hereke',
+        // ÖZEL
+        'Güderi','Keçi/Koyun Tüyü','İpek'
+      ];
       data.cinsler = cinsler
         .sort((a,b) => {
           const ka = katSira.indexOf(a.kategori); const kb = katSira.indexOf(b.kategori);
           if (ka !== kb) return (ka===-1?99:ka) - (kb===-1?99:kb);
+          // Halı kategorisinde özel sıra
+          if (a.kategori === 'Halı') {
+            const ia = haliSira.findIndex(s => a.ad.includes(s) || s.includes(a.ad.split(' ')[0]));
+            const ib = haliSira.findIndex(s => b.ad.includes(s) || s.includes(b.ad.split(' ')[0]));
+            if (ia !== ib) return (ia===-1?999:ia) - (ib===-1?999:ib);
+          }
           return a.ad.localeCompare(b.ad,'tr');
         })
         .map(c => ({
