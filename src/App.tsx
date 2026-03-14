@@ -9,6 +9,7 @@ import ServiceDetail from './pages/ServiceDetail';
 import Booking from './pages/Booking';
 import Gallery from './pages/Gallery';
 import Dashboard from './pages/Dashboard';
+import MusteriPanel from './pages/MusteriPanel';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
@@ -27,7 +28,8 @@ function App() {
                 <Route path="/hizmetler/:serviceId" element={<ServiceDetail />} />
                 <Route path="/rezervasyon" element={<Booking />} />
                 <Route path="/galeri" element={<Gallery />} />
-                <Route path="/panel" element={<Dashboard />} />
+                <Route path="/panel/*" element={<Dashboard />} />
+                <Route path="/hesabim" element={<MusteriPanel />} />
                 <Route path="/hakkimizda" element={<About />} />
                 <Route path="/iletisim" element={<Contact />} />
                 <Route path="/giris" element={<Login />} />
