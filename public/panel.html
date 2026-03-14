@@ -1648,6 +1648,7 @@ body {
         <button class="ay-menu-btn" onclick="ayTab('urunler',this)">📦 Ürün Listesi <span style="margin-left:auto;color:var(--text3);">›</span></button>
         <button class="ay-menu-btn" onclick="ayTab('iban',this)">🏦 Ödeme / IBAN <span style="margin-left:auto;color:var(--text3);">›</span></button>
         <button class="ay-menu-btn" onclick="ayTab('mesajlar',this)">✉️ Mesaj Şablonları <span style="margin-left:auto;color:var(--text3);">›</span></button>
+        <button class="ay-menu-btn" onclick="ayTab('veriler',this)">💾 Veriler <span style="margin-left:auto;color:var(--text3);">›</span></button>
         <button class="ay-menu-btn" onclick="ayTab('tehlikeli',this)" style="color:var(--red);">⚠️ Tehlikeli Alan <span style="margin-left:auto;color:var(--red);">›</span></button>
       </div>
 
@@ -1699,6 +1700,23 @@ body {
         <div class="section-title" style="margin-bottom:4px;">✉️ Mesaj Şablonları</div>
         <div style="font-size:11px;color:var(--text3);margin-bottom:12px;">Kullanılabilir değişkenler: <code style="background:var(--bg);padding:1px 4px;border-radius:3px;">{isim}</code> <code style="background:var(--bg);padding:1px 4px;border-radius:3px;">{adet}</code> <code style="background:var(--bg);padding:1px 4px;border-radius:3px;">{toplam}</code> <code style="background:var(--bg);padding:1px 4px;border-radius:3px;">{isletme}</code></div>
         <div id="ay-mesaj-listesi"></div>
+      </div>
+
+      <!-- Veriler -->
+      <div id="ay-tab-veriler" class="ay-tab-content" style="display:none;">
+        <div class="section-title" style="margin-bottom:12px;">💾 Veriler</div>
+        <div class="card"><div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">🔄 Cache Temizle & Yenile</div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">Yerel önbelleği temizler, Supabase'den güncel veriyi yükler.</div>
+            <button class="btn btn-secondary" style="width:100%;" onclick="cacheTemizle()">🔄 Cache Temizle & Yenile</button>
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:10px;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">🗑️ Son Silinenleri Temizle</div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">Silinenler listesini temizler. Veriler geri alınamaz.</div>
+            <button class="btn btn-danger" style="width:100%;" onclick="silTumSilinenler();toast('Silinenler temizlendi')">🗑️ Silinenleri Temizle</button>
+          </div>
+        </div></div>
       </div>
 
       <!-- Tehlikeli -->
@@ -6505,6 +6523,7 @@ function closeModal(id){
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.opacity='1';setTimeout(()=>t.style.opacity='0',2800);}
 function resetAll(){localStorage.removeItem('olgu_hali_v2');location.reload();}
+function cacheTemizle(){localStorage.removeItem('olgu_hali_v2');location.reload();}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
 
