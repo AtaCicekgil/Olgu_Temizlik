@@ -2791,9 +2791,20 @@ async function _syncToSupabase() {
 
 function load() {
   const saved = localStorage.getItem('olgu_hali_v2');
-  if (saved) data = JSON.parse(saved);
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    // Cinsler hariç localStorage'dan yükle — cinsler her zaman Supabase'den gelsin
+    data.musteriler  = parsed.musteriler  || [];
+    data.siparisler  = parsed.siparisler  || [];
+    data.silinenler  = parsed.silinenler  || [];
+    data.giderler    = parsed.giderler    || [];
+    data.settings    = parsed.settings    || data.settings;
+    data.counters    = parsed.counters    || data.counters;
+    // data.cinsler: localStorage'dan ALMA — Supabase'den gelecek
+  }
   _applyMigrations();
   if (_getSb()) _loadFromSupabase();
+  else renderAll(); // offline: varsayılan cinslerle devam et
 }
 
 function _applyMigrations() {
