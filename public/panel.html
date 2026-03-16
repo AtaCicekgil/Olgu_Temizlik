@@ -1356,7 +1356,7 @@ body {
 
   <div class="content">
 
-    <div class="page active" id="page-dashboard" id="page-dashboard">
+    <div class="page active" id="page-dashboard">
       <!-- Hızlı durum kartları -->
       <div class="stats-grid" style="margin-bottom:12px;" id="dash-durum-grid"></div>
       <!-- Bugünün siparişleri -->
@@ -2532,12 +2532,24 @@ async function girisYap() {
   btn.textContent = 'Giriş yapılıyor...'; btn.disabled = true;
   hata.style.display = 'none';
 
+  // Supabase hazır olana kadar bekle
+  await _sbHazirBekle();
+
   const sb = _getSb();
-  if (!sb) { hata.textContent = '❌ Bağlantı hatası'; hata.style.display = 'block'; btn.textContent = 'Giriş Yap'; btn.disabled = false; return; }
+  if (!sb) {
+    hata.textContent = '❌ Sunucuya bağlanılamadı, sayfayı yenileyin';
+    hata.style.display = 'block'; btn.textContent = 'Giriş Yap'; btn.disabled = false; return;
+  }
 
   const { error } = await sb.auth.signInWithPassword({ email, password: sifre });
   if (error) {
-    hata.textContent = '❌ E-posta veya şifre hatalı';
+    if (error.message.includes('Invalid login')) {
+      hata.textContent = '❌ E-posta veya şifre hatalı';
+    } else if (error.message.includes('Email not confirmed')) {
+      hata.textContent = '❌ E-posta onaylanmamış — Supabase\'den "Auto Confirm" açık olmalı';
+    } else {
+      hata.textContent = '❌ Hata: ' + error.message;
+    }
     hata.style.display = 'block';
     btn.textContent = 'Giriş Yap'; btn.disabled = false;
     return;
