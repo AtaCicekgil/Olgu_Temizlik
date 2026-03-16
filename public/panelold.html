@@ -577,7 +577,7 @@ body {
   position: fixed;
   inset: 0;
   background: rgba(15,23,42,0.55);
-  z-index: 850;
+  z-index: 600;
   align-items: center;
   justify-content: center;
   padding: 16px;
@@ -1225,24 +1225,26 @@ body {
 <div id="giris-ekrani" style="position:fixed;inset:0;background:#EFF6FF;display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Inter,sans-serif;padding:16px;">
   <div style="background:#fff;border-radius:20px;padding:40px 32px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(37,99,235,0.12);">
     <div style="text-align:center;margin-bottom:32px;">
-      <div style="width:64px;height:64px;border-radius:16px;overflow:hidden;margin:0 auto 14px;"><img src="data:image/webp;base64,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" width="64" height="64" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+      <div style="width:60px;height:60px;border-radius:16px;background:#1E3A8A;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 14px;">🧹</div>
       <div style="font-size:22px;font-weight:800;color:#1E293B;">Olgu Temizlik</div>
       <div style="font-size:13px;color:#64748B;margin-top:4px;">Yönetim Paneli</div>
     </div>
     <div style="margin-bottom:14px;">
-      <label style="font-size:12px;font-weight:700;color:#475569;display:block;margin-bottom:6px;">E-posta</label>
-      <input id="giris-kullanici" type="email" placeholder="ornek@olgutemizlik.com"
-        style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid #BFDBFE;font-size:16px;outline:none;box-sizing:border-box;font-family:inherit;"
+      <label style="font-size:12px;font-weight:700;color:#475569;display:block;margin-bottom:6px;">Kullanıcı Adı</label>
+      <input id="giris-kullanici" type="text" placeholder="kullanıcı adı"
+        style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid #BFDBFE;font-size:14px;outline:none;box-sizing:border-box;font-family:inherit;"
         onkeydown="if(event.key==='Enter')document.getElementById('giris-sifre').focus()">
     </div>
     <div style="margin-bottom:20px;">
       <label style="font-size:12px;font-weight:700;color:#475569;display:block;margin-bottom:6px;">Şifre</label>
-      <input id="giris-sifre" type="password" placeholder="••••••••"
-        style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid #BFDBFE;font-size:16px;outline:none;box-sizing:border-box;font-family:inherit;"
+      <input id="giris-sifre" type="password" placeholder="••••"
+        style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid #BFDBFE;font-size:14px;outline:none;box-sizing:border-box;font-family:inherit;"
         onkeydown="if(event.key==='Enter')girisYap()">
     </div>
-    <div id="giris-hata" style="display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;font-size:13px;color:#DC2626;margin-bottom:14px;font-weight:600;"></div>
-    <button id="giris-btn" onclick="girisYap()"
+    <div id="giris-hata" style="display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;font-size:13px;color:#DC2626;margin-bottom:14px;font-weight:600;">
+      ❌ Kullanıcı adı veya şifre hatalı
+    </div>
+    <button onclick="girisYap()"
       style="width:100%;padding:14px;border-radius:12px;background:#2563EB;color:#fff;border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">
       Giriş Yap
     </button>
@@ -1253,11 +1255,16 @@ body {
 
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <div class="sidebar-logo-icon" style="background:transparent;box-shadow:none;padding:0;overflow:hidden;">
-      <img src="data:image/webp;base64,UklGRioqAABXRUJQVlA4WAoAAAAQAAAA/wAA/wAAQUxQSOoVAAAB8IZt2yI52bbtx3FWT5zYleDuboHgegV3yOWuuLssDpfAFeTG3d3h5sIhOMHhjuNyE4MkMJHpOo9j/zE91T3dVdV/I2ICUKCiIaBOCT0LslcqlSRobakbZX/gkCW2HDv2T4ed+vDjjz8+/o3Xexz/5ONP3nX8r3cdu/96ffsouidJJQntxbJ7H3PKLe9+OLmTvfvd+xMfPeOkXZdeEgCk0pFou6D4t7N2mqZptXuasVpN07QaLUbWrH477a7L9t1wMABoErQ9GMdFMcZo7my8k25mMbJm59t3HvLTkQAkCdoGXORVNq+7xcju6cQb/7yBAghBS5I07j9sppruMRpJznrx9J8OBTQJWnpEBTlS062akkzf++eOQwEEkTIjCoQV+uUMSTeLJBe9e/ZOAwColBQRAfqPvuKzzaB5093NSH7//PFrA1ApI6rA6n99dh7TUflE0i2N5Iw7du8PqJYNFWDN06aTMXZumlvdY5VMX/rrkoBomVABNjxnOmnm3rlxrpEeSX5wxnqAaFkQATa+eibpRhYA6ebkjCtHAdAyIAKscs180owsCJJm5IzLNhWIFJ0osOYFM2gLjTWLgnQjZ16yARCk0BRY5cwvyDQ1Fg3pRn5xyRpAopK5UFQx4PeTSDN3LyDSnZx61FCEUEyiSA580phG86Ii3cgJBwBBi0cSYP0rOmnRrMhIM6Y3rQskRSMBA/76CWmsu3hII786YykELRQBNrozMjrLAN3I8bsGhAIJGHjoFHpqLAekGX/813AELQgRrHu/08y8NJBGvro9oIWgkL3fYjQ2uLDokTPOWgqhABTDz+9iaiwbtCr50ubQvJOAdZ9mmnoZMeviJwdLzglw0DRGp5UQd0uNb6vkmqLvQXOZevfyYSk559L1Qq4pfnILmZJlxI2ce9layHfBenfSotcuF27k/Ju3BVRyTAJ2/pSp91wm3MgFt+8QIIoclwp2/JypO3u7gNzI2TftrIAgzwXY+TNGLx9u5Lwbtg6AItcFfY/+kamXDjfyh/vGKKCCukVV80PQ7x9kGsuGRdKeGtMBqKBuCQCgeSHoe65Z9JolIq0yPr93BVBB3aLAkIse2RQhHwR9zzU3LxnWRb7wm+GACuqWAIw49h1yymiEPBD0PTel91wSzGlvHjwMCIq6JQAjjvyQTBdxyuYIrSfa/4KUzlJhTr596AggqEhdCgw78j2npdGqnLgRQssl+JW7s3mLwI18828jAFWRuoKictj7pJk76VVO3BrSYgEb/r8bS4QbOfWoEdAkSM0sogC2vyPSoruTpHXx8y0ktJRi52mMLA9u5Ox/rQjt2xG0LgWwwx3z6Ubvybo48SeQFlLs8DmjlwaP5JzLNwf6dFQSlTo0ga5420LGSGZKq7yif5CWEfR5h6mXBY/k/Gs2AzSoqkp2DcCm931FViMzu7ul/DeSoNoSIoNvZeolwSM579otE2iQ+jUBlj/lE9LNrC43n7sDOjS0hOpVjF4SjFx45+ZA0qFStybAMqd9RsYYG+LGb7ZHRyItELBnGq0cGOkPbKOodIQgdQdB/9OmkjFad2+Ap3xyZFJpAcWeM92czZ5L5uRzv0gQKiqqdWii6DjgGTKN7E1Lb0GiTSe64utMvQSYk6/+ZiAQVKXuAGDPZ6pMU2evOn/4PUKzCfo8ztSLz4187ffDgSCQukOCytjHq6S5u/cKjfM3gTaXaP8TPMbCcyMnHz4CUAHq0gTY+YnFpDl7j86nBqg0VcBOXRa94DySn525OhBU6tcKsP6FX9Pd2ZRuPAraTIL13mD0YnMj54xbE1CV+jUB1rrgK9LYtGafbwppIu24kpEsMjfyxys3A1QgdWsCLHnBdDI6m9dTPtNfpWkCftWVstCM7HpsN0AEqEsToP9vXiajOZvJFi0+AaFZFGtNpLFF88Gc8dmx/aCKekVEBf1/M94Zjc1e9W9GQ5tDpP8VNBaXGfnWX4cCivolBAz73UukG5vfqnxoiEpTKP7E6MWVGj85eVlABfWrAnu/ZfTIVnSv+hFoCsHq0zyyqMzZectagArqVwU2vmIe3dia7sZ3h0OaIKmcxciiMuNr+3RAVerXBNjympmksXXd02OhvafY4zv3ojJ+f85IaJD6NQFGnPg9ac5Wds7dGNpbIv0eYmQxuXHSrpCO0IAEGH7oO0Zztnjk9U2Ag9PoxeTO+zdCqCT1JYIlDn2bdGfLm8/ZWLR3RFb4kKm7e/EYefkwBBUBBLW7BQX+/BbpxjxMeR16SXGkRSskcxs3CCqCzCJBge3vqdKN+Whx9l6Q3hBZdgLTQnJPLxwSFPWEBNj6zoX0yNxM+cYSkF4IOMmjFZG7XzQkVKQOUWDjW+bRont+eFz0C2jjBBvMYPSaBWN+xQAEFckUgBVO+JieRu+eF4y8oRdEOm5j9CKKvG8gVLNJguGnTnFG89q54T5rFLRRiu1muhWRc+KGCMimwM5Pk9HpudPFq0UaJeEGmheQ+6y90VeyBVTO+Y7RyRyq2tzNoI1RrDHbna3eEsYLNEkEIuhRsc6tpDGfLeUVkEZdysgCinxnRa2oIGPAFp8yOnPL3xsKaYRijW/dC8jdfotEFRkDRk9mytx2r/JwaCMER9FZQMYnh4pkUoyezNTzLOV7QyH1KVb+gOZeOM6FOyCISE+KbT+hMcfdzRfuKNqIo7174RifTkSziAx4hynzzSPPQ32CgS8zFpB7+geoZFGc71XPPZ+8IrQexR5VegEZ3x8GyaLYfbalzDtP+SuEOgThdloRRV4ARQaRfs+zK+Zb98iHB0gdKqt/wVhAzkXbZQvYb1FMC8A93QZaB06keQEZX+0PySDo8zSjWf7ReDoqmQRDxjMWUeTlUGQIsmM0FkLki4OCSAbFtp20InL7eTbFf5i6ewG4L9gSFZUs5zN6ATkXj8ok+Mk7jMXAlGdKRwZBv1doRWR8Y6BIBsWoRfSCiHy5jyY9Kbb/sZgin0QdO1UL5MuVpdKT4Ewac7LpbhBFhoCLmbIo0/hL9OlBMPAlxkIy/hlJtqsYCyPy/pD0oNjpB7dCcv6iniuYFsiEfprhYEYvqF9mEhkwgVYYnnZuJ6GH5F5WWQaw1Fx6YbDKS6E1FKt/ybQcLD2nSNL49rIitcYstlgKpO+DrHpBuDm5LbTWRV4tBQi4lF3F4JHsum+vwQIAgn6PszRczpRFaOTie3dGjwHLfMqqFdUv6rm+CDyS1Yd3AkRrJdi/y9OCMh6FkEVxImPeeSQXPbxHBVD0WMHJrFpBRd4hKplGGT3XPJLpgzsGIAh61vAQo3tR/ReSbauYa27OxY/uBEiQzBgwkcb8bDLjO0OQRXTIG7TcciMXPjBGIUEls2KH7+hF5Vw4Cpol4O7cciMX37OTQBKVOgN2o7Oo6NwbIQMS2XMhPZecXPTAGECC1K842AosclwmUe3/Di2H3Nj58G4BElQaiecZi8v4Sl9IT9CKnJVDZuS03RNIUGko5Jkic85ZCyo9SYJtFrrnizk57bSlEZKgjVr2/2nFReORCFkk6B20PDEjp5+4LJBo9/pURbAl6YX2YEU0S4Jtutxzw4yceMQwICgEmWtoEEAEu9NZYM7ZGyBkURnxPi0nzMiJx40AgqJuEdEA4Df/MwA4iVZkdB6XTQJ+WzXPA4vkB8cvBVSCNiQAQ379xMJvhwJXMxaa8YUB0CyquIfWem7kxCOHAR0V1QZICBi83VNGfjwCuIHR3b2w3Ku7IWSRRLac4STd3VvGnfzo5KWAJKh0r0MUwOj/Tcmqz1wJuJNWaIy8XTSTVnBaTL2VzMnJxy4NJNJzJkmAgWNu6yLN3H0shr3LtNjc52+KkCmEgU+wK7aMGTnzzKWBjopqIxQY9MtnUzKau6f8C1abVXSMvFayacAWU71qreGRnHrU6kDQEBqhAhnzWEpPzbunPBirziw89/k7QjMACNh8VkytBdzIqactDYgAkrmWANjxvk6aeY+RF6H/R4VH4zNDVTMh4HTG2HRuZOetywN9OgSNUEGf7W+aRxrZU8oXde1vis/df42QTTScaTE2lxs576bNgUoIAfWJCrDVdXPJqnnWlOOTfzG1oqPzw+VFM0EE59CjN487+dnt2wAhqKrWpwC2vvJb0syzd7uc1eJjynHollVUz1zENHrNXvNIzr95RUBV0HOWEIBtb51NmrNe43uDLyoFZp37Q7JBgJ9+wKo1gxv5xdEbAhqQuaegwKY3zCPNWb9x0qBxpYDGqetAs0EUG73hjL3mRi68fRNAVaQRQYBNL5tBmrORzrkbXloOaHxoKUg2IGDwuB9osVfcyB9u3xYIKtKIEIDR184izeneGDvocFZjGaDZhSoqIlmgwG7Pd9GieYPcyHk3bAOIAo3QAGx0/Ryyal67PjIecElZcP54VBCtA6Lo/8uXSKbmdblHI+fetA0gCjRCA7Dyv2aQMY3eK3eVBRrn/b2iWgekouj7qydnkfQ0mvccjSTn3zQK0CDSCFFg6ZM/IaO5We/cWh4iv/8DROuAhooAG14yYSHrtakPnTIKUBVphCiwzBFvx5hG9167rTS4R84+OIhK7VoQSBBgiTWP+c+1n377TfevZ7z+r7O2XgqAKDJmEQWWOeo9Mo3u7O1y4cbOv0O0jpoa0H3o8KHDug/vBwCqisw9iQLDjvkw0o3NWDI8cv4RgtAAQDQkiowhqKDeWqLAsgdPIKOxOcuGGxefPARJI2pKRjSymygw/LiPSDc2a5mo7Yx3r4REG9TLIpoAff/4NunG5o37lw06+cpWkNACGoCOsS+SbmxmH3t92aAbZxxcQZAmExX0O+gFksZmds7f5pLSQRp5/waAShOJAtj7sUg3Z1Mb31viohJCSznztOGASpOICjp2vnshY3Rvug+GXMTUSgfjYvLl3w4CVJpAAjBo9zsX0KvRW2JMJ0uIWTVlOv53QwBV6RVRBSo73zuf3pXGlnit70azy4nFqpGv/X0EgKAijRENAJY96IkFZDVGi9YKL+qGs+jlw7tbNHLaeVsNAgBVFZEeRERDUAADtz7rfZJmbNHIy7HunNLi7tHIRW/9e48lBTUlhBBUUHuF7U95fh7paWTLRh6FNb6mlRf3GEnyk0fP3HubIf06UFs7Bm+20wUPf7KYZHS6t47xUOh/mZYZd4upk2TXh2+89MQl551/4TVPjH/zowXsbuZki/0euKOM1O0WI+v2GM3Z8s5fAdeVoJpuZrFHM2cuOuevCxzDWI5y2fjJYGAXWhs3dSiwXaS1b49XICt9075F/hOho88ExnbNeApCH32MaZvmTHeAJjiSxhwtWXNWggb8nF4U3uX53DrGFweJKEbPoxcEq8xnt1aJvBUKwcAPaMVwMTsX5/GihV0tYzwOCki4m7EIgNW2HJXHm22yyYe01nDaDghAwMm0Yshtebt1vloWCgjGLKAXgmguBx3wTqsYn0uCdFvh64LIaUG/FjpDEwEgfR5h6m2YVw9AAADFSTG2YcbpS0FqbbGI1n5F3iaC7oIhbzO2X8YToTWguKINc3buCKkV5C+0tsv4Ur+eFGvNorddNg6KHkXuZ2yznIt2zRLwe3qbZfxwOCTLcl/Q260LoehZFNfT2itftBNClgT7uXs7ZXxnSJAsihWnMJq7e9v071BBFgm4jF1tlHPBZtB6dvrB26jIR/qKZFP0Hc+0fTL+CYo6BUe65cUmGqRAVfq/23zGScujbsHIaYz5sGB9FKxOaIXzIXVBMS4nYnzmrocfLNKHHviW3mTus7eANmLbTrccYIwsXmeTG+/sI6hfJLmHMQ/cYlq01mzuC3aGNgCKLX5wy4NCbjLjU30FDRV5kGk75PGv0MYEHBitDTK+t4xIYwSDxzO2Xul194MRRKQRUPwh9bbH+Opg0UaJDHuN1u44/4ZEGgXFX8y8vTGftJyExon0fYTW5vAwJNo4BGz1nXs7Y3x5pITekESvprUx7ovHQKVmgxCw5ff09sX4YF/psVEQPY/m7t6WuM/dFopeFgx/j7FdMZ4LRa8F/C41a0+Mk5dqAqj2eZixTUn/AEXvS8COs2ntiPG+RKQZRJPTzaz9MH6zMRTNgZ88yth2uPlfIWgOUWz5La3dMP5vH20aUZzG6O2F+1ejpNJE2vd+pu2F8TCpJM0jActPorUTkXcPkEpoIgn402L39sE4ZVVoaCrVfhfS2gbnDwdARRVNJIqRT9LaBLf0bBUVkeaqYJPptPYg8sGgkGaTUMF+c+ntgHHipmimnkUCfrHY2gDn9/tC0JqCK2mlzz09Vrq3BMLwu2glz83/FlpIsORTjOUu8pGAFoJi+feYeveSFvnS6ipoIShGT2Na3iJfXQ2CloJixy+YljXjy2tA0WJQ7DubsZwZJ64LRctBsfvnrJq7e8kyfjUaAXko2PELVsuX8buxUMkHxc5fMC1bxtm/kCSo5gGgGPMF03IVOee36MgPKHb4hFVzdy9JkV+ORUiQo4rtPmW1PEX+3yiIap5AsdW7TMtS5DOrISBnoFj6EZqVITe+vgz6SO5AMfw2upUfdz69JioKiOQMFMPHpbSyY+RdK0FVkceC8PPvaOXGmB7XAUVOQRUHTqd5iYn8/jCRBLklIcEaT5BWVtw4ZTuEoCIiOSUSMPKylFZO3Hn/ughSO7ekgsqR39K8hERyXF90aO4hCdjxWdLKhhu//M1AVCr51l1EFcPOnE/zUhHJu0cBqorcFxEJwK4fkFYePLLzrA4kKiLFIKpY4ZJOmpcEI9/ZA6GiUhwiARjzMhnLgDvn/3sEEtViEQ1Y/vxZ9OgF55F8ZjRQERRlTyIBGP1QF80LzcjZpw+CJgEFJBow+JCPSPPCMqM/sCGgUC0kkQCsdMLnpHkhmZPv/CxABIVSryiw7o0/kuaF40Z+eNJKgKLgRSFb3zyXNC8UM3L6cUsBKih+AXSne+aTZoVhRs74x8qACkqhKNB/zzvmkWZF4Gbkx//ZAFBBaRQFwrY3fUa6ec65kZx6xmqAqnQvCYAogFXPnkbSzPPLjIyvHb0CoEFqlwZAVIDlD316HsnoueTRyR8fOmAQoAIpHwBUgT6j/zmJJKPnjEcnOeHCzRJABSgpgCqAJfe57kuSbuY54Rad9M9vGDsQgAjKragAstqf7/iaJM3cW8zdjCS/uOsPywPQICjBEhTASr+7dYqTZDT3FnG3SJI27YE/r65ACCqCkqwqAIbsdM5z3zpJmpl5c3mMRpLVz5+88KcjASAoRMoTICFRAP1X2f9f//2sk93dYjR37xV39xijO0l2ffnYP3+2Rj8AUBWgbImIJhUFMGi5XQ6+bMJHzp6tu9Ozm5m7s+dPX77xb7st1R9A0tGhgprlS0RDpdInAEDfkWN2O+T2eyf/OPdH9macP2f6Y7edc8CeKyi6hyRRVfRYyjSEkCSVjoqg5nJbjN7u1Gsuu/bOuyf/8N2smT3PevOBO2+99Zoz99tqk5UE3SUkQVVEcw9WUDggGhQAAHBZAJ0BKgABAAE+USaQRaOiIZIpNXg4BQSxN3GjbiGf1WzZnIDldCd/Sfkz4K5Au5flF+UfXccS9/Pyg+WnnlH49a/iL9r90Hzi/1P+g9i/6V/5nuAfp3/rP8B+NvcQ/sX/S9QH8x/xP7M+77/j/95/XPdV/h/UD/pn9+///tUf9r2Ev269gD+T/531aP+H+2fwU/tl+3fwE/zX+9//P2APQA9AD07+sH+A7Uf8j0hnwD2k0SftXjfZGvIvUC9j7sWAD8w4Wvsvz4/7zwMPt/+49gD+Sf5P1YP67xffU/sCfzX+/+l965P3B///uR/s3/7im8/jMO/pssfUhdyciLBblGMgtYxtD2L3+hLe9s6aEL7Obp61aYQjXQg4HZMjKVRVaFVvpvFfTgQ40fLgQ/elfSUZFPVhLCUm935DEpDP6uPAP74MmxGjx5W470fRYdah6Ht425abc0ePO1g6GsY1xqYIBgDZ1jl//+BMHDCc9r7/9hvchO2wm6W5zFWrG5cp4ygn8rVY5dxvY7Y7iOekKzIZZHFeUtNKSpCdaudRMCDUljDNRYyeAnIgj7eq8a/TVE1RNIPmFzfwutbJd6HhAg3XenwuLvY3wNgBQID/R3VcvHqtL498p99gi10vSOeBS7woSqaV02iN66L7hTYJB1IBso/pwUT/YHtBAscrQbN60cVe0c76JR/lnivf44bOJZU4ZGT219Mln8rnQsAgCcF7TpWPTlRRbcvww487TtaVMWd3zMCUPGxnnxIFtyFoJR62jFxnWlEdDx5Cb3ve7c60JdMCVDEDyn1R3hsEY5wul2fp7FwmRyjx7Pyq7eeZXrU6U+dLkxYKs1i29aJ6lGNEwKqENjXwAgzDfO3DNetS+g80pBJuMaBuUGhKAh6vjY58PvxsPDtW2dyZcuhH04/KrlgZVZPI9BTE+bnupRtEb4/CrqrOj7pjk19QpWbuXWgA/u2nQ2MUDub6ecdBWqBFdZqIUaTUzGn/x0Mi0J+skpV224D3OblBMTb0oIpdRx7zlBUk3gfEOMbKZJwDcTpqjDFQmPvH1ok7P6CqaZHiyNV/R/YQAJ0+I4qzMhXQ2FnzsmHv1/MpyxF7O///+r4Y+dF/VYfkdtq4dee0VfMA4oUvZfLsOmyikI88HSvTLhNdq68P7k9JGb77awvUshM19xTf7GbZSNC6VtPyrmi4RJ6J9yxKCSthf+L1HJ67oDVsbayiqIW/QzP8hqagVxPvYylmxwv/qnQIk7exQU9lYyuFi7x7fU6q+zp/AhjJ/30hVD92ZmogwQ0QoptH2j5FUICofiM/qSUAfCqctBhXTe7QwDGXkDXTmlLpadt9FliRDRm8pOwcdkMOxAi3yKI00VcT4ckmbblvC1j+Tn+6KtmdAB901ze053hk9Z2hqoipQQfDwMNfht/SodgQtoqnCubUGVWn+Jmht7vnzbPZRD1nWnTZBVbTPnKXpHIjxITCE+5tX+xm2FJZr5law9Ltcf92GAae4oshQBXBS8P9QxRvV0XAB38LpJm6i0i2JiejnvYFF9d0IdVFnMca2ePqbB4eIUqxMNFU4Uwnl3LgrHrePZwD7Ax9Yp0Nlk5GZqsr5Un2VlfP/wAJdvdnEo+bGrYufY5Q8xM2unNq+epLGuG3gepVE4eDGKGQ9dulgV0zBUZsYtqEhg2xE4i7BeccE2agpHjcYAeapRDULKCsQfIaYiyIn413SRdcPEAFP9he+YSDD+gAEG4RqREqxRNpGRmbFdrfZAHto9L2TugaMWWrXDZ/mKsZ6AYm/ntxIoBCdpbvYKAML4xGI+OtdcgbNq7EnejR5yzCf78K/p9jwmBboZOvcjBsHonbgRwEyCOZDqxcvccaLgNXOwQSKB+76eGPDfoSfMiF0Ddrr5IInjBtn05sbvCWw1wFlbuIHo2dOUQ5RorTQ2DImakXPcgl65hr1pC4gf54YZ9TQ6iExhl/KohR78rZ1M2WLnLb9mhMCKxTdx0KhE4zAR8xdsirtZcxoJRkCx2p/A7i75bDnkc7RsH6zF+YMjXfGXFwK766g+ZfuosP3JqVYda0FRz4gygiXgdTNQT0BO0Q0Ejp24zTfT/MsFOkgMmrOqWi1e0Au5Qq0Qio8hphK/S2rMUeQJjzz7Zy86wH4dZvldQ+G8doh+in0Ne/Uw9zWt0BaQDdIUyRgcfUc1rhVcTLd90cWP0S4U7u5z9QBvAA2cQ7jX0Kfux9IoN6RA6sgX446q4psMKygoH68lY8PpBBNnWdF33K0+ck4Iu8Vx5p4gZvOQXtzm80bGIWPTH+YOh2c37jxFqdf6YpG4eYZMrf8Z4MmcCB8htzhOwpHkDfb/y1iJoY4vZeUZI7W0NHQ0TmxK3wVjXXmKvtivvujp/5mkf/SAG0+CoNOqpf12f0MrAGMbEh9rhmODYvX5v/t2ie6d4Yh7i02+i7WuTtQ5ogsudyY5z6G5vBrmhdfC6eJjM3xh16XdoNYYAwFyuPvRST15jETqPOg+PYfHDw1dFn18YLk+BTRlgGXVPAUiUknDXmWf/Rot2KBDV48SjDpdxG67k+dC39WJTnFLkzOehCML9my92oKPcx9deqGFdQpLmoHic56VDN8KYzQu225sMv5v/wKyA0fW12as4AHq+WVjTr7lQUqPrJJq67nIxtLgYESIXWSRrHumBfKuk72PYlFBqAf2XezP8W5dn4BYnZ3AFZq1boWkzoqyX8M2UL/oqzyhWTuuCBvwExTM8Q6ZhCuDBd1tTd66ITr/1sJXxbnxXd2GM5/1DBK+zCkgq4yhG1PwvoZWrY0w6yt+OLlhXGlhNdcKrFlmYDE5H8otGHTHyePCqlsmq5+ZGUPBTZ+N42uQC90npfq0NmXmOBIIetqy6XNCOuiZCCIO5//S+cueGsO9EWH+Pb0D368Y6gSsvYDQRBIQuTXQ1gVdvUFCTH6XHKct4mTC8ZOuN+6KiDumOlcszj7TLibXViy6xAnGNz0OKnxmLX89MRS9Yw7jS7kC/Ts8utsuh8Nc/s7vGJsUiEU23MveOiZzLhjeF9FKcbr5YU/YSHxl0yFB0sbtpf8plUxWpDNm1ZVbNm1rHCMoih28abrzTDFFW7Sw3oUMRx/wnp8XQKjukhuy3k3LfQ4qKdd20LZVWlODU1ehlCpm1petX2uqGdUNf4FyWLg/I6reFb6Yh7eEwDEsg5dUwtUqzOGyjYo3t2eRiWukn0ym1Hkssx/Y904yjbxcp8Uu0Amtacu0/IsGUY7aMQLDzdw9h7CLcdWm4SbuC/4/MrnoWRFeXqpTG5qH9Vn+GpC1G84C1FHgJQqimaT3PJVbGhnOnUX2IVPSf919xuKQH+wQ6Wtgn6wbvCR//vsG8u8/xFovrcqoGPbA7qCcJ67+BJ1IqMJ0ilbvz7LgcIl9pA4T8yvD3dPh7yUeZInLbU8p9DfbFUlBUnFQA8aJcBlvlrc/0+oKugmuSl7IuGSiAH2oqHtBK0lc5IJWMn87sjvh6fTCifGNBisLYynIpSUHej3SaEjjUcRnNKAUQFWGkeuuvubX0FD5pPip3LD01HWPclHGlwzGRLc5lkI/VoMwPOdTxEbcQvJVYz4Ykweckajp48z9v19dt0WPuryDt5k9xF5iq9qxOtHxF699jBjCS8AXoKQyCNNeUd8QFFP9HhJ/gQJluBrDeodhY9+BsaWl4+wnLidVaS+xk87aCnF/J/DJEL0ucmOnqTkfdoVfn83KFZIU+KV6x2D65h9DY41HbFHS5177LtRW+QB9Z4NsCcb97fUWxsPl755HvbFsYCZVJLXW/y+0xDfGlI+W6AAAsldzEN35meV1xFMGgU48RvR/DDujY5e1Wy9nS7NVd77RuSp4D7yJjWZc1qgIvBHCrDt12COqZFmPN+/fW2uBDvN5bzjVRpiNGJqFCjDzokFnWHWHwQ9Sxy6L02qB8Up8UpuYDC63gI0NoJLj7m73LRfegqAi35Mr7VtCVX8xKrG1b002H7naSUnirslX+djlYWlyr+eKL5Py6URQAYhGBEdjU/cSeNQajebzMG9WAFjKcP9LER0qnSoikkCqDrNZigN6W7GRYf1JyCuVmWkRTbh73BU58ktbJUpOsli4Wan2P4AiplxsWoS8/jwirsvNhdV83BcBeXOuSKoT203ZlhjLpNcrNC3fWnv8gAhECcffSSpD/MosNuCkVytUGft//FFVQfbauHFyjridiDFRN11V4DtvovHwSoUGiWWc+6/ZqxJpyljNO/98m8w/uG1ReHrlMhgQhJwNdSefe07SJCtPvdMVfQnYRpQBXTN3L0n8kVRnLdYOixKA7/W1s/OkIr11657Fsh/0tfRozFRKom9tkYtr/wP/Ro7j4g8l70aZOAU5J1dhPcImmb4spuauaaTG/r6dsGtlIUNDuNAimO4CritxqlwUb2z24cgwaU/lkQbA2EwV9XGYG8sy/f+MqywJSs0gTAdGnaGkN9fO7uAsqMb86HH9wvHvnZ/nf+PyZlEMwHzrZWrW1qSssoRQw9C0nY8SkuBwA5u/eZtoWfDkCrhFLFcRc71ljxDBvJBgJOFcBdW5gGY7kUUAk3JMgS3l1PgTFFFHqwBy4ch5CQHz13C/h9KVdaZeeStyACjSy4iOQu68OxY1eZEdXZwDLfAc7X47MsNUT8/aYMJDw/gqSV6pE1XWP+mqaAGDbnIeMFsNUb/6KtyN+XHtFH6cYqh5ikYT4lcFx3SlAb6gCQggT2Cqb3EgzzyuKtlRKtOffRSdUERwaDHVLxDywpff9jiyDyv24zXUR8+mI3QglU4QchPjRsTb9y/lJibiyOVD/6Gu80FEensaVqQ23jbVLS0g8tA8X49INNF5zzO56OlFWshinzLvYWALWsigcrBVsiiIqSvqJHRsXSe/MdtSSwJneazocmUkkLOoTrgNHlocTIUiKh3WH3+rVnKJGOTg7qlhaNv3C8SQHAfRxik4QN+Hfa6QPrztVj5foQKnmbW6UaKt/xDjnj5gnAjPSXNjC7LH2Qwmwko9dTR3bjGWiGcqlmWfkQJ/FxoRa+0fTn4axT7NMllPEsx401m2gLQdXp1s8R21q9ZZ3BReGEN50Z0w191WvcBla5Znf5DKob4suSzz7xOKiSaEu13xl/11XE47WDEdEC9jeepiWrIcWjvwqo6DG3xyzzCPALUAIcgMX7+aXozN78m8BGXChDFbnh3qVpGV8GfVvgBLP8Vaf3Uz/TWYafxGFfut8uydg8jSyLEs9wmrA/iLMzLLyqmhx1pd+Od4Zx3e+pQBnGAFrGNaurM+xl5plFClECKNYxE8D5PZ1hs9id85mTx0EC8/tKe5yEbNh947DL0ERzSj1cgrd4SRt6jsbkeF2jXvBbSSs3/b1/+1GyGvjwX2TfbcePBfZOCHcXz3DliNx84u6k92IzOTdYE3q3bOhlmMRJCdCk9H1USl8JTFb37f35REFeHZ0Wqlxk5eDyI/a2bm56ND4N1+/sK4WdEMxRz+80gbkFMf5LBlb5mrWOBbI+VilVDt3EqEHTmukVgToGt/Blgibc61ZtQ+cCol3WVONQFsLZdrgvyXtr80A8ePkEd3q1YihcLxrbAYWRURyZkll8JKDR9l+UvFQyXupBCYXoFI0tmi/nGilzr82dpqqVRUTf7AO9EzCmz5I/uaLJwKjf89RUdL0rWuNT0PAls4mz1EvLNpa8ct3N9AnlmUlkLljMT33pPsxmEoSWZU27sUBVnGigUixoc+78euIrQasHctXWEZRG0R/z0101gE/RR+5ph9/iyunkbf8RtcAFPwK+pupYXPuLyZRPh4AJ64jCSbmiS3ksmSexJo0WQoQ1IJgWljelfpTe+lmKwz4mMAAAAAElLd2ogCWh6J3bxQwx13fSHx4NMy8jUEe78iGAlOuPqsne8Mo7vcg8G+0ZVrsKXpA0AjKYaeLxJ66B/DLiJf4lphRw1UuoW3QshriEWDCrjMfnTR9eZENk2dhNsah/gXhB/Bo+gag709Tp+z6HF+peuglQhpdaAmyAr9B2vlyEmwWXa4HpztPDtDC+pXJNu+VII4U9hb/WdjG4heIcn63fUtba4RsLFEXK0NcNnLMS36b+1dXcWm7ILiMcV0hg+VZfHg4gZkyEAJPzMcmMGD+4kxExRIaPkV9P/5zV7yYDGcPLGQBHWfMAigSDieCAAHzBzasIa9VMmFAHeecORGveaddN2b6iZBwpUywRV8jxoKlhhyVfNEplYMFn0K6D5DZkuEYxqU8uUWVnWTcyn5/mAaDclGAhhJvHA61MYddDXop3dAAGqtIZpLh3z0bU8lrD6czvg3q9+u1n5UKzViSYBj7BJ91rY/Q8QTVPMJN70ax/q0PWX96Inx3vXORcGu4vw2fdHvE2zi2WYkYD7whNe98wUOm9EpDL9Q4nizIAAnYDRYhkyadNNk6v1Vp8YhKOuoNKM00axqjf4O4Kl8fs01REMIPOLIyhONg+7T8oxZ5FlDWAfrzHrqtHqdzx00k6tQyqMFSTya1cVkR2C++aeBmPSbFqP9vAjot0Bu5vC9MwcrZQoqfJKtTlUtxBumXY5X/ypPYDIASLJLZDyBDDyvmBkc5TzWh2Z46866siy3RkMivKw09uveaA/qFgdoFyTaney8J+8C7U7jS2/SB39Fk6OVja34UZY41MmZCuD3wQ4WrQjTPGaQP/doUqcg7vBYK/ea7AxjReBh+ZJhraXSHCjUe46Q3vU9j9FuNgY3y08JxBXORbv2MI39NV4j9hhBYhpBYTUYTql0q597/sE1zDwBA3NeK/BE/1vrCzvX25m/dlx33GbARQlCoHP9DmZXaJirOZnAINeC9VnGVoNgAAAAA=" width="42" height="42" style="border-radius:10px;object-fit:cover;display:block;">
+    <div class="sidebar-logo-icon">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M3 8C3 5.5 5.5 3 8 3H14C16.5 3 19 5.5 19 8V9H3V8Z" fill="rgba(255,255,255,0.9)"/>
+        <rect x="2" y="9" width="18" height="10" rx="2" fill="rgba(255,255,255,0.9)"/>
+        <path d="M8 9V7M14 9V7" stroke="#1a3a6e" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M6 13H16M6 16H12" stroke="#1a3a6e" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
     </div>
     <div>
-      <div class="sidebar-logo-text">Olgu Temizlik</div>
+      <div class="sidebar-logo-text">Olgu Halı</div>
       <div class="sidebar-logo-sub">Yönetim Paneli</div>
     </div>
   </div>
@@ -1651,7 +1658,6 @@ body {
         <button class="ay-menu-btn" onclick="ayTab('iban',this)">🏦 Ödeme / IBAN <span style="margin-left:auto;color:var(--text3);">›</span></button>
         <button class="ay-menu-btn" onclick="ayTab('mesajlar',this)">✉️ Mesaj Şablonları <span style="margin-left:auto;color:var(--text3);">›</span></button>
         <button class="ay-menu-btn" onclick="ayTab('veriler',this)">💾 Veriler <span style="margin-left:auto;color:var(--text3);">›</span></button>
-        <button class="ay-menu-btn" onclick="ayTab('googlerehber',this);setTimeout(renderGcStatus,100)">📒 Google Rehber <span style="margin-left:auto;color:var(--text3);">›</span></button>
         <button class="ay-menu-btn" onclick="ayTab('tehlikeli',this)" style="color:var(--red);">⚠️ Tehlikeli Alan <span style="margin-left:auto;color:var(--red);">›</span></button>
       </div>
 
@@ -1730,25 +1736,6 @@ body {
           <button class="btn btn-danger" style="width:100%;" onclick="resetAll()">🗑️ Tüm Verileri Sıfırla</button>
         </div></div>
       </div>
-
-      <!-- Google Rehber -->
-      <div id="ay-tab-googlerehber" class="ay-tab-content" style="display:none;">
-        <div class="section-title" style="margin-bottom:12px;">📒 Google Rehber Entegrasyonu</div>
-        <div class="card"><div class="card-body">
-          <div id="gc-status-widget">
-            <div style="font-size:13px;color:var(--text2);">Yükleniyor...</div>
-          </div>
-        </div></div>
-        <div class="card" style="margin-top:10px;"><div class="card-body">
-          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;">Nasıl çalışır?</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.7;">
-            • Yeni müşteri kaydettiğinde otomatik olarak Google Rehber'e eklenir<br>
-            • Müşteri bilgilerini düzenlersen rehber de güncellenir<br>
-            • Aynı telefon numarası zaten rehberde varsa mükerrer oluşturmaz, günceller<br>
-            • Tüm telefon numaraları +90 formatına normalize edilir
-          </div>
-        </div></div>
-      </div>
     </div>
 
     <!-- GELİR / GİDER SAYFASI -->
@@ -1795,35 +1782,7 @@ body {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
         <button type="button" id="tur-btn-hali" onclick="wTurSec('hali')"
           style="padding:28px 14px;border-radius:16px;border:2.5px solid var(--border);background:var(--white);cursor:pointer;font-family:Inter,sans-serif;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:10px;">
-          <div style="display:flex;align-items:center;justify-content:center;">
-            <svg width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- Halı zemini -->
-              <rect x="6" y="18" width="88" height="64" rx="5" fill="#EFF6FF" stroke="#1a56db" stroke-width="3.5"/>
-              <!-- Saçaklar sol -->
-              <line x1="6" y1="28" x2="1" y2="23" stroke="#1a56db" stroke-width="2" stroke-linecap="round"/>
-              <line x1="6" y1="38" x2="1" y2="33" stroke="#1a56db" stroke-width="2" stroke-linecap="round"/>
-              <line x1="6" y1="48" x2="1" y2="43" stroke="#1a56db" stroke-width="2" stroke-linecap="round"/>
-              <line x1="6" y1="58" x2="1" y2="53" stroke="#1a56db" stroke-width="2" stroke-linecap="round"/>
-              <line x1="6" y1="68" x2="1" y2="63" stroke="#1a56db" stroke-width="2" stroke-linecap="round"/>
-              <!-- Saçaklar sağ -->
-              <line x1="94" y1="28" x2="99" y2="23" stroke="#1a56db" stroke-width="2" stroke-linecap="round"/>
-              <line x1="94" y1="38" x2="99" y2="33" stroke="#1a56db" stroke-width="2" stroke-linecap="round"/>
-              <line x1="94" y1="48" x2="99" y2="43" stroke="#1a56db" stroke-width="2" stroke-linecap="round"/>
-              <line x1="94" y1="58" x2="99" y2="53" stroke="#1a56db" stroke-width="2" stroke-linecap="round"/>
-              <line x1="94" y1="68" x2="99" y2="63" stroke="#1a56db" stroke-width="2" stroke-linecap="round"/>
-              <!-- Bordür çerçeve -->
-              <rect x="12" y="24" width="76" height="52" rx="3" fill="none" stroke="#3f83f8" stroke-width="2"/>
-              <!-- İç desen - merkez motif -->
-              <rect x="38" y="38" width="24" height="24" rx="2" fill="#bfdbfe" stroke="#1a56db" stroke-width="1.5"/>
-              <line x1="50" y1="38" x2="50" y2="62" stroke="#1a56db" stroke-width="1.5"/>
-              <line x1="38" y1="50" x2="62" y2="50" stroke="#1a56db" stroke-width="1.5"/>
-              <!-- Köşe süsler -->
-              <circle cx="22" cy="34" r="3" fill="#3f83f8"/>
-              <circle cx="78" cy="34" r="3" fill="#3f83f8"/>
-              <circle cx="22" cy="66" r="3" fill="#3f83f8"/>
-              <circle cx="78" cy="66" r="3" fill="#3f83f8"/>
-            </svg>
-          </div>
+          <div style="font-size:44px;">🪢</div>
           <div style="font-size:15px;font-weight:800;color:var(--text);">Halı</div>
           <div style="font-size:11px;color:var(--text3);">Halı · Perde · Kuru Temizleme · Bakım</div>
         </button>
@@ -1850,10 +1809,7 @@ body {
       <!-- Yeni müşteri formu -->
       <div id="w-yeni-musteri" style="display:none;background:var(--blue-light);border:1.5px solid #bfdbfe;border-radius:10px;padding:14px;margin-bottom:14px;">
         <div style="font-size:11px;font-weight:800;color:var(--blue);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Yeni Müşteri Ekle</div>
-        <div style="display:flex;gap:8px;">
-          <div class="form-group" style="flex:1"><label class="form-label">Ad *</label><input class="form-input" id="w-m-ad" placeholder="Ad"></div>
-          <div class="form-group" style="flex:1"><label class="form-label">Soyad</label><input class="form-input" id="w-m-soyad" placeholder="Soyad"></div>
-        </div>
+        <div class="form-group"><label class="form-label">Ad Soyad *</label><input class="form-input" id="w-m-isim" placeholder="Ad Soyad"></div>
         <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="w-m-tel" type="tel" placeholder="05XX XXX XX XX"></div>
         <div class="form-group"><label class="form-label">Adres</label><input class="form-input" id="w-m-adres" placeholder="Mahalle, cadde, no..."></div>
         <div style="display:flex;gap:8px;">
@@ -1949,10 +1905,7 @@ body {
 <div class="modal-overlay" id="modal-musteri" onclick="if(event.target===this)closeModal('modal-musteri')">
   <div class="modal">
     <div class="modal-title">Yeni Müşteri <button class="modal-close" onclick="closeModal('modal-musteri')">×</button></div>
-    <div style="display:flex;gap:8px;">
-      <div class="form-group" style="flex:1"><label class="form-label">Ad *</label><input class="form-input" id="m-ad" placeholder="Ad"></div>
-      <div class="form-group" style="flex:1"><label class="form-label">Soyad</label><input class="form-input" id="m-soyad" placeholder="Soyad"></div>
-    </div>
+    <div class="form-group"><label class="form-label">Ad Soyad</label><input class="form-input" id="m-isim" placeholder="Ad Soyad"></div>
     <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="m-tel" placeholder="05XX XXX XX XX" type="tel"></div>
     <div class="form-group"><label class="form-label">Adres</label><input class="form-input" id="m-adres" placeholder="Mahalle, Cadde, No..."></div>
     <div style="display:flex;gap:8px;margin-top:4px;">
@@ -2002,9 +1955,17 @@ body {
 
     <!-- Normal durum iletişim butonları -->
     <div id="durum-iletisim-btns" style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
-      <button class="btn" id="durum-mesaj-btn" onclick="durumMesajAc()"
-        style="flex:2;min-width:120px;background:var(--blue-light);color:var(--blue);border:1.5px solid #bfdbfe;font-size:13px;font-weight:700;">
-        📨 Mesaj Gönder
+      <button class="btn" id="durum-sms-btn" onclick="durumSmsSend()"
+        style="flex:1;min-width:70px;background:#f0fdf4;color:#059669;border:1.5px solid #bbf7d0;font-size:12px;font-weight:700;">
+        ✉️ SMS
+      </button>
+      <button class="btn" id="durum-wp-btn" onclick="durumWpSend()"
+        style="flex:1;min-width:70px;background:#f0fdf9;color:#25d366;border:1.5px solid #86efbf;font-size:12px;font-weight:700;">
+        📱 WA
+      </button>
+      <button class="btn" id="durum-wpweb-btn" onclick="durumWpWebSend()"
+        style="flex:1;min-width:70px;background:#e7fef3;color:#128C7E;border:1.5px solid #6ee7b7;font-size:12px;font-weight:700;">
+        💻 WA Web
       </button>
       <button class="btn" id="durum-ara-btn" onclick="durumAra()"
         style="flex:1;min-width:70px;background:#eff6ff;color:#1a56db;border:1.5px solid #bfdbfe;font-size:12px;font-weight:700;">
@@ -2052,8 +2013,13 @@ body {
         <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">📩 Mesaj Önizleme</div>
         <div id="durum-mesaj-teslim" style="background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px;font-size:12px;line-height:1.65;color:var(--text);white-space:pre-line;margin-bottom:10px;min-height:50px;max-height:180px;overflow-y:auto;"></div>
         <div style="display:flex;gap:8px;margin-bottom:4px;">
-          <button class="btn" onclick="durumMesajAc()"
-            style="width:100%;background:var(--blue-light);color:var(--blue);border:1.5px solid #bfdbfe;font-size:13px;font-weight:700;">📨 Mesaj Gönder</button>
+          <button class="btn" onclick="durumTeslimSmsSend()"
+            style="flex:1;background:#f0fdf4;color:#059669;border:1.5px solid #bbf7d0;font-size:13px;">✉️ SMS</button>
+          <button class="btn" onclick="durumTeslimWpSend()"
+            style="flex:1;background:#f0fdf9;color:#25d366;border:1.5px solid #86efbf;font-size:13px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="#25d366" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+            WhatsApp
+          </button>
         </div>
       </div>
     </div>
@@ -2143,7 +2109,7 @@ body {
 </div>
 
 <!-- KART DETAY BOTTOM SHEET -->
-<div class="modal-overlay" id="modal-kart-detay" style="align-items:center;padding:16px;z-index:700;" onclick="closeModal('modal-kart-detay')"  >
+<div class="modal-overlay" id="modal-kart-detay" style="align-items:flex-end;padding:0;z-index:700;" onclick="closeModal('modal-kart-detay')">
   <div onclick="event.stopPropagation()" style="width:100%;max-width:560px;margin:0 auto;max-height:92vh;background:var(--white);border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden;">
     <!-- Handle bar -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid var(--border);flex-shrink:0;">
@@ -2368,15 +2334,9 @@ body {
   <div class="modal">
     <div class="modal-title">✏️ Müşteri Düzenle <button class="modal-close" onclick="closeModal('modal-musteri-edit')">×</button></div>
     <input type="hidden" id="musteri-edit-id">
-    <div style="display:flex;gap:8px;">
-      <div class="form-group" style="flex:1">
-        <label class="form-label">Ad *</label>
-        <input class="form-input" id="musteri-edit-ad" placeholder="Ad">
-      </div>
-      <div class="form-group" style="flex:1">
-        <label class="form-label">Soyad</label>
-        <input class="form-input" id="musteri-edit-soyad" placeholder="Soyad">
-      </div>
+    <div class="form-group">
+      <label class="form-label">İsim Soyisim</label>
+      <input class="form-input" id="musteri-edit-isim" placeholder="Ad Soyad">
     </div>
     <div class="form-group">
       <label class="form-label">Telefon</label>
@@ -2450,141 +2410,70 @@ body {
   </div>
 </div>
 
+<!-- SMS SEÇENEK MODAL -->
+<div class="modal-overlay" id="modal-sms" style="z-index:870;align-items:flex-end;padding:0;" onclick="if(event.target===this)closeModal('modal-sms')">
+  <div class="modal" style="border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;padding:0;">
+    <div style="padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:12px;">
+      <div style="font-size:15px;font-weight:700;">✉️ SMS Gönder</div>
+      <button class="modal-close" onclick="closeModal('modal-sms')">×</button>
+    </div>
+    <div style="padding:12px 16px;" id="sms-musteri-bilgi"></div>
+    <div style="padding:0 16px 8px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:8px;">Hazır Mesajlar</div>
+      <div id="sms-secenekler" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+    <div style="padding:8px 16px;border-top:1px solid var(--border);">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:8px;">Elle Yaz</div>
+      <textarea id="sms-ozel-metin" class="form-input" rows="4" placeholder="Mesajınızı buraya yazın..." style="font-size:13px;"></textarea>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="smsSendOzel()">✉️ Gönder</button>
+    </div>
+    <div style="height:16px;"></div>
+  </div>
+</div>
+
 <!-- MESAJ GÖNDER MODAL -->
-<div class="modal-overlay" id="modal-mesaj" style="z-index:900;align-items:center;padding:16px;" onclick="if(event.target===this)closeModal('modal-mesaj')">
-  <div onclick="event.stopPropagation()" style="width:100%;max-width:540px;margin:0 auto;background:var(--white);border-radius:20px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
-
-    <!-- Header: müşteri bilgisi -->
-    <div style="padding:14px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:10px;">
-      <div id="mesaj-musteri-bilgi" style="flex:1;min-width:0;"></div>
-      <button onclick="closeModal('modal-mesaj')" style="width:32px;height:32px;border-radius:50%;border:none;background:var(--bg);font-size:20px;cursor:pointer;color:var(--text2);flex-shrink:0;line-height:1;">×</button>
-    </div>
-
-    <!-- Şablon chip'leri -->
-    <div style="padding:10px 14px 8px;border-bottom:1px solid var(--border);flex-shrink:0;">
-      <div style="font-size:10px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">Şablon Seç</div>
-      <div id="mesaj-sablon-chips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
-    </div>
-
-    <!-- Seçilen şablon önizleme (opsiyonel) -->
-    <div id="mesaj-onizle-wrap" style="display:none;padding:8px 14px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg);">
-      <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;" id="mesaj-onizle-baslik"></div>
-      <div id="mesaj-onizle-metin" style="font-size:12px;color:var(--text2);line-height:1.6;white-space:pre-wrap;max-height:80px;overflow-y:auto;"></div>
-    </div>
-
-    <!-- Mesaj textarea -->
-    <div style="padding:10px 14px 6px;flex:1;overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:6px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div style="font-size:10px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;">Mesaj</div>
-        <button onclick="document.getElementById('mesaj-metin').value=''" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;padding:0;">Temizle</button>
+<div class="modal-overlay" id="modal-mesaj-gonder" style="z-index:880;align-items:flex-end;padding:0;" onclick="if(event.target===this)closeModal('modal-mesaj-gonder')">
+  <div onclick="event.stopPropagation()" style="width:100%;max-width:560px;margin:0 auto;background:var(--white);border-radius:20px 20px 0 0;padding:16px;max-height:80vh;display:flex;flex-direction:column;gap:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:15px;font-weight:700;">📨 Mesaj Gönder</div>
+        <div id="mg-musteri" style="font-size:12px;color:var(--text2);margin-top:2px;"></div>
       </div>
-      <textarea id="mesaj-metin" class="form-input" rows="4"
-        style="font-size:13px;resize:none;width:100%;min-height:80px;flex:1;"
-        placeholder="Mesajı buraya yazın veya şablon seçin..."></textarea>
+      <button onclick="closeModal('modal-mesaj-gonder')" style="width:32px;height:32px;border-radius:50%;border:none;background:var(--bg);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);">×</button>
     </div>
-
-    <!-- Gönder butonları -->
-    <div style="padding:8px 14px 16px;flex-shrink:0;">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
-        <button onclick="_mesajGonder('sms')"
-          style="background:#f0fdf4;color:#059669;border:1.5px solid #bbf7d0;border-radius:12px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:Inter,sans-serif;">
-          <span style="font-size:22px;line-height:1;">📱</span>
-          <span style="font-size:11px;font-weight:700;color:#059669;">SMS</span>
-        </button>
-        <button onclick="_mesajGonder('wa')"
-          style="background:#f0fff4;color:#25d366;border:1.5px solid #86efbf;border-radius:12px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:Inter,sans-serif;">
-          <span style="font-size:22px;line-height:1;">💬</span>
-          <span style="font-size:11px;font-weight:700;color:#25d366;">WhatsApp</span>
-        </button>
-        <button onclick="_mesajGonder('wabusiness')"
-          style="background:#e8f5e9;color:#2e7d32;border:1.5px solid #a5d6a7;border-radius:12px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:Inter,sans-serif;">
-          <span style="font-size:22px;line-height:1;">🏢</span>
-          <span style="font-size:11px;font-weight:700;color:#2e7d32;">WA İşletme</span>
-        </button>
-        <button onclick="_mesajGonder('kopyala')"
-          style="background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:Inter,sans-serif;">
-          <span style="font-size:22px;line-height:1;">📋</span>
-          <span style="font-size:11px;font-weight:700;">Kopyala</span>
-        </button>
-      </div>
-    </div>
-
+    <textarea id="mg-metin" class="form-input" rows="5" style="font-size:13px;resize:none;"></textarea>
+    <div id="mg-butonlar" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================================
-// GİRİŞ — Supabase Auth
-// ============================================================
-async function girisKontrol() {
-  // Supabase hazır değilse bekle
-  await _sbHazirBekle();
-  const sb = _getSb();
-  if (!sb) { toast('⚠️ Sunucuya bağlanılamadı'); return; }
-
-  // Mevcut oturumu kontrol et
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    document.getElementById('giris-ekrani').style.display = 'none';
+const _GIRIS = [{k:'ata', s:'1621', isim:'Ata'}];
+function girisKontrol() {
+  if (sessionStorage.getItem('olgu_oturum')) {
+    document.getElementById('giris-ekrani').style.display='none';
     _appBaslat();
     return true;
   }
   return false;
 }
-
-// Supabase yüklenene kadar bekle (max 3sn)
-function _sbHazirBekle() {
-  return new Promise(resolve => {
-    if (typeof supabase !== 'undefined') { resolve(); return; }
-    let sayac = 0;
-    const t = setInterval(() => {
-      sayac++;
-      if (typeof supabase !== 'undefined' || sayac > 30) { clearInterval(t); resolve(); }
-    }, 100);
-  });
-}
-
-async function girisYap() {
-  const email = document.getElementById('giris-kullanici').value.trim();
-  const sifre = document.getElementById('giris-sifre').value;
-  const hata = document.getElementById('giris-hata');
-  const btn = document.getElementById('giris-btn');
-
-  if (!email || !sifre) {
-    hata.textContent = '❌ E-posta ve şifre gerekli';
-    hata.style.display = 'block'; return;
+function girisYap() {
+  const k=(document.getElementById('giris-kullanici').value||'').trim().toLowerCase();
+  const s=(document.getElementById('giris-sifre').value||'').trim();
+  const u=_GIRIS.find(x=>x.k===k&&x.s===s);
+  if(u){
+    sessionStorage.setItem('olgu_oturum', JSON.stringify({k:u.k,isim:u.isim}));
+    document.getElementById('giris-ekrani').style.display='none';
+    document.getElementById('giris-hata').style.display='none';
+    _appBaslat();
+  } else {
+    document.getElementById('giris-hata').style.display='block';
+    document.getElementById('giris-sifre').value='';
+    document.getElementById('giris-sifre').focus();
   }
-
-  btn.textContent = 'Giriş yapılıyor...'; btn.disabled = true;
-  hata.style.display = 'none';
-
-  const sb = _getSb();
-  if (!sb) { hata.textContent = '❌ Bağlantı hatası'; hata.style.display = 'block'; btn.textContent = 'Giriş Yap'; btn.disabled = false; return; }
-
-  const { error } = await sb.auth.signInWithPassword({ email, password: sifre });
-  if (error) {
-    hata.textContent = '❌ E-posta veya şifre hatalı';
-    hata.style.display = 'block';
-    btn.textContent = 'Giriş Yap'; btn.disabled = false;
-    return;
-  }
-
-  document.getElementById('giris-ekrani').style.display = 'none';
-  btn.textContent = 'Giriş Yap'; btn.disabled = false;
-  _appBaslat();
 }
-
-async function cikisYap() {
-  const sb = _getSb();
-  if (sb) {
-    await sb.auth.signOut();
-  }
-  localStorage.removeItem('olgu_hali_v2');
-  sessionStorage.clear();
-  location.reload();
-}
+function cikisYap(){sessionStorage.removeItem('olgu_oturum');location.reload();}
 async function manuelSync() {
   const btn = document.getElementById('topbar-sync-btn');
   if (btn) { btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'; }
@@ -2693,8 +2582,6 @@ let data = {
 let pendingDurum = null;
 let pendingOdemeAlindi = null;
 let pendingOdemeYontem = 'nakit';
-let pendingOdemeAl = null;
-let pendingOdemeAlYontem = 'nakit';
 
 function setOdemeAlindi(alindi) {
   pendingOdemeAlindi = alindi;
@@ -2729,31 +2616,13 @@ function setOdemeYontem(yontem) {
 // -- TARİH FİLTRESİ --
 let selectedDate = null; // null = tümü, 'YYYY-MM-DD' = filtreli
 
-function _dateStripCount(ds) {
-  // Aktif sayfaya göre ilgili sipariş sayısını döndür
-  const aktifPage = document.querySelector('.page.active')?.id?.replace('page-','') || 'dashboard';
-  const durumlar = {
-    'alinacak': ['alinacak'],
-    'alindi': ['alindi'],
-    'yikanıyor': ['yikanıyor'],
-    'hazir': ['hazir'],
-    'dagitimda': ['dagitimda'],
-    'teslim': ['teslim'],
-  };
-  const filtre = durumlar[aktifPage];
-  return data.siparisler.filter(s => {
-    if (s.tarih !== ds) return false;
-    if (filtre) return filtre.includes(s.durum);
-    return true; // dashboard, tüm siparişler ve diğer sayfalar
-  }).length;
-}
-
 function buildDateStrip() {
   const scroll = document.getElementById('date-strip-scroll');
   const today = new Date();
   today.setHours(0,0,0,0);
   const todayStr = today.toISOString().split('T')[0];
 
+  // 1 yıl geri + 1 yıl ileri = ~730 gün
   const PAST = 365, FUTURE = 365;
   const days = [];
   for (let i = -PAST; i <= FUTURE; i++) {
@@ -2765,7 +2634,7 @@ function buildDateStrip() {
   scroll.innerHTML = days.map(d => {
     const ds = d.toISOString().split('T')[0];
     const isToday = ds === todayStr;
-    const count = _dateStripCount(ds);
+    const count = data.siparisler.filter(s => s.tarih === ds).length;
     const DAYS = ['Paz','Pzt','Sal','Çar','Per','Cum','Cts'];
     const dayName = DAYS[d.getDay()];
     const isSelected = ds === selectedDate;
@@ -2776,10 +2645,11 @@ function buildDateStrip() {
     return `<button type="button" class="${cls}" data-date="${ds}" onclick="selectDate('${ds}')" id="dp-${ds}">
       <span class="dp-day">${dayName}</span>
       <span class="dp-num">${d.getDate()}</span>
-      <span class="dp-count">${count > 0 ? count + ' sip.' : ''}</span>
+      <span class="dp-count">${count > 0 ? count + '●' : ''}</span>
     </button>`;
   }).join('');
 
+  // Bugüne scroll
   setTimeout(() => scrollToDate(selectedDate || todayStr), 50);
 }
 
@@ -2804,6 +2674,7 @@ function selectDate(ds) {
     return;
   }
   selectedDate = ds;
+  // UI güncelle
   document.querySelectorAll('.date-pill').forEach(p => {
     const pds = p.dataset.date;
     const today = new Date().toISOString().split('T')[0];
@@ -2811,12 +2682,11 @@ function selectDate(ds) {
     p.classList.toggle('today', pds === today && pds !== ds);
     if (pds === ds) p.classList.add('selected');
   });
+  // Label göster
   const d = new Date(ds + 'T00:00:00');
   const label = d.toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
   document.getElementById('date-filter-label').style.display = 'flex';
   document.getElementById('date-filter-text').textContent = '📅 ' + label;
-  // content padding artır — date-strip + filter label
-  document.querySelector('.content').style.paddingTop = '152px';
   renderAll();
 }
 
@@ -2829,7 +2699,6 @@ function clearDateFilter() {
     p.classList.toggle('today', pds === today);
   });
   document.getElementById('date-filter-label').style.display = 'none';
-  document.querySelector('.content').style.paddingTop = '';
   renderAll();
 }
 
@@ -2841,11 +2710,14 @@ function gotoToday() {
 function updateDateStripCounts() {
   document.querySelectorAll('.date-pill').forEach(p => {
     const ds = p.dataset.date;
-    const count = _dateStripCount(ds);
+    const count = data.siparisler.filter(s => s.tarih === ds).length;
     const countEl = p.querySelector('.dp-count');
     if (countEl) countEl.textContent = count > 0 ? count + ' sip.' : '';
-    if (count > 0 && !p.classList.contains('selected')) p.classList.add('has-order');
-    else p.classList.remove('has-order');
+    const numEl = p.querySelector('.dp-num');
+    if (numEl) {
+      if (count > 0 && !p.classList.contains('selected')) p.classList.add('has-order');
+      else p.classList.remove('has-order');
+    }
   });
 }
 
@@ -2856,67 +2728,6 @@ function toggleDateStrip(show) {
   document.querySelector('.content').style.paddingTop = show ? '' : '68px';
 }
 
-
-
-// ============================================================
-// YARDIMCI FONKSİYONLAR
-// ============================================================
-
-// Müşteri tam adını döndürür: ad + soyad
-function mIsim(m, fallback) {
-  if (!m) return fallback || 'Bilinmiyor';
-  const ad = m.ad || '';
-  const soyad = m.soyad || '';
-  const tam = (ad + (soyad ? ' ' + soyad : '')).trim();
-  return tam || fallback || 'Bilinmiyor';
-}
-
-// Müşteri ID gösterimi: U101, U102...
-function mId(m) {
-  if (!m) return '';
-  return 'U' + m.id;
-}
-
-// Yeni müşteri Supabase'e kaydet, sonra local data'ya ekle
-async function saveMusteriToSupabase(musteriData, callback) {
-  const sb = _getSb();
-  if (!sb) { toast('⚠️ Bağlantı yok'); return; }
-  try {
-    const { data: inserted, error } = await sb
-      .from('musteriler')
-      .insert({
-        ad: musteriData.ad,
-        soyad: musteriData.soyad || null,
-        tel: musteriData.tel || null,
-        adres: musteriData.adres || null,
-        not_: musteriData.not || null,
-        google_resource_name: musteriData.google_resource_name || null
-      })
-      .select()
-      .single();
-    if (error) throw error;
-    // Local data'ya ekle
-    const yeni = {
-      id: inserted.id,
-      ad: inserted.ad,
-      soyad: inserted.soyad || '',
-      tel: inserted.tel || '',
-      adres: inserted.adres || '',
-      not: inserted.not_ || '',
-      google_resource_name: inserted.google_resource_name || null
-    };
-    data.musteriler.push(yeni);
-    data.counters.musteri = Math.max(data.counters.musteri, inserted.id);
-    save();
-    renderAll();
-    toast('Müşteri eklendi: U' + inserted.id);
-    gcSyncMusteri(yeni, 'create');
-    if (callback) callback(yeni);
-  } catch(e) {
-    console.error('Müşteri kayıt hatası:', e);
-    toast('Hata: ' + (e.message || 'Kayıt başarısız'));
-  }
-}
 
 // ============================================================
 // SUPABASE ENTEGRASYONU
@@ -2931,6 +2742,23 @@ function _getSb() {
     return _sbInstance;
   }
   return null;
+}
+
+function manuelSync() {
+  const btn = document.getElementById('topbar-sync-btn');
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+  const sb = _getSb();
+  if (!sb) { toast('⚠️ İnternet bağlantısı yok'); if(btn){btn.textContent='🔄';btn.disabled=false;} return; }
+  // Önce mevcut veriyi Supabase'e gönder, sonra çek
+  _syncToSupabase().then(() => {
+    return _loadFromSupabase();
+  }).then(() => {
+    if (btn) { btn.textContent = '🔄'; btn.disabled = false; }
+  }).catch(err => {
+    console.warn('Sync hatası:', err);
+    if (btn) { btn.textContent = '🔄'; btn.disabled = false; }
+    toast('⚠️ Sync hatası: ' + err.message);
+  });
 }
 
 function save() {
@@ -2950,8 +2778,7 @@ async function _syncToSupabase() {
     if (data.musteriler.length > 0) {
       const mRows = data.musteriler.map(m => ({
         id: parseInt(String(m.id).replace(/[^0-9]/g,'')) || undefined,
-        ad: m.ad||'', soyad: m.soyad||null, tel: m.tel||null, adres: m.adres||null,
-        not_: m.not||null, google_resource_name: m.google_resource_name||null
+        isim: m.isim, tel: m.tel||null, adres: m.adres||null, not_: m.not||null
       }));
       await sb.from('musteriler').upsert(mRows, {onConflict:'id'});
     }
@@ -2990,15 +2817,18 @@ function load() {
   const saved = localStorage.getItem('olgu_hali_v2');
   if (saved) {
     const parsed = JSON.parse(saved);
-    // Müşteriler ve siparişler artık SADECE Supabase'den gelir
-    // localStorage'dan sadece ayarlar ve sayaçları al
+    // Cinsler hariç localStorage'dan yükle — cinsler her zaman Supabase'den gelsin
+    data.musteriler  = parsed.musteriler  || [];
+    data.siparisler  = parsed.siparisler  || [];
     data.silinenler  = parsed.silinenler  || [];
+    data.giderler    = parsed.giderler    || [];
     data.settings    = parsed.settings    || data.settings;
     data.counters    = parsed.counters    || data.counters;
+    // data.cinsler: localStorage'dan ALMA — Supabase'den gelecek
   }
   _applyMigrations();
   if (_getSb()) _loadFromSupabase();
-  else renderAll();
+  else renderAll(); // offline: varsayılan cinslerle devam et
 }
 
 function _applyMigrations() {
@@ -3043,16 +2873,10 @@ async function _loadFromSupabase() {
       sb.from('ayarlar').select('*').single()
     ]);
     if (musteriler?.length) {
-      // Supabase'den gelen veri her zaman kazanır — localStorage'ı tamamen ezer
       data.musteriler = musteriler.map(m => ({
-        id: m.id, ad: m.ad||'', soyad: m.soyad||'',
-        tel: m.tel||'', adres: m.adres||'', not: m.not_||'',
-        google_resource_name: m.google_resource_name||null
+        id: m.id, isim:m.isim, tel:m.tel||'', adres:m.adres||'', not:m.not_||''
       }));
       data.counters.musteri = Math.max(...musteriler.map(m=>parseInt(m.id)||0), 100);
-    } else {
-      // Supabase'de müşteri yoksa localStorage'ı da temizle
-      data.musteriler = [];
     }
     if (siparisler?.length) {
       data.siparisler = siparisler.map(s => ({
@@ -3236,18 +3060,18 @@ const MESAJLAR = {
   alindi: function(s,m) {
     var isletme = data.settings.isletmeAd || 'Olgu Halı Yıkama';
     var ozet = urunOzetCumlesi(s);
-    return 'Sayın ' + mIsim(m) + ', ' + (ozet||'ürünleriniz') + ' teslim alınmıştır. İtinayla yıkanarak en kısa sürede teslim edilecektir.\n\nOLGU HALI YIKAMA\n05332002662';
+    return 'Sayın ' + m.isim + ', ' + (ozet||'ürünleriniz') + ' teslim alınmıştır. İtinayla yıkanarak en kısa sürede teslim edilecektir.\n\nOLGU HALI YIKAMA\n05332002662';
   },
   yikanıyor: function(s,m) {
     var isletme = data.settings.isletmeAd || 'Olgu Hal\u0131 Y\u0131kama';
-    return 'Say\u0131n ' + mIsim(m) + ', \u00FCr\u00FCnlerinizin y\u0131kama i\u015Flemi tamamlanm\u0131\u015Ft\u0131r. Kuruma i\u015Flemi bittikten sonra teslim i\u00E7in tekrar bilgilendirme yap\u0131lacakt\u0131r.\n\n' + isletme;
+    return 'Say\u0131n ' + m.isim + ', \u00FCr\u00FCnlerinizin y\u0131kama i\u015Flemi tamamlanm\u0131\u015Ft\u0131r. Kuruma i\u015Flemi bittikten sonra teslim i\u00E7in tekrar bilgilendirme yap\u0131lacakt\u0131r.\n\n' + isletme;
   },
   hazir: function(s,m) {
     var ozet = siparisOzet(s);
     var toplam = hesaplaToplam(s);
     var isletme = data.settings.isletmeAd || 'Olgu Hal\u0131 Y\u0131kama';
     var tel = data.settings.isletmeTel ? '\nBilgi: ' + data.settings.isletmeTel : '';
-    var msg = 'Say\u0131n ' + mIsim(m) + ',\n\n\u00DCr\u00FCnleriniz y\u0131kanarak teslimata haz\u0131rlanm\u0131\u015Ft\u0131r. \uD83D\uDFE2';
+    var msg = 'Say\u0131n ' + m.isim + ',\n\n\u00DCr\u00FCnleriniz y\u0131kanarak teslimata haz\u0131rlanm\u0131\u015Ft\u0131r. \uD83D\uDFE2';
     if (ozet) msg += '\n\n\uD83D\uDCCB Sipari\u015F Detay\u0131:\n' + ozet + '\n\nToplam: \u20BA' + toplam.toLocaleString('tr-TR');
     msg += tel + '\n\n' + isletme;
     return msg;
@@ -3256,7 +3080,7 @@ const MESAJLAR = {
     var ozet = siparisOzet(s);
     var toplam = hesaplaToplam(s);
     var isletme = data.settings.isletmeAd || 'Olgu Hal\u0131 Y\u0131kama';
-    var msg = 'Say\u0131n ' + mIsim(m) + ',\n\n\u00DCr\u00FCnleriniz da\u011F\u0131t\u0131ma \u00E7\u0131kar\u0131lm\u0131\u015Ft\u0131r. En k\u0131sa s\u00FCrede adresinize teslim edilecektir. \uD83D\uDE9A';
+    var msg = 'Say\u0131n ' + m.isim + ',\n\n\u00DCr\u00FCnleriniz da\u011F\u0131t\u0131ma \u00E7\u0131kar\u0131lm\u0131\u015Ft\u0131r. En k\u0131sa s\u00FCrede adresinize teslim edilecektir. \uD83D\uDE9A';
     if (ozet) msg += '\n\n\uD83D\uDCCB Sipari\u015F Detay\u0131:\n' + ozet + '\n\nToplam: \u20BA' + toplam.toLocaleString('tr-TR');
     msg += '\n\n' + isletme;
     return msg;
@@ -3270,9 +3094,9 @@ const MESAJLAR = {
       var iban=data.settings.ibanNo||'\u2014';
       var ad=data.settings.ibanIsim?'\nAd Soyad: '+data.settings.ibanIsim:'';
       var banka=data.settings.ibanBanka?'\nBanka: '+data.settings.ibanBanka:'';
-      return 'Say\u0131n '+mIsim(m)+','+ozetBlok+'\n\nToplam: \u20BA'+toplam.toLocaleString('tr-TR')+'\n\u00D6deme: Havale / IBAN \u2705\n\nIBAN: '+iban+ad+banka+'\n\nTe\u015Fekk\u00FCrler \uD83D\uDE4F\n'+isletme;
+      return 'Say\u0131n '+m.isim+','+ozetBlok+'\n\nToplam: \u20BA'+toplam.toLocaleString('tr-TR')+'\n\u00D6deme: Havale / IBAN \u2705\n\nIBAN: '+iban+ad+banka+'\n\nTe\u015Fekk\u00FCrler \uD83D\uDE4F\n'+isletme;
     }
-    return 'Say\u0131n '+mIsim(m)+','+ozetBlok+'\n\nToplam: \u20BA'+toplam.toLocaleString('tr-TR')+'\n\u00D6deme: Nakit al\u0131nm\u0131\u015Ft\u0131r. \u2705\n\nTe\u015Fekk\u00FCrler \uD83D\uDE4F\n'+isletme;
+    return 'Say\u0131n '+m.isim+','+ozetBlok+'\n\nToplam: \u20BA'+toplam.toLocaleString('tr-TR')+'\n\u00D6deme: Nakit al\u0131nm\u0131\u015Ft\u0131r. \u2705\n\nTe\u015Fekk\u00FCrler \uD83D\uDE4F\n'+isletme;
   },
   teslim_bekleyen: function(s,m,yontem) {
     var toplam=hesaplaToplam(s);
@@ -3283,13 +3107,13 @@ const MESAJLAR = {
       var iban=data.settings.ibanNo||'\u2014';
       var ad=data.settings.ibanIsim?'\nAd Soyad: '+data.settings.ibanIsim:'';
       var banka=data.settings.ibanBanka?'\nBanka: '+data.settings.ibanBanka:'';
-      return 'Say\u0131n '+mIsim(m)+','+ozetBlok+'\n\nToplam: \u20BA'+toplam.toLocaleString('tr-TR')+'\n\u26A0\uFE0F \u00D6deme hen\u00FCz al\u0131nmam\u0131\u015Ft\u0131r.\n\nHavale ile \u00F6deme i\u00E7in:\nIBAN: '+iban+ad+banka+'\n\nTe\u015Fekk\u00FCrler \uD83D\uDE4F\n'+isletme;
+      return 'Say\u0131n '+m.isim+','+ozetBlok+'\n\nToplam: \u20BA'+toplam.toLocaleString('tr-TR')+'\n\u26A0\uFE0F \u00D6deme hen\u00FCz al\u0131nmam\u0131\u015Ft\u0131r.\n\nHavale ile \u00F6deme i\u00E7in:\nIBAN: '+iban+ad+banka+'\n\nTe\u015Fekk\u00FCrler \uD83D\uDE4F\n'+isletme;
     }
-    return 'Say\u0131n '+mIsim(m)+','+ozetBlok+'\n\nToplam: \u20BA'+toplam.toLocaleString('tr-TR')+'\n\u26A0\uFE0F \u00D6deme hen\u00FCz al\u0131nmam\u0131\u015Ft\u0131r.\n\nEn k\u0131sa s\u00FCrede nakit \u00F6deme yapman\u0131z\u0131 rica ederiz.\n\nTe\u015Fekk\u00FCrler \uD83D\uDE4F\n'+isletme;
+    return 'Say\u0131n '+m.isim+','+ozetBlok+'\n\nToplam: \u20BA'+toplam.toLocaleString('tr-TR')+'\n\u26A0\uFE0F \u00D6deme hen\u00FCz al\u0131nmam\u0131\u015Ft\u0131r.\n\nEn k\u0131sa s\u00FCrede nakit \u00F6deme yapman\u0131z\u0131 rica ederiz.\n\nTe\u015Fekk\u00FCrler \uD83D\uDE4F\n'+isletme;
   },
   odeme_al: function(s,m,yontem) {
     var isletme=data.settings.isletmeAd||'Olgu Hal\u0131 Y\u0131kama';
-    return 'Say\u0131n '+mIsim(m)+', \u00F6demeniz al\u0131nm\u0131\u015Ft\u0131r. Te\u015Fekk\u00FCrler. '+isletme;
+    return 'Say\u0131n '+m.isim+', \u00F6demeniz al\u0131nm\u0131\u015Ft\u0131r. Te\u015Fekk\u00FCrler. '+isletme;
   }
 };
 
@@ -3326,7 +3150,6 @@ function showPage(id) {
   const btn = document.getElementById('topbar-new-btn');
   if (btn) btn.style.display = ['kasa','silinenler','ayarlar','rota'].includes(id) ? 'none' : '';
   toggleDateStrip(!['kasa','silinenler','ayarlar','musteriler','dashboard','rota'].includes(id));
-  updateDateStripCounts();
   renderPage(id);
   closeSidebar();
 }
@@ -3770,12 +3593,12 @@ function renderSiparisArama() {
     liste = liste.filter(s => {
       const m = data.musteriler.find(x=>x.id==s.musteriId);
       const sno = 'S' + s.id;
-      const mno = 'U' + s.musteriId;
+      const mno = 'M' + s.musteriId;
       return (
         sno.toLowerCase().includes(ara) ||
         String(s.id).includes(ara) ||
         mno.toLowerCase().includes(ara) ||
-        (mIsim(m)).toLowerCase().includes(ara) ||
+        (m?.isim||'').toLowerCase().includes(ara) ||
         (m?.tel||'').toLowerCase().includes(ara) ||
         (s.tarih||'').includes(ara) ||
         (s.not||'').toLowerCase().includes(ara)
@@ -3949,7 +3772,7 @@ function siparisKarti(s, ctx) {
           ${odemeBadge}
           ${isKoltuk?'<span style="background:#f5f3ff;color:#7e3af2;font-size:9px;font-weight:800;padding:1px 5px;border-radius:4px;">KOLTUK</span>':''}
         </div>
-        <div style="margin-bottom:2px;"><span class="card-name" style="cursor:pointer;" onclick="event.stopPropagation();openProfil('${s.musteriId}')">${mIsim(m,'Bilinmiyor')}</span><span style="font-size:10px;color:var(--text3);font-weight:500;margin-left:5px;">U${s.musteriId}</span></div>
+        <div style="margin-bottom:2px;"><span class="card-name" style="cursor:pointer;" onclick="event.stopPropagation();openProfil('${s.musteriId}')">${m?.isim||'Bilinmiyor'}</span><span style="font-size:10px;color:var(--text3);font-weight:500;margin-left:5px;">M${s.musteriId}</span></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;margin-top:3px;">
           <div style="font-size:11px;color:var(--text3);">📦 ${totalAdet} adet${totalM2>0?' · '+totalM2.toFixed(1)+'m²':''}</div>
           <div style="font-size:11px;color:var(--text3);">💰 <b style="color:${odemeRenk};">₺${toplam.toLocaleString('tr-TR')}</b>${s.odendi?' ✅':(s.durum==='teslim'?' ⚠️':'')}</div>
@@ -3972,8 +3795,7 @@ function fotoGoruntule(sid, tip, idx) {
   const s = data.siparisler.find(x=>x.id==sid); if(!s)return;
   const list = (s.fotolar?.[tip]||[]);
   fotoGoruntuleState = {list, idx};
-  const src = typeof list[idx] === 'string' ? list[idx] : (list[idx]?.url || '');
-  document.getElementById('foto-goruntule-img').src = src;
+  document.getElementById('foto-goruntule-img').src = list[idx];
   document.getElementById('foto-goruntule-idx').textContent = (idx+1)+' / '+list.length;
   document.getElementById('modal-foto').classList.add('open');
 }
@@ -3982,8 +3804,7 @@ function fotoNav(dir) {
   const {list, idx} = fotoGoruntuleState;
   const newIdx = (idx+dir+list.length)%list.length;
   fotoGoruntuleState.idx = newIdx;
-  const src = typeof list[newIdx] === 'string' ? list[newIdx] : (list[newIdx]?.url || '');
-  document.getElementById('foto-goruntule-img').src = src;
+  document.getElementById('foto-goruntule-img').src = list[newIdx];
   document.getElementById('foto-goruntule-idx').textContent = (newIdx+1)+' / '+list.length;
 }
 
@@ -4259,18 +4080,36 @@ function dFotoRender(s) {
     const grid = document.getElementById('detay-foto-grid-'+tip);
     if (!grid) return;
     const fotolar = s.fotolar?.[tip] || [];
-    grid.innerHTML = fotolar.map((foto, i) => {
-      const src = typeof foto === 'string' ? foto : (foto?.url || '');
-      return `<div style="position:relative;display:inline-block;">
+    grid.innerHTML = fotolar.map((src, i) =>
+      `<div style="position:relative;display:inline-block;">
         <img src="${src}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;cursor:pointer;" onclick="fotoGoruntule('${s.id}','${tip}',${i})">
         <button onclick="detayFotoSil('${s.id}','${tip}',${i})" style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;padding:0;">×</button>
-      </div>`;
-    }).join('') +
+      </div>`
+    ).join('') +
     `<button onclick="document.getElementById('detay-foto-input-${tip}').click()"
       style="width:64px;height:64px;border-radius:8px;border:2px dashed var(--border);background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px;cursor:pointer;color:var(--text3);gap:2px;font-family:Inter,sans-serif;">
       📷<span style="font-size:9px;font-weight:700;">Ekle</span>
     </button>`;
   });
+}
+
+function detayFotoEkle(input, tip) {
+  const sid = document.getElementById('detay-siparis-id').value;
+  const s = data.siparisler.find(x=>x.id==sid); if(!s) return;
+  if (!s.fotolar) s.fotolar = {};
+  if (!s.fotolar[tip]) s.fotolar[tip] = [];
+  const files = Array.from(input.files);
+  let done = 0;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      s.fotolar[tip].push(e.target.result);
+      done++;
+      if (done === files.length) { save(); dFotoRender(s); toast('📷 Fotoğraf eklendi'); }
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
 }
 
 function detayFotoSil(sid, tip, idx) {
@@ -4481,7 +4320,7 @@ function openKartDetay(sid) {
 
   // Başlık
   document.getElementById('kd-baslik').innerHTML =
-    `<span class="card-id">S${s.id}</span> <span onclick="openProfil('${s.musteriId}')" style="cursor:pointer;text-decoration:underline;text-decoration-color:rgba(0,0,0,0.2);">${mIsim(m,'Bilinmiyor')}</span> <span class="badge ${si.badge}" style="font-size:10px;">${si.icon} ${si.label}</span>`;
+    `<span class="card-id">S${s.id}</span> <span onclick="openProfil('${s.musteriId}')" style="cursor:pointer;text-decoration:underline;text-decoration-color:rgba(0,0,0,0.2);">${m?.isim||'Bilinmiyor'}</span> <span class="badge ${si.badge}" style="font-size:10px;">${si.icon} ${si.label}</span>`;
 
   // Ürünler — kategorize
   const KAT_EMOJI = {'Halı':'🪢','Koltuk':'🛋️','Perde':'🪟','Kuru Temizleme':'👔','Bakım Hizmetleri':'🧵'};
@@ -4581,7 +4420,7 @@ function openKartDetay(sid) {
     ? `<button class="btn btn-primary" style="flex:1;" onclick="closeModal('modal-kart-detay');openDurumModal('${s.id}')">→ ${STATUS_INFO[sonraki]?.label}</button>`
     : (s.durum==='teslim'&&!s.odendi?`<button class="btn btn-green" style="flex:1;" onclick="closeModal('modal-kart-detay');odemeAl('${s.id}')">💰 Ödeme Al</button>`:'');
   const telBtn = m?.tel?`<button class="btn btn-secondary" style="flex:1;" onclick="window.open('tel:${m.tel}')">📞 Ara</button>`:'';
-  const waBtn = `<button class="btn btn-secondary" style="flex:1;" onclick="mesajAc('${s.id}')">💬 Mesaj</button>`;
+  const waBtn = `<button class="btn btn-secondary" style="flex:1;" onclick="whatsapp('${s.id}')">💬 WA</button>`;
   const smsBtn = m?.tel?`<button class="btn btn-secondary" style="flex:1;" onclick="sms('${s.id}')">✉️ SMS</button>`:'';
   window._kartAdres = m?.adres || '';
   const yolBtn = m?.adres ? `<button class="btn btn-secondary" style="flex:1;" onclick="openMaps(window._kartAdres)">🗺️ Yol</button>` : '';
@@ -4694,7 +4533,7 @@ function renderRota() {
           ${rotaSiralamaModu?`<div style="width:32px;height:32px;background:#f5f3ff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#7c3aed;font-weight:800;font-size:16px;flex-shrink:0;">⠿</div>`:
           `<div style="width:32px;height:32px;background:${accentColor};border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex-shrink:0;">${i+1}</div>`}
           <div style="flex:1;min-width:0;">
-            <div style="font-weight:700;font-size:14px;">${mIsim(m,'Bilinmiyor')} <span class="card-id">S${s.id}</span></div>
+            <div style="font-weight:700;font-size:14px;">${m?.isim||'Bilinmiyor'} <span class="card-id">S${s.id}</span></div>
             ${s.saat?`<div style="font-size:12px;color:${accentColor};font-weight:700;margin-top:1px;">⏰ ${s.saat}</div>`:''}
             <div style="font-size:12px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">📍 ${adres}</div>
             <div style="font-size:11px;color:var(--text3);margin-top:2px;">${isKoltukItem?'🛋️ Koltuk':s.haliler.filter(h=>h.tip!=='ekucret').length+' ürün'}${totalM2>0?' · '+totalM2.toFixed(1)+'m²':''} · ₺${toplam.toLocaleString('tr-TR')}</div>
@@ -5014,10 +4853,10 @@ function renderMusteriler() {
   // Arama
   if (ara) {
     liste = liste.filter(({m}) => {
-      const mno = 'U' + m.id;
+      const mno = 'M' + m.id;
       const mnoNum = String(m.id);
       return (
-        mIsim(m).toLowerCase().includes(ara) ||
+        m.isim.toLowerCase().includes(ara) ||
         (m.tel||'').toLowerCase().includes(ara) ||
         (m.adres||'').toLowerCase().includes(ara) ||
         mno.toLowerCase().includes(ara) ||
@@ -5047,14 +4886,14 @@ function renderMusteriler() {
   }
 
   el.innerHTML = liste.map(({m, n, toplam, borcToplam, sonSiparis, borclu, vip, yeni}) => {
-    const ilk = (m.ad||'?').charAt(0).toUpperCase();
+    const ilk = m.isim.charAt(0).toUpperCase();
     const avatarBg = borclu ? '#fef2f2' : vip ? '#fef9c3' : 'var(--blue-light)';
     const avatarColor = borclu ? 'var(--red)' : vip ? '#854d0e' : 'var(--blue)';
 
-    const isimHL = musteriVurgula(mIsim(m), ara);
+    const isimHL = musteriVurgula(m.isim, ara);
     const telHL = musteriVurgula(m.tel||'—', ara);
     const adresHL = m.adres ? musteriVurgula(m.adres, ara) : '';
-    const mNoHL = musteriVurgula('U'+m.id, ara);
+    const mNoHL = musteriVurgula('M'+m.id, ara);
 
     return `<div class="card" onclick="openProfil('${m.id}')" style="cursor:pointer;">
       <div class="card-header">
@@ -5063,9 +4902,8 @@ function renderMusteriler() {
           <div style="min-width:0;flex:1;">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:1px;">
               <span class="card-id" style="font-size:10px;">${mNoHL}</span>
-              <span class="card-name" style="margin:0;">${isimHL}</span>
+              <span class="card-name" style="margin:0;">${isimHL}</span> <span style="font-size:10px;color:var(--text3);font-weight:500;">M${m.id}</span>
               ${musteriTag(m)}
-              ${gcStatusIcon(m)}
             </div>
             <div class="card-meta">${telHL}</div>
             ${adresHL ? `<div class="card-meta" style="font-size:10px;">📍 ${adresHL}</div>` : ''}
@@ -5167,7 +5005,7 @@ function renderKasa() {
     const isKoltuk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
     return `<div class="kasa-row" onclick="toggleCard('kc-${s.id}',this)" style="cursor:pointer;">
       <div style="flex:1;min-width:0;">
-        <div style="font-weight:600;">${isKoltuk?'🛋️ ':'🪢 '}${mIsim(m,'?')} <span style="color:var(--text3);font-size:11px;">S${s.id}</span> <span style="color:var(--text3);font-size:10px;font-weight:400;">U${s.musteriId}</span>
+        <div style="font-weight:600;">${isKoltuk?'🛋️ ':'🪢 '}${m?.isim||'?'} <span style="color:var(--text3);font-size:11px;">S${s.id}</span> <span style="color:var(--text3);font-size:10px;font-weight:400;">M${s.musteriId}</span>
           ${s.durum!=='teslim'?'<span style="font-size:9px;background:var(--blue-light);color:var(--blue);padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px;">AKTİF</span>':''}
         </div>
         <div style="font-size:11px;color:var(--text3);">📦 ${totalAdet} adet · ${totalM2.toFixed(1)}m²  ·  ${s.tarih}${s.teslimTarihi?' → '+s.teslimTarihi:''}</div>
@@ -5358,7 +5196,7 @@ function mesajSablonuIsle(template, s, m) {
   const ibanBlok = ibanNo ? `\nÖdeme için:\n${ibanBanka ? ibanBanka+' ' : ''}${ibanNo}${ibanIsim ? '\n'+ibanIsim : ''}` : '';
 
   return (template||'')
-    .replace(/{isim}/g, mIsim(m))
+    .replace(/{isim}/g, m.isim||'')
     .replace(/{urunler}/g, ozet)
     .replace(/{detay}/g, detay)
     .replace(/{m2}/g, toplamM2.toFixed(1))
@@ -5420,7 +5258,7 @@ function renderSilinenler() {
     const m=data.musteriler.find(x=>x.id==s.musteriId);
     const t=hesaplaToplam(s);
     const td=s.silinmeTarih?new Date(s.silinmeTarih).toLocaleDateString('tr-TR'):'?';
-    return `<div class="card"><div class="card-header"><div><span class="card-id" style="color:var(--red);">S${s.id}</span><div class="card-name">${mIsim(m,'Bilinmiyor')}</div><div class="card-meta">Silindi: ${td} · ${s.servisTip==='koltuk'?s.haliler.length+' koltuk ürünü':s.haliler.length+' halı'}</div></div><div style="text-align:right;"><div class="total-amount" style="font-size:14px;">₺${t.toLocaleString('tr-TR')}</div><button class="btn btn-green btn-sm" style="margin-top:6px;" onclick="geriAl(${i})">↩ Geri Al</button></div></div></div>`;
+    return `<div class="card"><div class="card-header"><div><span class="card-id" style="color:var(--red);">S${s.id}</span><div class="card-name">${m?.isim||'Bilinmiyor'}</div><div class="card-meta">Silindi: ${td} · ${s.servisTip==='koltuk'?s.haliler.length+' koltuk ürünü':s.haliler.length+' halı'}</div></div><div style="text-align:right;"><div class="total-amount" style="font-size:14px;">₺${t.toLocaleString('tr-TR')}</div><button class="btn btn-green btn-sm" style="margin-top:6px;" onclick="geriAl(${i})">↩ Geri Al</button></div></div></div>`;
   }).join('');
 }
 
@@ -5556,7 +5394,7 @@ function wMusteriAra() {
 function wMusteriListeRender() {
   const ara = document.getElementById('w-musteri-ara').value.toLowerCase();
   const liste = data.musteriler.filter(m =>
-    !ara || mIsim(m).toLowerCase().includes(ara) || (m.tel||'').includes(ara)
+    !ara || m.isim.toLowerCase().includes(ara) || (m.tel||'').includes(ara)
   );
   const el = document.getElementById('w-musteri-liste');
   if (!liste.length) {
@@ -5574,7 +5412,7 @@ function wMusteriListeRender() {
       <div style="width:38px;height:38px;border-radius:10px;background:${selected?'rgba(255,255,255,0.2)':'var(--blue-light)'};
         display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">👤</div>
       <div style="flex:1;min-width:0;">
-        <div style="font-weight:700;font-size:14px;color:${selected?'#fff':'var(--text)'};">${mIsim(m)} <span style="font-size:10px;opacity:0.6;">U${m.id}</span></div>
+        <div style="font-weight:700;font-size:14px;color:${selected?'#fff':'var(--text)'};">${m.isim} <span style="font-size:10px;opacity:0.6;">M${m.id}</span></div>
         <div style="font-size:11px;color:${selected?'rgba(255,255,255,0.7)':'var(--text3)'};">${m.tel||'—'} · ${sipSayisi} sipariş</div>
       </div>
       ${selected ? '<span style="color:#fff;font-size:18px;">✓</span>' : ''}
@@ -5589,24 +5427,23 @@ function wMusteriSec(id) {
 
 function wYeniMusteriAc() {
   document.getElementById('w-yeni-musteri').style.display='block';
-  document.getElementById('w-m-ad').focus();
+  document.getElementById('w-m-isim').focus();
 }
 function wYeniMusteriKapat() {
   document.getElementById('w-yeni-musteri').style.display='none';
-  ['w-m-ad','w-m-soyad','w-m-tel','w-m-adres'].forEach(id=>document.getElementById(id).value='');
+  ['w-m-isim','w-m-tel','w-m-adres'].forEach(id=>document.getElementById(id).value='');
 }
 function wYeniMusteriKaydet() {
-  const ad = document.getElementById('w-m-ad').value.trim();
-  if (!ad) { toast('Ad gerekli!'); return; }
-  const soyad = document.getElementById('w-m-soyad').value.trim();
-  const yeni = {ad, soyad, tel:document.getElementById('w-m-tel').value.trim(), adres:document.getElementById('w-m-adres').value.trim(), google_resource_name:null};
-  saveMusteriToSupabase(yeni, (savedMusteri) => {
-    wState.musteriId = savedMusteri.id;
-    wYeniMusteriKapat();
-    document.getElementById('w-musteri-ara').value='';
-    wMusteriListeRender();
-    toast('Müşteri eklendi: U'+savedMusteri.id);
-  });
+  const isim = document.getElementById('w-m-isim').value.trim();
+  if (!isim) { toast('İsim gerekli!'); return; }
+  data.counters.musteri++;
+  const yeni = {id:data.counters.musteri, isim, tel:document.getElementById('w-m-tel').value.trim(), adres:document.getElementById('w-m-adres').value.trim()};
+  data.musteriler.push(yeni); save();
+  wState.musteriId = yeni.id;
+  wYeniMusteriKapat();
+  document.getElementById('w-musteri-ara').value='';
+  wMusteriListeRender();
+  toast('Müşteri eklendi: M'+yeni.id);
 }
 
 // -- PANEL 1: HALILAR --
@@ -5929,130 +5766,30 @@ function wHesaplaToplamW() {
 }
 
 // -- PANEL 2: FOTOĞRAF --
-// ============================================================
-// FOTOĞRAF SİSTEMİ — Supabase Storage
-// ============================================================
-const FOTO_BUCKET = 'fotograflar';
-
-async function _fotoYukle(file, sipId, tip) {
-  const sb = _getSb(); if (!sb) return null;
-  // Dosya adı: siparis_id/tip/timestamp.jpg
-  const ext = file.type.includes('png') ? 'png' : 'jpg';
-  const path = `${sipId}/${tip}/${Date.now()}_${Math.random().toString(36).substr(2,6)}.${ext}`;
-
-  // Önce canvas ile sıkıştır
-  const compressed = await _fotoSikistir(file, 900, 0.75);
-
-  const { error } = await sb.storage.from(FOTO_BUCKET).upload(path, compressed, {
-    contentType: compressed.type || 'image/jpeg',
-    upsert: false
-  });
-  if (error) { console.error('Foto yükleme hatası:', error); return null; }
-
-  // Public URL al
-  const { data } = sb.storage.from(FOTO_BUCKET).getPublicUrl(path);
-  return data.publicUrl;
-}
-
-function _fotoSikistir(file, maxPx, quality) {
-  return new Promise(resolve => {
+function wFotoEkle(input, tip) {
+  const files = Array.from(input.files);
+  files.forEach(file => {
     const reader = new FileReader();
-    reader.onload = e => {
+    reader.onload = function(ev) {
       const img = new Image();
-      img.onload = () => {
+      img.onload = function() {
+        const MAX = 800;
         let w = img.width, h = img.height;
-        if (w > maxPx || h > maxPx) {
-          if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
-          else { w = Math.round(w * maxPx / h); h = maxPx; }
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else { w = Math.round(w * MAX / h); h = MAX; }
         }
         const canvas = document.createElement('canvas');
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        canvas.toBlob(blob => resolve(blob), 'image/jpeg', quality);
+        const compressed = canvas.toDataURL('image/jpeg', 0.65);
+        wState.fotolar[tip].push(compressed);
+        wFotoGridRender(tip);
       };
-      img.src = e.target.result;
+      img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
   });
-}
-
-async function wFotoEkle(input, tip) {
-  const files = Array.from(input.files);
-  if (!files.length) return;
-  toast('📷 Yükleniyor...');
-  for (const file of files) {
-    // Wizard'da sipariş henüz kaydedilmedi, geçici olarak wState'e base64 ekle
-    // Sipariş kaydedilince Storage'a taşınır
-    const reader = new FileReader();
-    await new Promise(resolve => {
-      reader.onload = e => {
-        const img = new Image();
-        img.onload = () => {
-          const MAX = 800;
-          let w = img.width, h = img.height;
-          if (w > MAX || h > MAX) {
-            if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
-            else { w = Math.round(w * MAX / h); h = MAX; }
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          wState.fotolar[tip].push({ url: canvas.toDataURL('image/jpeg', 0.65), _file: file, _yuklenecek: true });
-          wFotoGridRender(tip);
-          resolve();
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-  input.value = '';
-  toast('📷 Fotoğraf eklendi');
-}
-
-// Sipariş kaydedilince fotoğrafları Storage'a yükle
-async function _fotoStorageaYukle(sipId, fotolar) {
-  const sb = _getSb(); if (!sb) return fotolar;
-  const sonuc = {};
-  for (const tip of ['alirken', 'ederken']) {
-    sonuc[tip] = [];
-    for (const foto of (fotolar[tip] || [])) {
-      if (foto._yuklenecek && foto._file) {
-        // Storage'a yükle
-        const url = await _fotoYukle(foto._file, sipId, tip);
-        if (url) sonuc[tip].push(url);
-        else sonuc[tip].push(foto.url); // hata varsa base64 ile devam et
-      } else if (typeof foto === 'string') {
-        sonuc[tip].push(foto); // zaten URL veya base64
-      } else if (foto.url) {
-        sonuc[tip].push(foto.url);
-      }
-    }
-  }
-  return sonuc;
-}
-
-async function detayFotoEkle(input, tip) {
-  const sid = document.getElementById('detay-siparis-id').value;
-  const s = data.siparisler.find(x=>x.id==sid); if(!s) return;
-  if (!s.fotolar) s.fotolar = {};
-  if (!s.fotolar[tip]) s.fotolar[tip] = [];
-  const files = Array.from(input.files);
-  toast('📷 Yükleniyor...');
-  for (const file of files) {
-    const url = await _fotoYukle(file, sid, tip);
-    if (url) {
-      s.fotolar[tip].push(url);
-    } else {
-      // Fallback: base64
-      await new Promise(resolve => {
-        const reader = new FileReader();
-        reader.onload = e => { s.fotolar[tip].push(e.target.result); resolve(); };
-        reader.readAsDataURL(file);
-      });
-    }
-  }
-  save(); dFotoRender(s); toast('📷 Fotoğraf eklendi');
   input.value = '';
 }
 
@@ -6065,13 +5802,12 @@ function wFotoGridRender(tip) {
   const grid = document.getElementById('foto-grid-'+tip);
   const fotolar = wState.fotolar[tip];
   const inputId = 'foto-input-'+tip;
-  grid.innerHTML = fotolar.map((foto,i) => {
-    const src = typeof foto === 'string' ? foto : foto.url;
-    return `<div class="foto-thumb">
+  grid.innerHTML = fotolar.map((src,i) =>
+    `<div class="foto-thumb">
       <img src="${src}" alt="">
       <button type="button" class="foto-del" onclick="wFotoSil('${tip}',${i})">×</button>
-    </div>`;
-  }).join('') + `<button type="button" class="foto-add-btn" onclick="document.getElementById('${inputId}').click()">
+    </div>`
+  ).join('') + `<button type="button" class="foto-add-btn" onclick="document.getElementById('${inputId}').click()">
     <span style="font-size:24px;">📷</span>
     <span>${fotolar.length?'Ekle':'Fotoğraf Ekle'}</span>
   </button>`;
@@ -6083,7 +5819,7 @@ function wOzetRender() {
   document.getElementById('ozet-musteri').innerHTML = `
     <div class="ozet-avatar">👤</div>
     <div>
-      <div style="font-weight:700;font-size:15px;color:var(--blue-dark);">${mIsim(m,'?')} <span style="font-size:11px;color:var(--text3);font-weight:500;">U${m.id}</span></div>
+      <div style="font-weight:700;font-size:15px;color:var(--blue-dark);">${m?.isim||'?'} <span style="font-size:11px;color:var(--text3);font-weight:500;">M${m.id}</span></div>
       <div style="font-size:11px;color:var(--text2);margin-top:2px;">${wState.servisTip==='koltuk'?'🛋️ Koltuk Siparişi':'🪢 Halı Siparişi'} · ${wState.tarih}${wState.saat?' ⏰'+wState.saat:''}</div>
       ${wState.teslimTarihi ? `<div style="font-size:11px;color:var(--blue);margin-top:2px;">📦 Teslim hedef: ${wState.teslimTarihi}</div>` : ''}
       ${wState.not ? `<div style="font-size:11px;color:var(--text3);margin-top:2px;">📝 ${wState.not}</div>` : ''}
@@ -6125,21 +5861,15 @@ function wOzetRender() {
 }
 
 // -- KAYDET --
-async function wKaydet() {
+function wKaydet() {
   try {
     if (!wState.servisTip) { wizardGoto(0); toast('Sipariş türü seçin!'); return; }
     if (!wState.musteriId) { wizardGoto(1); toast('Müşteri seçin!'); return; }
 
     if (!data.counters) data.counters = { musteri:100, siparis:700, gider:0 };
     data.counters.siparis = (data.counters.siparis||700) + 1;
-    const sid = data.counters.siparis;
-
-    // Fotoğrafları önce Storage'a yükle
-    toast('💾 Kaydediliyor...');
-    const fotolar = await _fotoStorageaYukle(sid, wState.fotolar || {alirken:[],ederken:[]});
-
     const siparis = {
-      id: sid,
+      id: data.counters.siparis,
       musteriId: wState.musteriId,
       servisTip: wState.servisTip || 'hali',
       tarih: wState.tarih || new Date().toISOString().split('T')[0],
@@ -6147,7 +5877,7 @@ async function wKaydet() {
       teslimTarihi: wState.teslimTarihi||null,
       not: wState.not||'',
       haliler: wState.halilar,
-      fotolar: fotolar,
+      fotolar: wState.fotolar || {alirken:[],ederken:[]},
       durum: wState.servisTip==='koltuk' ? 'randevu' : 'alinacak',
       odendi: false,
       olusturma: new Date().toISOString()
@@ -6163,14 +5893,12 @@ async function wKaydet() {
   }
 }
 
-function openYeniMusteri(){['m-ad','m-soyad','m-tel','m-adres'].forEach(id=>document.getElementById(id).value='');document.getElementById('modal-musteri').classList.add('open');}
+function openYeniMusteri(){['m-isim','m-tel','m-adres'].forEach(id=>document.getElementById(id).value='');document.getElementById('modal-musteri').classList.add('open');}
 function saveMusteri(){
-  const ad=document.getElementById('m-ad').value.trim();if(!ad){toast('Ad gerekli!');return;}
-  const soyad=document.getElementById('m-soyad').value.trim();
-  const yeniMusteri={ad, soyad, tel:document.getElementById('m-tel').value.trim(), adres:document.getElementById('m-adres').value.trim(), google_resource_name:null};
-  // Supabase'e kaydet, dönen id'yi kullan
-  saveMusteriToSupabase(yeniMusteri);
-  closeModal('modal-musteri');
+  const isim=document.getElementById('m-isim').value.trim();if(!isim){toast('İsim gerekli!');return;}
+  data.counters.musteri++;
+  data.musteriler.push({id:data.counters.musteri,isim,tel:document.getElementById('m-tel').value.trim(),adres:document.getElementById('m-adres').value.trim()});
+  save();closeModal('modal-musteri');renderAll();toast('Müşteri eklendi: M'+data.counters.musteri);
 }
 
 function cinsTipSec(tip) {
@@ -6248,7 +5976,7 @@ function openDurumModal(sid){
   document.getElementById('durum-siparis-info').innerHTML=
     `<div style="display:flex;justify-content:space-between;align-items:center;">
       <div>
-        <div style="font-weight:700;font-size:14px;">${mIsim(m,'?')} <span style="font-size:10px;color:var(--text3);font-weight:400;">U${s.musteriId}</span></div>
+        <div style="font-weight:700;font-size:14px;">${m?.isim||'?'} <span style="font-size:10px;color:var(--text3);font-weight:400;">M${s.musteriId}</span></div>
         <div style="font-size:12px;color:var(--text2);margin-top:2px;">S${s.id} · ${n} adet ürün · ₺${t.toLocaleString('tr-TR')}</div>
       </div>
       <span class="badge ${STATUS_INFO[hedef]?.badge}">${STATUS_INFO[hedef]?.icon} ${STATUS_INFO[hedef]?.label}</span>
@@ -6272,7 +6000,7 @@ function openDurumModal(sid){
     const msgEl=document.getElementById('durum-mesaj');
     const tmpl=data.settings.mesajlar?.[hedef];
     const fn=MESAJLAR[hedef];
-    const mesajOnizleme=tmpl?mesajSablonuIsle(tmpl,s,m||{ad:'Müşteri',soyad:''}):(fn?fn(s,m||{ad:'Müşteri',soyad:''}):null);
+    const mesajOnizleme=tmpl?mesajSablonuIsle(tmpl,s,m||{isim:'Müşteri'}):(fn?fn(s,m||{isim:'Müşteri'}):null);
     const iletisimBtns=document.getElementById('durum-iletisim-btns');
     if(mesajOnizleme){msgEl.textContent=mesajOnizleme;msgEl.style.display='block';if(iletisimBtns)iletisimBtns.style.display='flex';}
     else{msgEl.style.display='none';if(iletisimBtns)iletisimBtns.style.display='none';}
@@ -6287,8 +6015,8 @@ function durumMesajGuncelle(){
   const s=data.siparisler.find(x=>x.id==pendingDurum.siparisId);if(!s)return;
   const m=data.musteriler.find(x=>x.id==s.musteriId);
   let mesaj='';
-  if(pendingOdemeAlindi===true) mesaj=MESAJLAR.teslim_alindi(s,m||{ad:'Müşteri',soyad:''},pendingOdemeYontem);
-  else if(pendingOdemeAlindi===false) mesaj=MESAJLAR.teslim_bekleyen(s,m||{ad:'Müşteri',soyad:''},pendingOdemeYontem);
+  if(pendingOdemeAlindi===true) mesaj=MESAJLAR.teslim_alindi(s,m||{isim:'Müşteri'},pendingOdemeYontem);
+  else if(pendingOdemeAlindi===false) mesaj=MESAJLAR.teslim_bekleyen(s,m||{isim:'Müşteri'},pendingOdemeYontem);
   const el=document.getElementById('durum-mesaj-teslim');
   const wrap=document.getElementById('durum-mesaj-teslim-wrap');
   if(el) el.textContent=mesaj;
@@ -6312,14 +6040,14 @@ function onaylaGecis(){
     if(pendingOdemeAlindi){
       s.odendi=true;
       s.odemeTarih=new Date().toISOString();
-      mesaj=MESAJLAR.teslim_alindi(s,m||{ad:'Müşteri',soyad:''},pendingOdemeYontem);
+      mesaj=MESAJLAR.teslim_alindi(s,m||{isim:'Müşteri'},pendingOdemeYontem);
     } else {
-      mesaj=MESAJLAR.teslim_bekleyen(s,m||{ad:'Müşteri',soyad:''},pendingOdemeYontem);
+      mesaj=MESAJLAR.teslim_bekleyen(s,m||{isim:'Müşteri'},pendingOdemeYontem);
     }
   } else {
     const tmpl2=data.settings.mesajlar?.[hedef];
-    if(tmpl2) mesaj=mesajSablonuIsle(tmpl2,s,m||{ad:'Müşteri',soyad:''});
-    else { const fn=MESAJLAR[hedef]; mesaj=fn?fn(s,m||{ad:'Müşteri',soyad:''}):'' }
+    if(tmpl2) mesaj=mesajSablonuIsle(tmpl2,s,m||{isim:'Müşteri'});
+    else { const fn=MESAJLAR[hedef]; mesaj=fn?fn(s,m||{isim:'Müşteri'}):'' }
   }
   save();
   if(mesaj) navigator.clipboard.writeText(mesaj).then(()=>toast('✅ Mesaj kopyalandı!')).catch(()=>toast('Durum güncellendi'));
@@ -6334,23 +6062,63 @@ function _durumMusteriTel() {
   const m=data.musteriler.find(x=>x.id==s.musteriId);
   return m?.tel||null;
 }
-function durumMesajAc() {
-  if(!pendingDurum) return;
-  const s = data.siparisler.find(x=>x.id==pendingDurum.siparisId); if(!s) return;
-  mesajAc(s.id);
+function _durumMesajMetni() {
+  return document.getElementById('durum-mesaj')?.textContent||'';
+}
+function durumSmsSend() {
+  const tel=_durumMusteriTel(); if(!tel){toast('Telefon numarası yok');return;}
+  const msg=_durumMesajMetni();
+  const t=tel.replace(/\D/g,'');
+  const sep=/iPad|iPhone|iPod/.test(navigator.userAgent)?'&':'?';
+  window.open('sms:'+t+sep+'body='+encodeURIComponent(msg),'_self');
+}
+function durumWpSend() {
+  const tel=_durumMusteriTel(); if(!tel){toast('Telefon numarası yok');return;}
+  const msg=_durumMesajMetni();
+  let t=tel.replace(/\D/g,'');
+  if(t.startsWith('0'))t='90'+t.slice(1);
+  else if(!t.startsWith('90'))t='90'+t;
+  window.open('https://wa.me/'+t+'?text='+encodeURIComponent(msg),'_blank');
+}
+function durumWpWebSend() {
+  const tel=_durumMusteriTel(); if(!tel){toast('Telefon numarası yok');return;}
+  const msg=_durumMesajMetni();
+  let t=tel.replace(/\D/g,'');
+  if(t.startsWith('0'))t='90'+t.slice(1);
+  else if(!t.startsWith('90'))t='90'+t;
+  window.open('https://web.whatsapp.com/send?phone='+t+'&text='+encodeURIComponent(msg),'_blank');
 }
 function durumAra() {
   const tel=_durumMusteriTel(); if(!tel){toast('Telefon numarası yok');return;}
   window.open('tel:'+tel.replace(/\D/g,''));
 }
 // Teslim mesajı WA/SMS
+function _teslimMesajMetni() {
+  return document.getElementById('durum-mesaj-teslim')?.textContent||'';
+}
+function durumTeslimSmsSend() {
+  const tel=_durumMusteriTel(); if(!tel){toast('Telefon numarası yok');return;}
+  const msg=_teslimMesajMetni(); if(!msg) return;
+  const t=tel.replace(/\D/g,'');
+  const sep=/iPad|iPhone|iPod/.test(navigator.userAgent)?'&':'?';
+  window.open('sms:'+t+sep+'body='+encodeURIComponent(msg),'_self');
+}
+function durumTeslimWpSend() {
+  const tel=_durumMusteriTel(); if(!tel){toast('Telefon numarası yok');return;}
+  const msg=_teslimMesajMetni(); if(!msg) return;
+  let t=tel.replace(/\D/g,'');
+  if(t.startsWith('0'))t='90'+t.slice(1);
+  else if(!t.startsWith('90'))t='90'+t;
+  window.open('https://wa.me/'+t+'?text='+encodeURIComponent(msg),'_blank');
+}
+
 function odemeAl(sid){
   pendingOdemeAl = sid;
   pendingOdemeAlYontem = 'nakit';
   const s = data.siparisler.find(x=>x.id==sid); if(!s)return;
   const m = data.musteriler.find(x=>x.id==s.musteriId);
   const t = hesaplaToplam(s);
-  document.getElementById('odeme-al-isim').textContent = mIsim(m,'?');
+  document.getElementById('odeme-al-isim').textContent = m?.isim||'?';
   document.getElementById('odeme-al-tutar').textContent = '₺'+t.toLocaleString('tr-TR');
   document.getElementById('odeme-al-iban-box').style.display='none';
   document.getElementById('odeme-al-modal').classList.add('open');
@@ -6382,144 +6150,118 @@ function odemeAlKaydet(){
   s.odemeTarih=new Date().toISOString();
   s.odemeyontemi=pendingOdemeAlYontem;
   save();
-  const mesaj=MESAJLAR.odeme_al(s,m||{ad:'Müşteri',soyad:''},pendingOdemeAlYontem);
+  const mesaj=MESAJLAR.odeme_al(s,m||{isim:'Müşteri'},pendingOdemeAlYontem);
   navigator.clipboard.writeText(mesaj).then(()=>toast('Ödeme kaydedildi, mesaj kopyalandı!')).catch(()=>toast('Ödeme kaydedildi ✓'));
   closeModal('odeme-al-modal');renderAll();pendingOdemeAl=null;
 }
 
-// ============================================================
-// MESAJ SİSTEMİ — tek merkezi modal
-// ============================================================
-let _mesajSid = null;
-let _mesajTel = null;
+let _smsSid = null;
 
-const MESAJ_KANAL_ETIKETLER = {
-  alindi:     { icon:'📦', label:'Alındı' },
-  'yikanıyor':{ icon:'🫧', label:'Yıkandı' },
-  hazir:      { icon:'✅', label:'Hazır' },
-  dagitimda:  { icon:'🚚', label:'Dağıtımda' },
-  teslim:     { icon:'🏠', label:'Teslim' },
-  randevu:    { icon:'📅', label:'Randevu' },
-  tamamlandi: { icon:'🎉', label:'Tamamlandı' },
-  borc:       { icon:'💳', label:'Borç' },
-  ozel:       { icon:'✏️', label:'Özel Mesaj' }
-};
-
-// Ana açış fonksiyonu — her yerden burası çağrılır
-function mesajAc(sid, varsayilanMetin) {
+function sms(sid) {
   const s = data.siparisler.find(x=>x.id==sid);
   const m = data.musteriler.find(x=>x.id==s?.musteriId);
   if (!m?.tel) { toast('Telefon numarası yok'); return; }
+  _smsSid = sid;
 
-  _mesajSid = sid;
-  let t = m.tel.replace(/\D/g,'');
-  if (t.startsWith('0')) t = '90' + t.slice(1);
-  else if (!t.startsWith('90')) t = '90' + t;
-  _mesajTel = t;
-
-  // Müşteri + sipariş bilgisi header
-  document.getElementById('mesaj-musteri-bilgi').innerHTML =
-    `<div style="display:flex;align-items:center;gap:10px;">
-      <div style="width:38px;height:38px;background:var(--blue-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--blue);flex-shrink:0;">${(m.ad||'?').charAt(0).toUpperCase()}</div>
-      <div>
-        <div style="font-weight:700;font-size:14px;color:var(--text);">${mIsim(m)}</div>
-        <div style="font-size:12px;color:var(--text2);">${m.tel} &nbsp;·&nbsp; S${s.id} &nbsp;·&nbsp; <span style="color:var(--blue);font-weight:600;">${STATUS_INFO[s.durum]?.label||s.durum}</span></div>
-      </div>
+  // Müşteri bilgisi
+  document.getElementById('sms-musteri-bilgi').innerHTML =
+    `<div style="display:flex;align-items:center;gap:10px;padding:6px 0 10px;border-bottom:1px solid var(--border);">
+      <div style="width:36px;height:36px;background:var(--blue-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:var(--blue);flex-shrink:0;">${m.isim.charAt(0).toUpperCase()}</div>
+      <div><div style="font-weight:700;font-size:14px;">${m.isim}</div><div style="font-size:12px;color:var(--text2);">${m.tel}</div></div>
     </div>`;
 
-  // Şablon chip'leri
-  const chips = document.getElementById('mesaj-sablon-chips');
-  const keys = ['alindi','yikanıyor','hazir','dagitimda','teslim','randevu','tamamlandi','borc'];
-  chips.innerHTML = keys.map(key => {
-    const info = MESAJ_KANAL_ETIKETLER[key];
+  // Hazır mesaj seçenekleri
+  const hazirlar = [];
+  const mKeys = ['alindi','yikanıyor','hazir','dagitimda','teslim','borc'];
+  mKeys.forEach(key => {
+    const info = MESAJ_ETIKETLER[key];
     const tmpl = data.settings.mesajlar?.[key];
-    if (!tmpl) return '';
-    const aktif = key === s.durum;
-    return `<button onclick="mesajSablonSec('${key}')" id="msablon-chip-${key}"
-      style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;
-             border:1.5px solid ${aktif?'var(--blue)':'var(--border)'};
-             background:${aktif?'var(--blue-light)':'var(--white)'};
-             color:${aktif?'var(--blue)':'var(--text2)'};
-             font-size:12px;font-weight:${aktif?'700':'600'};cursor:pointer;
-             font-family:Inter,sans-serif;white-space:nowrap;transition:all 0.15s;">
-      ${info.icon} ${info.label}${aktif?' ✦':''}
-    </button>`;
-  }).join('');
-
-  // Önizleme kapat
-  document.getElementById('mesaj-onizle-wrap').style.display = 'none';
-
-  // Varsayılan mesaj
-  let varsayilan = varsayilanMetin || '';
-  if (!varsayilan) {
-    const tmpl = data.settings.mesajlar?.[s.durum];
-    if (tmpl) varsayilan = mesajSablonuIsle(tmpl, s, m);
-  }
-  document.getElementById('mesaj-metin').value = varsayilan;
-  document.getElementById('modal-mesaj').classList.add('open');
-}
-
-let _secilenSablon = null;
-function mesajSablonSec(key) {
-  const s = data.siparisler.find(x=>x.id==_mesajSid);
-  const m = data.musteriler.find(x=>x.id==s?.musteriId);
-  const info = MESAJ_KANAL_ETIKETLER[key];
-  const tmpl = data.settings.mesajlar?.[key];
-  if (!tmpl || !s || !m) return;
-
-  const msg = mesajSablonuIsle(tmpl, s, m);
-
-  // Chip aktif yap
-  document.querySelectorAll('[id^="msablon-chip-"]').forEach(c => {
-    const ck = c.id.replace('msablon-chip-','');
-    const isThis = ck === key;
-    c.style.borderColor = isThis ? 'var(--blue)' : 'var(--border)';
-    c.style.background = isThis ? 'var(--blue-light)' : 'var(--white)';
-    c.style.color = isThis ? 'var(--blue)' : 'var(--text2)';
-    c.style.fontWeight = isThis ? '700' : '600';
+    if (!tmpl) return;
+    const msg = mesajSablonuIsle(tmpl, s, m);
+    hazirlar.push({key, info, msg});
   });
 
-  // Önizleme göster
-  document.getElementById('mesaj-onizle-baslik').textContent = info.icon + ' ' + info.label + ' önizleme';
-  document.getElementById('mesaj-onizle-metin').textContent = msg;
-  document.getElementById('mesaj-onizle-wrap').style.display = '';
+  // Siparişin durumuna göre önerilen önce gelsin
+  hazirlar.sort((a,b) => (a.key===s.durum?-1:b.key===s.durum?1:0));
 
-  // Textarea'ya yükle
-  document.getElementById('mesaj-metin').value = msg;
-  _secilenSablon = key;
+  const secenek = document.getElementById('sms-secenekler');
+  secenek.innerHTML = hazirlar.map(({key,info,msg}) => `
+    <div style="border:1.5px solid var(--border);border-radius:10px;overflow:hidden;${key===s.durum?'border-color:var(--blue);':''}" >
+      <div style="padding:8px 12px;background:${key===s.durum?'var(--blue-light)':'var(--bg)'};display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleSmsOnizle('${key}')">
+        <span style="font-size:12px;font-weight:700;color:${key===s.durum?'var(--blue)':'var(--text)'};">${info.icon} ${info.label}${key===s.durum?' ✦':''}</span>
+        <span style="font-size:11px;color:var(--text3);" id="sms-arrow-${key}">›</span>
+      </div>
+      <div id="sms-onizle-${key}" style="display:none;padding:10px 12px;border-top:1px solid var(--border);">
+        <div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px;white-space:pre-wrap;">${msg}</div>
+        <button class="btn btn-primary btn-sm" style="width:100%;" onclick="smsSendHazir('${key}')">✉️ Bu Mesajı Gönder</button>
+      </div>
+    </div>
+  `).join('');
+
+  // Özel metin alanını temizle
+  document.getElementById('sms-ozel-metin').value = '';
+
+  document.getElementById('modal-sms').classList.add('open');
 }
 
-function _mesajGonder(kanal) {
-  const mesaj = document.getElementById('mesaj-metin').value.trim();
-  if (!mesaj) { toast('Mesaj boş'); return; }
-  const t = _mesajTel;
-  const telRaw = t.replace(/^90/, '0');
-
-  if (kanal === 'sms') {
-    const sep = /iPad|iPhone|iPod/.test(navigator.userAgent) ? '&' : '?';
-    window.open('sms:' + telRaw + sep + 'body=' + encodeURIComponent(mesaj), '_self');
-  } else if (kanal === 'wa') {
-    window.open('https://wa.me/' + t + '?text=' + encodeURIComponent(mesaj), '_blank');
-  } else if (kanal === 'wabusiness') {
-    window.open('https://wa.me/' + t + '?text=' + encodeURIComponent(mesaj), '_blank');
-  } else if (kanal === 'kopyala') {
-    navigator.clipboard.writeText(mesaj).then(() => toast('✅ Kopyalandı'));
-    closeModal('modal-mesaj');
-    return;
-  }
-  closeModal('modal-mesaj');
+function toggleSmsOnizle(key) {
+  const el = document.getElementById('sms-onizle-'+key);
+  const arrow = document.getElementById('sms-arrow-'+key);
+  const open = el.style.display === '';
+  el.style.display = open ? 'none' : '';
+  arrow.textContent = open ? '›' : '˅';
 }
 
-// Eski fonksiyonlar — geriye dönük uyumluluk için yeni sisteme yönlendir
-function sms(sid) { mesajAc(sid); }
-function whatsapp(sid) { mesajAc(sid); }
-function rotaMesajAc(sid) { mesajAc(sid); }
-function _mesajSecAc(mesaj, s, m) {
-  if (!s) return;
-  mesajAc(s.id, mesaj);
+function smsSendHazir(key) {
+  const s = data.siparisler.find(x=>x.id==_smsSid);
+  const m = data.musteriler.find(x=>x.id==s?.musteriId);
+  if (!m?.tel) return;
+  const tmpl = data.settings.mesajlar?.[key]||'';
+  const msg = mesajSablonuIsle(tmpl, s, m);
+  smsGonder(m.tel, msg);
+  closeModal('modal-sms');
 }
-// Eski modal-mesaj-gonder referansları
-function _mgSend(tip) { _mesajGonder(tip); }
+
+function smsSendOzel() {
+  const s = data.siparisler.find(x=>x.id==_smsSid);
+  const m = data.musteriler.find(x=>x.id==s?.musteriId);
+  if (!m?.tel) return;
+  const msg = document.getElementById('sms-ozel-metin').value.trim();
+  if (!msg) { toast('Mesaj boş'); return; }
+  smsGonder(m.tel, msg);
+  closeModal('modal-sms');
+}
+
+function smsGonder(tel, msg) {
+  const t = tel.replace(/\D/g,'');
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const sep = isIOS ? '&' : '?';
+  window.open(`sms:${t}${sep}body=${encodeURIComponent(msg)}`, '_self');
+}
+
+function whatsapp(sid){
+  const s=data.siparisler.find(x=>x.id==sid);const m=data.musteriler.find(x=>x.id==s?.musteriId);
+  if(!m?.tel){toast('Telefon numarası yok');return;}
+  const fn=MESAJLAR[s.durum];const msg=fn?fn(s,m):`Sayın ${m.isim}, siparişiniz hakkında bilgilendirme.`;
+  window.open(`https://wa.me/90${m.tel.replace(/\D/g,'').slice(-10)}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+function rotaMesajAc(sid) {
+  const s = data.siparisler.find(x=>x.id==sid); if(!s) return;
+  const m = data.musteriler.find(x=>x.id==s.musteriId);
+  if(!m?.tel) { toast('Telefon numarası yok'); return; }
+  // Mevcut duruma göre şablonu hazırla
+  const tmpl = data.settings.mesajlar?.[s.durum];
+  const fn = MESAJLAR[s.durum];
+  const mesaj = tmpl ? mesajSablonuIsle(tmpl,s,m) : (fn ? fn(s,m) : `Sayın ${m.isim}, siparişiniz hakkında bilgilendirme.
+
+OLGU HALI YIKAMA
+05332002662`);
+  _mesajSecAc(mesaj, s, m);
+}
+
+
+// -- MÜŞTERİ PROFİL --
 let profilMusteriId = null;
 
 function openProfil(musteriId) {
@@ -6532,9 +6274,9 @@ function openProfil(musteriId) {
   const borcToplam = siparisler.filter(s=>s.durum==='teslim'&&!s.odendi).reduce((sum,s)=>sum+hesaplaToplam(s),0);
 
   // Header
-  document.getElementById('profil-avatar').textContent = (m.ad||'?').charAt(0).toUpperCase();
-  document.getElementById('profil-isim').textContent = mIsim(m);
-  document.getElementById('profil-id').innerHTML = `U${m.id} &nbsp;·&nbsp; ${m.tel||'Telefon yok'} &nbsp;·&nbsp; ${musteriTag(m)||'Müşteri'}`;
+  document.getElementById('profil-avatar').textContent = m.isim.charAt(0).toUpperCase();
+  document.getElementById('profil-isim').textContent = m.isim;
+  document.getElementById('profil-id').innerHTML = `M${m.id} &nbsp;·&nbsp; ${m.tel||'Telefon yok'} &nbsp;·&nbsp; ${musteriTag(m)||'Müşteri'}`;
   document.getElementById('ps-siparis').textContent = siparisler.length;
   document.getElementById('ps-toplam').textContent = '₺'+toplam.toLocaleString('tr-TR');
   document.getElementById('ps-borclu').textContent = borcToplam > 0 ? '₺'+borcToplam.toLocaleString('tr-TR') : '—';
@@ -6668,8 +6410,7 @@ function profilRenderOdemeler(musteriId) {
 function musteriDuzenle(id) {
   const m = data.musteriler.find(x=>x.id==id); if(!m)return;
   document.getElementById('musteri-edit-id').value = id;
-  document.getElementById('musteri-edit-ad').value = m.ad||'';
-  document.getElementById('musteri-edit-soyad').value = m.soyad||'';
+  document.getElementById('musteri-edit-isim').value = m.isim||'';
   document.getElementById('musteri-edit-tel').value = m.tel||'';
   document.getElementById('musteri-edit-adres').value = m.adres||'';
   document.getElementById('modal-musteri-edit').classList.add('open');
@@ -6678,16 +6419,15 @@ function musteriDuzenle(id) {
 function saveMusteriEdit() {
   const id = document.getElementById('musteri-edit-id').value;
   const m = data.musteriler.find(x=>x.id==id); if(!m)return;
-  m.ad = document.getElementById('musteri-edit-ad').value.trim();
-  m.soyad = document.getElementById('musteri-edit-soyad').value.trim();
+  m.isim = document.getElementById('musteri-edit-isim').value.trim();
   m.tel = document.getElementById('musteri-edit-tel').value.trim();
   m.adres = document.getElementById('musteri-edit-adres').value.trim();
   save();
   closeModal('modal-musteri-edit');
+  // profil panelini güncelle
   if (profilMusteriId) openProfil(profilMusteriId);
   renderMusteriler();
   toast('Müşteri güncellendi');
-  gcSyncMusteri(m, m.google_resource_name ? 'update' : 'create');
 }
 
 function profilRenderBilgiler(m) {
@@ -6695,68 +6435,25 @@ function profilRenderBilgiler(m) {
   el.innerHTML = `
     <div class="profil-section-title">İletişim Bilgileri</div>
     <div class="card"><div class="card-body" style="padding:4px 14px;">
-      <div class="profil-info-row"><span class="profil-info-key">Ad</span><span class="profil-info-val">${m.ad||''}</span></div>
-      <div class="profil-info-row"><span class="profil-info-key">Soyad</span><span class="profil-info-val">${m.soyad||'—'}</span></div>
+      <div class="profil-info-row"><span class="profil-info-key">Ad Soyad</span><span class="profil-info-val">${m.isim}</span></div>
       <div class="profil-info-row"><span class="profil-info-key">Telefon</span>
         <span class="profil-info-val">
           ${m.tel?`<button onclick="window.open('tel:${m.tel}')" style='background:none;border:none;padding:0;color:var(--blue);font-family:Inter,sans-serif;font-size:14px;cursor:pointer;'>${m.tel}</button>`:'—'}
         </span>
       </div>
       <div class="profil-info-row"><span class="profil-info-key">Adres</span><span class="profil-info-val" style="text-align:right;max-width:200px;">${m.adres||'—'}</span></div>
-      <div class="profil-info-row"><span class="profil-info-key">Müşteri ID</span><span class="profil-info-val">U${m.id}</span></div>
+      <div class="profil-info-row"><span class="profil-info-key">Müşteri ID</span><span class="profil-info-val">M${m.id}</span></div>
     </div></div>
-
-    <div class="profil-section-title" style="margin-top:14px;">Not</div>
-    <div class="card"><div class="card-body" style="padding:10px 14px;">
-      <textarea id="profil-not-input" class="form-input" rows="3"
-        style="font-size:13px;resize:none;width:100%;border:none;padding:0;background:transparent;outline:none;"
-        placeholder="Müşteri hakkında notlar..."
-        onchange="profilNotKaydet('${m.id}',this.value)"
-        oninput="profilNotKaydet('${m.id}',this.value)"
-      >${m.not||''}</textarea>
-    </div></div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;">
-      <button type="button" class="btn btn-primary" style="grid-column:1/-1;" onclick="closeProfil();openYeniSiparisMusteri('${m.id}')">+ Yeni Sipariş</button>
-      ${m.tel?`<button class="btn btn-secondary" onclick="window.open('tel:${m.tel}')">📞 Ara</button>`:'<div></div>'}
-      ${m.tel?`<button class="btn btn-secondary" style="background:#f0fff4;color:#25d366;border-color:#86efbf;" onclick="profilWaMesaj('${m.id}')">💬 WA</button>`:'<div></div>'}
-      ${m.tel?`<button class="btn btn-secondary" style="background:#e8f5e9;color:#1b5e20;border-color:#a5d6a7;" onclick="profilWaMesaj('${m.id}')">🏢 WA Biz</button>`:'<div></div>'}
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button type="button" class="btn btn-primary" style="flex:1;" onclick="closeProfil();openYeniSiparisMusteri('${m.id}')">+ Yeni Sipariş</button>
+      ${m.tel?`<button class="btn btn-secondary" style="flex:1;" onclick="window.open('tel:${m.tel}')">📞 Ara</button>`:''}
+      ${m.tel?`<a href="https://wa.me/90${m.tel.replace(/\D/g,'').slice(-10)}" target="_blank" class="btn btn-green" style="flex:1;text-decoration:none;justify-content:center;">💬 WA</a>`:''}
     </div>
-    <div style="display:flex;gap:8px;margin-top:8px;">
+    <div style="margin-top:12px;display:flex;gap:8px;">
       <button type="button" class="btn btn-secondary" style="flex:1;" onclick="musteriDuzenle('${m.id}')">✏️ Düzenle</button>
       <button type="button" class="btn btn-danger" style="flex:1;" onclick="closeProfil();silMusteri('${m.id}')">🗑 Sil</button>
     </div>
   `;
-}
-
-let _profilNotTimer = null;
-function profilNotKaydet(musteriId, deger) {
-  clearTimeout(_profilNotTimer);
-  _profilNotTimer = setTimeout(() => {
-    const m = data.musteriler.find(x=>x.id==musteriId); if(!m) return;
-    m.not = deger;
-    save();
-    // Supabase'e de yaz
-    const sb = _getSb();
-    if (sb) sb.from('musteriler').update({not_: deger}).eq('id', parseInt(musteriId)).then(()=>{});
-  }, 600);
-}
-
-function profilWaMesaj(musteriId) {
-  // Müşterinin son aktif siparişini bul
-  const siparisler = data.siparisler.filter(s=>s.musteriId==musteriId && s.durum !== 'teslim');
-  const s = siparisler.sort((a,b)=>(b.olusturma||'').localeCompare(a.olusturma||''))[0];
-  if (s) {
-    mesajAc(s.id);
-  } else {
-    // Sipariş yoksa direkt WA aç
-    const m = data.musteriler.find(x=>x.id==musteriId);
-    if (!m?.tel) { toast('Telefon numarası yok'); return; }
-    let t = m.tel.replace(/\D/g,'');
-    if (t.startsWith('0')) t = '90'+t.slice(1);
-    else if (!t.startsWith('90')) t = '90'+t;
-    window.open('https://wa.me/'+t, '_blank');
-  }
 }
 
 function openMaps(adres) {
@@ -6821,7 +6518,7 @@ function tasiModal(sid){
   const m=data.musteriler.find(x=>x.id==s.musteriId);
   const isKoltuk = s.servisTip==='koltuk';
   const gecerliDurumlar = isKoltuk ? DURUMLAR_KOLTUK : DURUMLAR;
-  document.getElementById('tasi-siparis-info').innerHTML=`<b>${mIsim(m,'?')}</b> — S${sid}<br><span style="font-size:11px;color:var(--text2);">Şu an: </span><span class="badge ${STATUS_INFO[s.durum]?.badge}">${STATUS_INFO[s.durum]?.icon} ${STATUS_INFO[s.durum]?.label}</span>`;
+  document.getElementById('tasi-siparis-info').innerHTML=`<b>${m?.isim||'?'}</b> — S${sid}<br><span style="font-size:11px;color:var(--text2);">Şu an: </span><span class="badge ${STATUS_INFO[s.durum]?.badge}">${STATUS_INFO[s.durum]?.icon} ${STATUS_INFO[s.durum]?.label}</span>`;
   document.getElementById('tasi-butonlar').innerHTML=gecerliDurumlar.filter(d=>d!==s.durum).map(d=>`<button class="btn btn-secondary" style="width:100%;justify-content:flex-start;" onclick="tasiSiparis('${sid}','${d}')">${STATUS_INFO[d]?.icon} ${STATUS_INFO[d]?.label}</button>`).join('');
   document.getElementById('modal-tasi').classList.add('open');
 }
@@ -6841,7 +6538,7 @@ function tasiSiparis(sid,hedef){
     document.getElementById('durum-siparis-info').innerHTML=
       `<div style="display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <div style="font-weight:700;font-size:14px;">${mIsim(m,'?')} <span style="font-size:10px;color:var(--text3);font-weight:400;">U${s.musteriId}</span></div>
+          <div style="font-weight:700;font-size:14px;">${m?.isim||'?'} <span style="font-size:10px;color:var(--text3);font-weight:400;">M${s.musteriId}</span></div>
           <div style="font-size:12px;color:var(--text2);margin-top:2px;">S${s.id} · ${n} adet ürün · ₺${t.toLocaleString('tr-TR')}</div>
         </div>
         <span class="badge badge-teslim">📦 Teslim Edildi</span>
@@ -6864,7 +6561,7 @@ function tasiSiparis(sid,hedef){
   const m2=data.musteriler.find(x=>x.id==s.musteriId);
   const tmplTasi=data.settings.mesajlar?.[hedef];
   const fnTasi=MESAJLAR[hedef];
-  const mesajTasi=tmplTasi?mesajSablonuIsle(tmplTasi,s,m2||{ad:'Müşteri',soyad:''}):(fnTasi?fnTasi(s,m2||{ad:'Müşteri',soyad:''}):'');
+  const mesajTasi=tmplTasi?mesajSablonuIsle(tmplTasi,s,m2||{isim:'Müşteri'}):(fnTasi?fnTasi(s,m2||{isim:'Müşteri'}):'');
   save();
   closeModal('modal-tasi');
   renderAll();
@@ -6874,6 +6571,54 @@ function tasiSiparis(sid,hedef){
   } else {
     toast(`Taşındı → ${STATUS_INFO[hedef]?.label}`);
   }
+}
+
+function _mesajSecAc(mesaj, s, m) {
+  const tel = m?.tel||'';
+  let t = tel.replace(/\D/g,'');
+  if(t.startsWith('0')) t='90'+t.slice(1);
+  else if(t && !t.startsWith('90')) t='90'+t;
+
+  // Mesaj gönder modalını aç
+  const modal = document.getElementById('modal-mesaj-gonder');
+  if(!modal) { navigator.clipboard.writeText(mesaj).then(()=>toast('✅ Mesaj kopyalandı')); return; }
+
+  document.getElementById('mg-musteri').textContent = m?.isim||'Müşteri';
+  document.getElementById('mg-metin').value = mesaj;
+
+  const btns = document.getElementById('mg-butonlar');
+  btns.innerHTML = `
+    <button class="btn" onclick="_mgSend('sms')"
+      style="flex:1;background:#f0fdf4;color:#059669;border:1.5px solid #bbf7d0;font-size:13px;font-weight:700;">✉️ SMS</button>
+    <button class="btn" onclick="_mgSend('wa')"
+      style="flex:1;background:#f0fdf9;color:#25d366;border:1.5px solid #86efbf;font-size:13px;font-weight:700;">📱 WA</button>
+    <button class="btn" onclick="_mgSend('waweb')"
+      style="flex:1;background:#e7fef3;color:#128C7E;border:1.5px solid #6ee7b7;font-size:13px;font-weight:700;">💻 WA Web</button>
+    <button class="btn" onclick="_mgSend('kopyala')"
+      style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);font-size:13px;font-weight:700;">📋 Kopyala</button>
+  `;
+  // tel numarasını data attribute olarak sakla
+  modal.dataset.tel = t;
+  modal.dataset.telRaw = tel;
+  modal.classList.add('open');
+}
+
+function _mgSend(tip) {
+  const modal = document.getElementById('modal-mesaj-gonder');
+  const mesaj = document.getElementById('mg-metin').value;
+  const t = modal.dataset.tel;
+  const telRaw = modal.dataset.telRaw;
+  if(tip==='sms') {
+    const sep = /iPad|iPhone|iPod/.test(navigator.userAgent)?'&':'?';
+    window.open('sms:'+telRaw.replace(/\D/g,'')+sep+'body='+encodeURIComponent(mesaj),'_self');
+  } else if(tip==='wa') {
+    window.open('https://wa.me/'+t+'?text='+encodeURIComponent(mesaj),'_blank');
+  } else if(tip==='waweb') {
+    window.open('https://web.whatsapp.com/send?phone='+t+'&text='+encodeURIComponent(mesaj),'_blank');
+  } else {
+    navigator.clipboard.writeText(mesaj).then(()=>toast('✅ Kopyalandı'));
+  }
+  closeModal('modal-mesaj-gonder');
 }
 
 function copyIban(){navigator.clipboard.writeText(data.settings.ibanNo||'').then(()=>toast('IBAN kopyalandı'));}
@@ -6889,239 +6634,7 @@ function cacheTemizle(){localStorage.removeItem('olgu_hali_v2');location.reload(
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
 
-// Sayfa yüklenince giriş kontrolü
-(async () => {
-  await _sbHazirBekle();
-  const girisOldu = await girisKontrol();
-  // Giriş yapılmadıysa ekran görünür kalır, kullanıcı girisYap() bekler
-})();
-
-// ============================================================
-// GOOGLE CONTACTS ENTEGRASYONu
-// ============================================================
-const GC_CLIENT_ID = '741183081389-r4ciu4g17kob4c3r57ltvr0g7agjkrmn.apps.googleusercontent.com';
-const GC_SCOPE = 'https://www.googleapis.com/auth/contacts';
-const GC_TOKEN_KEY = 'olgu_gc_token';
-
-// Token yönetimi
-function gcGetToken() {
-  try { return JSON.parse(localStorage.getItem(GC_TOKEN_KEY)); } catch(e) { return null; }
-}
-function gcSaveToken(t) {
-  localStorage.setItem(GC_TOKEN_KEY, JSON.stringify(t));
-}
-function gcClearToken() {
-  localStorage.removeItem(GC_TOKEN_KEY);
-}
-function gcIsLoggedIn() {
-  const t = gcGetToken();
-  return t && t.access_token && t.expires_at > Date.now();
-}
-
-// OAuth login — popup ile
-function gcLogin() {
-  const state = Math.random().toString(36).substr(2);
-  sessionStorage.setItem('gc_state', state);
-  const params = new URLSearchParams({
-    client_id: GC_CLIENT_ID,
-    redirect_uri: 'https://www.olgutemizlik.com/panel',
-    response_type: 'token',
-    scope: GC_SCOPE,
-    state: state,
-    prompt: 'consent'
-  });
-  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
-}
-
-function gcLogout() {
-  gcClearToken();
-  renderGcStatus();
-  toast('Google Rehber bağlantısı kesildi');
-}
-
-// Sayfa yüklenince hash'ten token yakala (OAuth redirect)
-(function gcHandleRedirect() {
-  const hash = window.location.hash;
-  if (!hash.includes('access_token')) return;
-  const params = new URLSearchParams(hash.replace('#',''));
-  const token = params.get('access_token');
-  const expiresIn = parseInt(params.get('expires_in') || '3600');
-  const state = params.get('state');
-  if (token) {
-    gcSaveToken({ access_token: token, expires_at: Date.now() + expiresIn * 1000 });
-    // URL'den hash'i temizle
-    history.replaceState(null, '', window.location.pathname + window.location.search);
-    toast('✅ Google Rehber bağlandı!');
-    setTimeout(renderGcStatus, 300);
-  }
-})();
-
-// Tel no normalize: her formatı +905XXXXXXXXX'e çevir
-function gcNormalizeTel(tel) {
-  if (!tel) return null;
-  let t = tel.replace(/[\s\-\(\)\.]/g, '');
-  if (t.startsWith('+90')) return t;
-  if (t.startsWith('0090')) return '+90' + t.slice(4);
-  if (t.startsWith('90') && t.length === 12) return '+' + t;
-  if (t.startsWith('0') && t.length === 11) return '+90' + t.slice(1);
-  if (t.length === 10) return '+90' + t;
-  return t;
-}
-
-// Ana sync fonksiyonu — yeni kayıt veya güncelleme
-async function gcSyncMusteri(musteri, mod) {
-  if (!gcIsLoggedIn()) return; // bağlı değilse sessizce geç
-  const token = gcGetToken().access_token;
-  const tel = gcNormalizeTel(musteri.tel);
-
-  try {
-    if (mod === 'update' && musteri.google_resource_name) {
-      // Mevcut kişiyi güncelle
-      await gcUpdateContact(token, musteri);
-      toast('📒 Rehber güncellendi');
-    } else {
-      // Önce tel ile ara — mükerrer engeli
-      const existing = tel ? await gcSearchByPhone(token, tel) : null;
-      if (existing) {
-        // Zaten var — resourceName kaydet, güncelle
-        musteri.google_resource_name = existing.resourceName;
-        save();
-        await gcUpdateContact(token, musteri);
-        toast('📒 Rehberde vardı, güncellendi');
-      } else {
-        // Yeni oluştur
-        await gcCreateContact(token, musteri);
-        toast('📒 Rehbere eklendi');
-      }
-    }
-    renderMusteriler();
-  } catch(e) {
-    console.error('Google Contacts sync hatası:', e);
-    // Token süresi dolmuşsa
-    if (e.status === 401) { gcClearToken(); renderGcStatus(); }
-  }
-}
-
-// Google'da tel ile ara
-async function gcSearchByPhone(token, tel) {
-  const res = await fetch(
-    `https://people.googleapis.com/v1/people:searchContacts?query=${encodeURIComponent(tel)}&readMask=names,phoneNumbers,resourceName`,
-    { headers: { Authorization: 'Bearer ' + token } }
-  );
-  const d = await res.json();
-  if (d.results && d.results.length > 0) return d.results[0].person;
-  return null;
-}
-
-// Yeni kişi oluştur
-async function gcCreateContact(token, musteri) {
-  const body = {
-    names: [{ givenName: '(U' + musteri.id + ') ' + (musteri.ad||''), familyName: musteri.soyad||'' }],
-    phoneNumbers: musteri.tel ? [{ value: gcNormalizeTel(musteri.tel), type: 'mobile' }] : [],
-    addresses: musteri.adres ? [{ formattedValue: musteri.adres, type: 'home' }] : [],
-    biographies: [{ value: 'Olgu Temizlik Müşterisi — ID: M' + musteri.id, contentType: 'TEXT_PLAIN' }]
-  };
-  const res = await fetch('https://people.googleapis.com/v1/people:createContact', {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) { const e = await res.json(); throw { status: res.status, ...e }; }
-  const created = await res.json();
-  // resourceName'i müşteriye kaydet
-  musteri.google_resource_name = created.resourceName;
-  save();
-  return created;
-}
-
-// Mevcut kişiyi güncelle
-async function gcUpdateContact(token, musteri) {
-  // Önce mevcut etag'ı al
-  const getRes = await fetch(
-    `https://people.googleapis.com/v1/${musteri.google_resource_name}?personFields=names,phoneNumbers,addresses,metadata`,
-    { headers: { Authorization: 'Bearer ' + token } }
-  );
-  if (!getRes.ok) throw { status: getRes.status };
-  const person = await getRes.json();
-
-  const body = {
-    etag: person.etag,
-    names: [{ givenName: '(U' + musteri.id + ') ' + (musteri.ad||''), familyName: musteri.soyad||'' }],
-    phoneNumbers: musteri.tel ? [{ value: gcNormalizeTel(musteri.tel), type: 'mobile' }] : [],
-    addresses: musteri.adres ? [{ formattedValue: musteri.adres, type: 'home' }] : []
-  };
-  const res = await fetch(
-    `https://people.googleapis.com/v1/${musteri.google_resource_name}:updateContact?updatePersonFields=names,phoneNumbers,addresses`,
-    {
-      method: 'PATCH',
-      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    }
-  );
-  if (!res.ok) { const e = await res.json(); throw { status: res.status, ...e }; }
-  return await res.json();
-}
-
-// Tüm mevcut müşterileri toplu sync et
-async function gcBulkSync() {
-  if (!gcIsLoggedIn()) { toast('Önce Google hesabını bağla!'); return; }
-  const btn = document.getElementById('gc-bulk-btn');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Senkronize ediliyor...'; }
-  let basarili = 0, hatali = 0;
-  for (const m of data.musteriler) {
-    try {
-      await gcSyncMusteri(m, m.google_resource_name ? 'update' : 'create');
-      basarili++;
-      await new Promise(r => setTimeout(r, 200)); // rate limit için bekle
-    } catch(e) { hatali++; }
-  }
-  if (btn) { btn.disabled = false; btn.textContent = '🔄 Tümünü Senkronize Et'; }
-  toast(`✅ ${basarili} müşteri senkronize edildi${hatali > 0 ? `, ${hatali} hata` : ''}`);
-  renderMusteriler();
-}
-
-// Ayarlar sayfasındaki Google Rehber widget'ını güncelle
-function renderGcStatus() {
-  const el = document.getElementById('gc-status-widget');
-  if (!el) return;
-  if (gcIsLoggedIn()) {
-    el.innerHTML = `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-        <span style="font-size:22px;">📒</span>
-        <div>
-          <div style="font-weight:700;color:var(--text);font-size:14px;">Google Rehber Bağlı ✅</div>
-          <div style="font-size:12px;color:var(--green);">Yeni müşteriler otomatik ekleniyor</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button id="gc-bulk-btn" class="btn btn-secondary" style="font-size:12px;padding:6px 12px;" onclick="gcBulkSync()">🔄 Tümünü Senkronize Et</button>
-        <button class="btn btn-secondary" style="font-size:12px;padding:6px 12px;color:var(--red);" onclick="gcLogout()">Bağlantıyı Kes</button>
-      </div>`;
-  } else {
-    el.innerHTML = `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-        <span style="font-size:22px;">📒</span>
-        <div>
-          <div style="font-weight:700;color:var(--text);font-size:14px;">Google Rehber</div>
-          <div style="font-size:12px;color:var(--text2);">Bağlı değil — müşteriler otomatik kaydedilmiyor</div>
-        </div>
-      </div>
-      <button class="btn btn-primary" style="font-size:13px;" onclick="gcLogin()">🔗 Google Hesabını Bağla</button>`;
-  }
-}
-
-// Müşteri kartındaki rehber ikonunu göster
-function gcStatusIcon(musteri) {
-  if (!gcIsLoggedIn()) return '';
-  if (musteri.google_resource_name) {
-    return `<span title="Google Rehber'de kayıtlı" style="font-size:13px;margin-left:4px;">📒✅</span>`;
-  }
-  return `<span title="Rehbere ekle" style="font-size:13px;margin-left:4px;cursor:pointer;opacity:0.5;"
-    onclick="event.stopPropagation();gcSyncMusteri(data.musteriler.find(x=>x.id==${musteri.id}),'create')">📒</span>`;
-}
-
-// Sayfa hazır olunca status widget'ı çiz
-document.addEventListener('DOMContentLoaded', () => setTimeout(renderGcStatus, 500));
+if(!girisKontrol()){}  // giriş ekranı bekler
 
 // Arama inputlarına addEventListener ile de bağla (iOS uyumluluk)
 ['input','keyup','change'].forEach(ev => {
