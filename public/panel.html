@@ -6786,6 +6786,11 @@ function closeProfil() {
 function silMusteri(id){
   const n=data.siparisler.filter(s=>s.musteriId==id).length;
   if(n>0){toast(`Bu müşterinin ${n} siparişi var, önce siparişleri silin`);return;}
+  const m = data.musteriler.find(x=>x.id==id);
+  // Google Rehber'den sil
+  if (m?.google_resource_name && gcIsLoggedIn()) {
+    gcDeleteContact(m.google_resource_name);
+  }
   data.musteriler=data.musteriler.filter(m=>m.id!=id);
   localStorage.setItem('olgu_hali_v2', JSON.stringify(data));
   // Supabase'den de sil
@@ -7060,6 +7065,21 @@ async function gcUpdateContact(token, musteri) {
   );
   if (!res.ok) { const e = await res.json(); throw { status: res.status, ...e }; }
   return await res.json();
+}
+
+// Google Rehber'den kişi sil
+async function gcDeleteContact(resourceName) {
+  if (!gcIsLoggedIn()) return;
+  const token = gcGetToken().access_token;
+  try {
+    await fetch(`https://people.googleapis.com/v1/${resourceName}:deleteContact`, {
+      method: 'DELETE',
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    toast('📒 Rehberden silindi');
+  } catch(e) {
+    console.warn('Google Contacts silme hatası:', e);
+  }
 }
 
 // Tüm mevcut müşterileri toplu sync et
