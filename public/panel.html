@@ -1502,7 +1502,8 @@ body {
       <div id="fin-panel-kasa">
       <!-- Dönem filtresi -->
       <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
-        <button type="button" class="musteri-chip active" id="kasa-btn-ay" onclick="kasaSetPeriod('ay',this)">Bu Ay</button>
+        <button type="button" class="musteri-chip active" id="kasa-btn-gun" onclick="kasaSetPeriod('gun',this)">Bugün</button>
+        <button type="button" class="musteri-chip" id="kasa-btn-ay" onclick="kasaSetPeriod('ay',this)">Bu Ay</button>
         <button type="button" class="musteri-chip" id="kasa-btn-yil" onclick="kasaSetPeriod('yil',this)">Bu Yıl</button>
         <button type="button" class="musteri-chip" id="kasa-btn-tumu" onclick="kasaSetPeriod('tumu',this)">Tümü</button>
       </div>
@@ -1568,26 +1569,27 @@ body {
       <div class="stats-grid" style="margin-bottom:16px;">
         <div class="stat-card">
           <div class="stat-icon" style="background:#f0fdf4;">📈</div>
-          <div><div class="stat-label">Bu Ay Gelir</div><div class="stat-value" id="gg-gelir" style="color:var(--green);">₺0</div></div>
+          <div><div class="stat-label" id="gg-label-gelir">Bu Ay Gelir</div><div class="stat-value" id="gg-gelir" style="color:var(--green);">₺0</div></div>
         </div>
         <div class="stat-card">
           <div class="stat-icon" style="background:var(--red-bg);">📉</div>
-          <div><div class="stat-label">Bu Ay Gider</div><div class="stat-value" id="gg-gider" style="color:var(--red);">₺0</div></div>
+          <div><div class="stat-label" id="gg-label-gider">Bu Ay Gider</div><div class="stat-value" id="gg-gider" style="color:var(--red);">₺0</div></div>
         </div>
         <div class="stat-card">
           <div class="stat-icon" style="background:#eff6ff;">💵</div>
-          <div><div class="stat-label">Bu Ay Nakit</div><div class="stat-value" id="gg-nakit" style="color:var(--blue);">₺0</div></div>
+          <div><div class="stat-label" id="gg-label-nakit">Bu Ay Nakit</div><div class="stat-value" id="gg-nakit" style="color:var(--blue);">₺0</div></div>
         </div>
         <div class="stat-card">
           <div class="stat-icon" style="background:#f5f3ff;">🏦</div>
-          <div><div class="stat-label">Bu Ay IBAN</div><div class="stat-value" id="gg-iban" style="color:var(--purple);">₺0</div></div>
+          <div><div class="stat-label" id="gg-label-iban">Bu Ay IBAN</div><div class="stat-value" id="gg-iban" style="color:var(--purple);">₺0</div></div>
         </div>
       </div>
       <div class="card" style="margin-bottom:16px;">
         <div class="card-body">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <div style="font-size:13px;font-weight:700;color:var(--text);">Net Kar / Zarar</div>
-            <div style="display:flex;gap:6px;">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-secondary btn-sm" id="gg-btn-gun" onclick="ggSetPeriod('gun')">Bugün</button>
               <button type="button" class="btn btn-secondary btn-sm" id="gg-btn-ay" onclick="ggSetPeriod('ay')">Bu Ay</button>
               <button type="button" class="btn btn-secondary btn-sm" id="gg-btn-yil" onclick="ggSetPeriod('yil')">Bu Yıl</button>
               <button type="button" class="btn btn-secondary btn-sm" id="gg-btn-tumu" onclick="ggSetPeriod('tumu')">Tümü</button>
@@ -3356,14 +3358,19 @@ function showPage(id) {
 }
 
 
-let ggPeriod = 'ay';
+let ggPeriod = 'gun';
 
 function ggSetPeriod(period) {
   ggPeriod = period;
-  ['ay','yil','tumu'].forEach(p => {
+  ['gun','ay','yil','tumu'].forEach(p => {
     const btn = document.getElementById('gg-btn-'+p);
-    if (btn) btn.style.background = p===period ? 'var(--blue)' : '';
-    if (btn) btn.style.color = p===period ? '#fff' : '';
+    if (btn) { btn.style.background = p===period ? 'var(--blue)' : ''; btn.style.color = p===period ? '#fff' : ''; }
+  });
+  const labels = {gun:'Bugün', ay:'Bu Ay', yil:'Bu Yıl', tumu:'Tüm Zamanlar'};
+  const lbl = labels[period]||'';
+  ['gelir','gider','nakit','iban'].forEach(k => {
+    const el = document.getElementById('gg-label-'+k);
+    if (el) el.textContent = lbl + ' ' + {gelir:'Gelir',gider:'Gider',nakit:'Nakit',iban:'IBAN'}[k];
   });
   renderGelirGider();
 }
@@ -3373,6 +3380,7 @@ function ggFilterSiparisler() {
   return data.siparisler.filter(s => {
     if (!s.odendi) return false;
     const d = new Date(s.odemeTarihi || s.odeme_tarihi || s.tarih);
+    if (ggPeriod==='gun') return d.toDateString()===now.toDateString();
     if (ggPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
     if (ggPeriod==='yil') return d.getFullYear()===now.getFullYear();
     return true;
@@ -3383,6 +3391,7 @@ function ggFilterGiderler() {
   const now = new Date();
   return (data.giderler||[]).filter(g => {
     const d = new Date(g.tarih);
+    if (ggPeriod==='gun') return d.toDateString()===now.toDateString();
     if (ggPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
     if (ggPeriod==='yil') return d.getFullYear()===now.getFullYear();
     return true;
@@ -3392,15 +3401,9 @@ function ggFilterGiderler() {
 function renderGelirGider() {
   const now = new Date();
   // Bu ay sabit kartlar
-  const buAySip = data.siparisler.filter(s => {
-    if (!s.odendi) return false;
-    const d = new Date(s.odemeTarihi || s.odeme_tarihi || s.tarih);
-    return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-  });
-  const buAyGid = (data.giderler||[]).filter(g => {
-    const d = new Date(g.tarih);
-    return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-  });
+  // Üst stat kartları her zaman seçili döneme göre
+  const buAySip = ggFilterSiparisler();
+  const buAyGid = ggFilterGiderler();
   const buAyGelir = buAySip.reduce((s,x)=>s+hesaplaToplam(x),0);
   const buAyGiderT = buAyGid.reduce((s,g)=>s+(g.tutar||0),0);
   const buAyNakit = buAySip.filter(s=>s.odemeyontemi!=='havale').reduce((s,x)=>s+hesaplaToplam(x),0);
@@ -5132,12 +5135,14 @@ function renderMusteriler() {
   }).join('');
 }
 
-let kasaPeriod = 'ay';
+let kasaPeriod = 'gun';
 
 function kasaSetPeriod(period, btn) {
   kasaPeriod = period;
-  document.querySelectorAll('#page-kasa .musteri-chip').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+  ['gun','ay','yil','tumu'].forEach(p => {
+    const b = document.getElementById('kasa-btn-'+p);
+    if (b) { b.classList.toggle('active', p===period); }
+  });
   renderKasa();
 }
 
@@ -5146,6 +5151,7 @@ function renderKasa() {
 
   function inPeriod(s) {
     const d = new Date(s.odemeTarihi || s.odeme_tarihi || s.tarih);
+    if (kasaPeriod==='gun') return d.toDateString()===now.toDateString();
     if (kasaPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
     if (kasaPeriod==='yil') return d.getFullYear()===now.getFullYear();
     return true;
@@ -5176,6 +5182,7 @@ function renderKasa() {
 
   const giderToplam = (data.giderler||[]).filter(g=>{
     const d = new Date(g.tarih);
+    if (kasaPeriod==='gun') return d.toDateString()===now.toDateString();
     if (kasaPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
     if (kasaPeriod==='yil') return d.getFullYear()===now.getFullYear();
     return true;
@@ -5184,6 +5191,9 @@ function renderKasa() {
   const kasaNet = tahsil - giderToplam;
   const fmt = n => '₺'+n.toLocaleString('tr-TR',{maximumFractionDigits:1});
   const setEl = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+  // Dönem etiketini güncelle
+  const _periodLbl = {gun:'Bugün',ay:'Bu Ay',yil:'Bu Yıl',tumu:'Tüm Zamanlar'}[kasaPeriod]||'';
+  setEl('kasa-net-label', _periodLbl + ' · Tahsil − Gider');
 
   setEl('kasa-net-tutar', fmt(kasaNet));
   setEl('kasa-net-label', `Gelir: ${fmt(tahsil)}  —  Gider: ${fmt(giderToplam)}`);
