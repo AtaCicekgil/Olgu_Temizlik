@@ -66,6 +66,10 @@ body {
   z-index: 50;
   transition: transform 0.3s;
   overflow-y: auto;
+  padding-bottom: 80px;
+}
+@media (min-width: 769px) {
+  .sidebar { padding-bottom: 0; }
 }
 
 .sidebar-logo {
@@ -1315,7 +1319,7 @@ body {
   <button class="nav-btn" onclick="showPage('ayarlar')" data-page="ayarlar">
     <span class="nav-icon">⚙️</span> Ayarlar
   </button>
-  <div style="padding:10px 8px;border-top:1px solid rgba(255,255,255,0.1);">
+  <div style="padding:10px 8px;border-top:1px solid rgba(255,255,255,0.1);padding-bottom:calc(10px + env(safe-area-inset-bottom, 0px));">
     <button onclick="cikisYap()" style="width:100%;padding:9px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;">🚪 Çıkış Yap</button>
   </div>
 </nav>
