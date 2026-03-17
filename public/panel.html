@@ -4407,7 +4407,11 @@ function dHaliEkleKaydet() {
     // TOPLU: adet kadar ayrı satır ekle (her biri 1 adet, m² aynı)
     const objler = [];
     for (let i = 0; i < adet; i++) {
-      objler.push({ id: 'e'+Date.now()+'_'+i, tip:'tekli', cinsId, adet:1, m2, m2Sonra, ozelFiyat });
+      const _f = ozelFiyat ?? cins?.fiyat ?? 0;
+      objler.push({ id: 'e'+Date.now()+'_'+i, tip:'tekli', cinsId,
+        cinsAd: cins?.ad||'', ad: cins?.ad||'', kategori: cins?.kategori||'Halı',
+        adet:1, m2, m2Sonra, ozelFiyat, birimFiyat: _f, fiyat: _f,
+        toplam: m2 ? _f*m2 : (m2Sonra ? null : 0) });
     }
     _urunKaydetCok(objler);
     return;
@@ -4415,9 +4419,13 @@ function dHaliEkleKaydet() {
 
   // TEKLİ: tek satır, adet+m² birlikte
   const tip = isSabit ? 'toplu' : 'tekli';
+  const _fp = ozelFiyat ?? cins?.fiyat ?? 0;
+  const _toplam = isSabit ? _fp*adet : (m2 ? _fp*m2 : (m2Sonra ? null : 0));
   const obj = {
     id: dHeEditId||('e'+Date.now()),
-    tip, cinsId, adet, m2, m2Sonra, ozelFiyat
+    tip, cinsId, adet, m2, m2Sonra, ozelFiyat,
+    cinsAd: cins?.ad||'', ad: cins?.ad||'', kategori: cins?.kategori||'Halı',
+    birimFiyat: _fp, fiyat: _fp, toplam: _toplam
   };
   _urunKaydet(obj);
 }
