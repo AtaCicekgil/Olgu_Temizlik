@@ -2963,6 +2963,15 @@ async function _syncToSupabase() {
           birim_fiyat: h.birimFiyat||h.fiyat||null, toplam: h.toplam||null
         })));
       }
+      // Fotoğraf URL'lerini DB'ye kaydet
+      const fotoUrls = [
+        ...(s.fotolar?.alirken||[]).map(f=>({siparis_id:sid, tip:'alirken', url: typeof f==='string'?f:f.url})),
+        ...(s.fotolar?.ederken||[]).map(f=>({siparis_id:sid, tip:'ederken', url: typeof f==='string'?f:f.url}))
+      ].filter(f=>f.url && f.url.startsWith('http'));
+      if (fotoUrls.length > 0) {
+        await sb.from('fotograflar').delete().eq('siparis_id', sid);
+        await sb.from('fotograflar').insert(fotoUrls);
+      }
     }
     if (data.giderler.length > 0) {
       await sb.from('giderler').upsert(data.giderler.map(g => ({
@@ -3024,11 +3033,12 @@ async function _loadFromSupabase() {
   try {
     const [
       {data: musteriler}, {data: siparisler}, {data: kalemler},
-      {data: giderler}, {data: cinsler}, {data: ayarlar}
+      {data: fotolar}, {data: giderler}, {data: cinsler}, {data: ayarlar}
     ] = await Promise.all([
       sb.from('musteriler').select('*').order('olusturma'),
       sb.from('siparisler').select('*').order('olusturma', {ascending:false}),
       sb.from('siparis_kalemleri').select('*'),
+      sb.from('fotograflar').select('*'),
       sb.from('giderler').select('*').order('tarih', {ascending:false}),
       sb.from('cinsler').select('*').eq('aktif',true).order('kategori').order('ad'),
       sb.from('ayarlar').select('*').single()
@@ -3054,9 +3064,13 @@ async function _loadFromSupabase() {
         haliler:(kalemler||[]).filter(k=>k.siparis_id===s.id).map(k=>({
           id:'H'+k.id, cinsAd:k.cins_ad||'', ad:k.cins_ad||'',
           kategori:k.kategori||'Halı', m2:k.m2||0, adet:k.adet||1,
-          birimFiyat:k.birim_fiyat||0, fiyat:k.birim_fiyat||0, toplam:k.toplam||0
+          birimFiyat:k.birim_fiyat||0, fiyat:k.birim_fiyat||0, toplam:k.toplam||0,
+          ozelFiyat: k.birim_fiyat||0
         })),
-        fotolar:{alirken:[], ederken:[]}
+        fotolar:{
+          alirken: (fotolar||[]).filter(f=>f.siparis_id===s.id && f.tip==='alirken').map(f=>f.url),
+          ederken: (fotolar||[]).filter(f=>f.siparis_id===s.id && f.tip==='ederken').map(f=>f.url)
+        }
       }));
       data.counters.siparis = Math.max(...siparisler.map(s=>parseInt(s.id)||0), 200);
     }
@@ -3879,7 +3893,7 @@ function siparisKarti(s, ctx) {
       const altStr = altBilgi + (isOzel?' <span style="color:#f59e0b;">\u25CF\u00F6zel</span>':'');
       return `<div class="hali-row" style="display:flex;flex-direction:column;gap:1px;">
         <div style="display:flex;align-items:center;">
-          <span class="hali-cins" style="flex:1;">${c?.ad||'?'}${h.m2Sonra?' <span style="background:var(--yellow-bg);color:var(--yellow);font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;">HESAPLANACAK</span>':''}</span>
+          <span class="hali-cins" style="flex:1;">${c?.ad||h.cinsAd||h.ad||'?'}${h.m2Sonra?' <span style="background:var(--yellow-bg);color:var(--yellow);font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;">HESAPLANACAK</span>':''}</span>
           <span class="hali-m2">${label}</span>
           <span class="hali-fiyat">${tutar!==null?'\u20BA'+tutar.toFixed(0):'<span style="color:var(--yellow);">\u2014</span>'}</span>
         </div>
@@ -4271,8 +4285,21 @@ function dFotoRender(s) {
 
 function detayFotoSil(sid, tip, idx) {
   const s = data.siparisler.find(x=>x.id==sid); if(!s) return;
+  const url = s.fotolar[tip][idx];
   s.fotolar[tip].splice(idx, 1);
   save(); dFotoRender(s); toast('Fotoğraf silindi');
+  // DB ve Storage'dan sil
+  const sb2 = _getSb();
+  if (sb2 && url && url.startsWith('http')) {
+    const numSid = parseInt(String(sid).replace(/[^0-9]/g,''));
+    sb2.from('fotograflar').delete().eq('siparis_id', numSid).eq('tip', tip).eq('url', url).then(()=>{});
+    // Storage'dan da sil
+    try {
+      const urlObj = new URL(url);
+      const pathParts = urlObj.pathname.split('/object/public/fotograflar/');
+      if (pathParts[1]) sb2.storage.from('fotograflar').remove([pathParts[1]]).then(()=>{});
+    } catch(e) {}
+  }
 }
 
 // Kompakt satır render
@@ -4281,7 +4308,7 @@ function dHalilarRender() {
   const s = data.siparisler.find(x=>x.id==sid); if(!s)return;
   const el = document.getElementById('detay-hali-rows');
   if (!s.haliler.length) {
-    el.innerHTML = `<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;border:1.5px dashed var(--border);border-radius:10px;"><img src="data:image/png;base64,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" width="16" height="16" style="display:inline-block;vertical-align:-3px;"> Henüz ürün yok — Ürün Ekle butonuna bas</div>`;
+    el.innerHTML = `<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;border:1.5px dashed var(--border);border-radius:10px;">🪢 Henüz ürün yok — Ürün Ekle butonuna bas</div>`;
     dHesaplaToplam();
     return;
   }
@@ -4305,7 +4332,7 @@ function dHaliSatir(sid, h) {
     baslik = `${isInd2?'🏷️':'⚡'} ${h.aciklama||( isInd2?'İndirim':'Ek Ücret')}`;
     tutar = h.tutar||0;
   } else {
-    const cinsAd = cins?.ad || '?';
+    const cinsAd = cins?.ad || h.cinsAd || h.ad || '?';
     const isSabitC = (cins?.fiyatTip||'m2') === 'sabit';
     if (isSabitC) {
       tutar = fiyat * adet;
@@ -4516,7 +4543,7 @@ function openKartDetay(sid) {
       }
       return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);">
         <div>
-          <div style="font-size:13px;font-weight:600;color:var(--text);">${c?.ad||'?'}${h.m2Sonra?' <span style="background:var(--yellow-bg);color:var(--yellow);font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;">HESAPLANACAK</span>':''}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);">${c?.ad||h.cinsAd||h.ad||'?'}${h.m2Sonra?' <span style="background:var(--yellow-bg);color:var(--yellow);font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;">HESAPLANACAK</span>':''}</div>
           <div style="font-size:11px;color:var(--text3);margin-top:1px;">${detay}</div>
         </div>
         <span style="font-weight:700;color:var(--blue);font-size:14px;">${tutar!==null?'₺'+tutar.toLocaleString('tr-TR'):'<span style="color:var(--yellow);">—</span>'}</span>
@@ -5697,7 +5724,7 @@ function wHaliSatir(h) {
     ozet = `${isInd3?'🏷️':'⚡'} ${h.aciklama||(isInd3?'İndirim':'Ek Ücret')}`;
     tutar = h.tutar||0;
   } else {
-    const cinsAd = cins?.ad || '?';
+    const cinsAd = cins?.ad || h.cinsAd || h.ad || '?';
     const isSabitC = (cins?.fiyatTip||'m2') === 'sabit';
     if (isSabitC) {
       // Sabit fiyatlı: m² yok, adet × fiyat
@@ -6051,8 +6078,14 @@ async function detayFotoEkle(input, tip) {
     const url = await _fotoYukle(file, sid, tip);
     if (url) {
       s.fotolar[tip].push(url);
+      // URL'yi DB'ye kaydet
+      const sb2 = _getSb();
+      if (sb2) {
+        const numSid = parseInt(String(sid).replace(/[^0-9]/g,''));
+        sb2.from('fotograflar').insert({siparis_id: numSid, tip, url}).then(()=>{});
+      }
     } else {
-      // Fallback: base64
+      // Fallback: base64 (Storage yoksa)
       await new Promise(resolve => {
         const reader = new FileReader();
         reader.onload = e => { s.fotolar[tip].push(e.target.result); resolve(); };
@@ -6120,7 +6153,7 @@ function wOzetRender() {
     }
     if(t) toplam+=t;
     return `<div class="ozet-hali-row">
-      <span>${c?.ad||'?'} <span style="color:var(--text3);font-size:11px;">${label}</span></span>
+      <span>${c?.ad||h.cinsAd||h.ad||'?'} <span style="color:var(--text3);font-size:11px;">${label}</span></span>
       <span style="font-weight:700;color:${t?'var(--blue)':'var(--yellow)'};">${t!==null?'₺'+t.toFixed(0):'—'}</span>
     </div>`;
   }).join('');
@@ -6162,6 +6195,15 @@ async function wKaydet() {
     };
     data.siparisler.push(siparis);
     save();
+    // Fotoğraf URL'lerini DB'ye kaydet
+    const sb2 = _getSb();
+    if (sb2) {
+      const fotoRows = [
+        ...(fotolar.alirken||[]).filter(u=>u&&u.startsWith('http')).map(url=>({siparis_id:sid, tip:'alirken', url})),
+        ...(fotolar.ederken||[]).filter(u=>u&&u.startsWith('http')).map(url=>({siparis_id:sid, tip:'ederken', url}))
+      ];
+      if (fotoRows.length) sb2.from('fotograflar').insert(fotoRows).then(()=>{});
+    }
     closeWizard();
     renderAll();
     toast('Sipariş oluşturuldu: S'+siparis.id);
