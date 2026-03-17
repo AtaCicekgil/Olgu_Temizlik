@@ -2958,9 +2958,14 @@ async function _syncToSupabase() {
       if (s.haliler && s.haliler.length > 0) {
         await sb.from('siparis_kalemleri').delete().eq('siparis_id', sid);
         await sb.from('siparis_kalemleri').insert(s.haliler.map(h => ({
-          siparis_id: sid, cins_ad: h.cinsAd||h.ad||null,
-          kategori: h.kategori||null, m2: h.m2||null, adet: h.adet||1,
-          birim_fiyat: h.birimFiyat||h.fiyat||null, toplam: h.toplam||null
+          siparis_id: sid,
+          tip_: h.tip||'tekli',
+          cins_ad: h.tip==='ekucret' ? (h.aciklama||null) : (h.cinsAd||h.ad||null),
+          kategori: h.tip==='ekucret' ? (h.tutar<0?'indirim':'ekucret') : (h.kategori||null),
+          m2: h.m2||null, adet: h.adet||1,
+          birim_fiyat: h.tip==='ekucret' ? (h.tutar||0) : (h.ozelFiyat??h.birimFiyat??h.fiyat??null),
+          toplam: h.tip==='ekucret' ? (h.tutar||0) : (h.toplam||null),
+          not_: h.m2Sonra ? 'sonra' : null
         })));
       }
       // Fotoğraf URL'lerini DB'ye kaydet
@@ -3061,12 +3066,22 @@ async function _loadFromSupabase() {
         servisTip:s.servis_tip||'hali', durum:s.durum, tarih:s.tarih||'',
         saat:s.saat||'', teslimTarihi:s.teslim_tarihi||'', not:s.not_||'',
         odendi:s.odendi||false, olusturma:s.olusturma,
-        haliler:(kalemler||[]).filter(k=>k.siparis_id===s.id).map(k=>({
-          id:'H'+k.id, cinsAd:k.cins_ad||'', ad:k.cins_ad||'',
-          kategori:k.kategori||'Halı', m2:k.m2||0, adet:k.adet||1,
-          birimFiyat:k.birim_fiyat||0, fiyat:k.birim_fiyat||0, toplam:k.toplam||0,
-          ozelFiyat: k.birim_fiyat||0
-        })),
+        haliler:(kalemler||[]).filter(k=>k.siparis_id===s.id).map(k=>{
+          const isEk = k.tip_==='ekucret' || k.kategori==='ekucret' || k.kategori==='indirim';
+          if (isEk) {
+            return { id:'H'+k.id, tip:'ekucret', aciklama:k.cins_ad||'', tutar:k.birim_fiyat||k.toplam||0 };
+          }
+          return {
+            id:'H'+k.id, tip:k.tip_||'tekli',
+            cinsAd:k.cins_ad||'', ad:k.cins_ad||'',
+            kategori:k.kategori||'Halı',
+            m2:k.m2||0, adet:k.adet||1,
+            m2Sonra: k.not_==='sonra',
+            birimFiyat:k.birim_fiyat||0, fiyat:k.birim_fiyat||0,
+            ozelFiyat:k.birim_fiyat||0,
+            toplam:k.toplam||0
+          };
+        }),
         fotolar:{
           alirken: (fotolar||[]).filter(f=>f.siparis_id===s.id && f.tip==='alirken').map(f=>f.url),
           ederken: (fotolar||[]).filter(f=>f.siparis_id===s.id && f.tip==='ederken').map(f=>f.url)
