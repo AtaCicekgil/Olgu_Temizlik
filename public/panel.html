@@ -3201,12 +3201,16 @@ function hesaplaToplam(s) {
   if (!s || !s.haliler) return 0;
   return s.haliler.reduce((sum,h) => {
     if (h.tip==='ekucret') return sum+(h.tutar||0);
-    const c=data.cinsler.find(x=>x.id===h.cinsId);
-    if (!c) return sum;
-    const ef = h.ozelFiyat!=null ? h.ozelFiyat : c.fiyat;
-    if ((c.fiyatTip||'m2')==='sabit') return sum+ef*(h.adet||1);
-    if (h.m2Sonra||!h.m2) return sum;
-    return sum+(h.tip==='toplu' ? ef*(h.adet||1)*(h.m2||0) : ef*(h.m2||0));
+    // Önce kaydedilmiş toplam değeri kullan (Supabase'den gelen)
+    if (h.toplam != null && h.toplam > 0) return sum + h.toplam;
+    // cinsId ile bul
+    const c = data.cinsler.find(x=>x.id===h.cinsId);
+    const ef = h.ozelFiyat!=null ? h.ozelFiyat
+              : (c ? c.fiyat : (h.birimFiyat||h.fiyat||0));
+    const isSabit = c ? (c.fiyatTip||'m2')==='sabit' : false;
+    if (isSabit) return sum + ef*(h.adet||1);
+    if (h.m2Sonra || !h.m2) return sum;
+    return sum + (h.tip==='toplu' ? ef*(h.adet||1)*(h.m2||0) : ef*(h.m2||0));
   }, 0);
 }
 
@@ -5977,8 +5981,10 @@ function wStep(id, key, step) {
 function wHesaplaToplamW() {
   const toplam = wState.halilar.reduce((sum,h) => {
     if (h.tip==='ekucret') return sum+(h.tutar||0);
-    const c=data.cinsler.find(x=>x.id===h.cinsId);
-    const fiyat = h.ozelFiyat != null ? h.ozelFiyat : (c?.fiyat||0);
+    if (h.toplam != null && h.toplam > 0) return sum + h.toplam;
+    const c = data.cinsler.find(x=>x.id===h.cinsId);
+    const fiyat = h.ozelFiyat != null ? h.ozelFiyat
+                : (c ? c.fiyat : (h.birimFiyat||h.fiyat||0));
     if ((c?.fiyatTip||'m2')==='sabit') return sum+fiyat*(h.adet||1);
     if (h.m2Sonra||!h.m2) return sum;
     return sum + fiyat*(h.adet||1)*(h.m2||0);
