@@ -1225,6 +1225,125 @@ body {
   .date-strip-wrap { left: 0; }
   .content { padding: 14px; padding-top: 140px; }
 }
+
+/* ── KASA YENİ TASARIM ────────────────────────────────── */
+.kasa-period-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s;
+  font-family: Inter, sans-serif;
+}
+.kasa-period-chip.active {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+
+.kasa-day-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: 44px;
+  transition: all .15s;
+  font-family: Inter, sans-serif;
+  gap: 2px;
+}
+.kasa-day-chip .kasa-day-num { font-size: 15px; font-weight: 800; color: var(--text); }
+.kasa-day-chip .kasa-day-dot { width: 5px; height: 5px; border-radius: 50%; background: transparent; margin-top: 2px; }
+.kasa-day-chip.active { background: var(--navy); border-color: var(--navy); color: rgba(255,255,255,0.7); }
+.kasa-day-chip.active .kasa-day-num { color: #fff; }
+.kasa-day-chip.has-data .kasa-day-dot { background: var(--green); }
+.kasa-day-chip.active.has-data .kasa-day-dot { background: #4ade80; }
+.kasa-day-chip.today { border-color: var(--blue); }
+.kasa-day-chip.today .kasa-day-num { color: var(--blue); }
+.kasa-day-chip.active.today .kasa-day-num { color: #fff; }
+
+.kasa-hero-card {
+  background: linear-gradient(135deg, var(--navy) 0%, #1a3a6e 100%);
+  border-radius: 18px;
+  padding: 20px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.kasa-hero-card::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.kasa-hero-card::after {
+  content: '';
+  position: absolute;
+  bottom: -20px; left: -20px;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
+}
+.kasa-hero-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.5; margin-bottom: 4px; }
+.kasa-hero-net { font-size: 36px; font-weight: 900; letter-spacing: -1px; line-height: 1; margin-bottom: 4px; }
+.kasa-hero-net.pozitif { color: #4ade80; }
+.kasa-hero-net.negatif { color: #f87171; }
+.kasa-hero-sub { font-size: 11px; opacity: 0.5; }
+
+.kasa-hero-stat { display:flex;flex-direction:column;align-items:center;gap:4px; }
+.kasa-hero-stat-icon { width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;margin-bottom:2px; }
+.kasa-hero-stat-val { font-size:14px;font-weight:800; }
+.kasa-hero-stat-lbl { font-size:9px;text-transform:uppercase;letter-spacing:0.8px;opacity:0.5;font-weight:700; }
+
+.kasa-mini-card {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 14px;
+  border: 1px solid var(--border);
+}
+
+.kasa-gelir-row {
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: box-shadow .15s;
+}
+.kasa-gelir-row:active { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+.kasa-gelir-badge {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.kasa-gider-row {
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+/* ── /KASA ────────────────────────────────────────────── */
 </style>
 </head>
 <body>
@@ -1486,161 +1605,97 @@ body {
       <div id="rota-list"></div>
     </div>
     <div class="page" id="page-kasa">
-      <!-- Finansal Sekmeler -->
-      <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid var(--border);">
-        <button type="button" id="fin-tab-kasa" onclick="finTabSec('kasa',this)"
-          style="flex:1;padding:10px 6px;background:none;border:none;font-family:Inter,sans-serif;font-size:13px;font-weight:700;cursor:pointer;color:var(--blue);border-bottom:2px solid var(--blue);margin-bottom:-2px;">
-          💰 Kasa
+
+      <!-- ════ KASA HEADER ════ -->
+      <div style="margin-bottom:16px;">
+
+        <!-- Dönem Chip'leri -->
+        <div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;">
+          <button type="button" class="kasa-period-chip active" id="kasa-btn-gun" onclick="kasaSetPeriod('gun',this)">Bugün</button>
+          <button type="button" class="kasa-period-chip" id="kasa-btn-ay" onclick="kasaSetPeriod('ay',this)">Bu Ay</button>
+          <button type="button" class="kasa-period-chip" id="kasa-btn-yil" onclick="kasaSetPeriod('yil',this)">Bu Yıl</button>
+          <button type="button" class="kasa-period-chip" id="kasa-btn-tumu" onclick="kasaSetPeriod('tumu',this)">Tümü</button>
+        </div>
+
+        <!-- Tarih Şeridi (sadece Bugün modunda gün seçimi) -->
+        <div id="kasa-tarih-seridi" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:12px;"></div>
+      </div>
+
+      <!-- ════ ANA ÖZET KARTI ════ -->
+      <div class="kasa-hero-card" style="margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <div>
+            <div class="kasa-hero-label" id="kasa-hero-period">Bugün</div>
+            <div class="kasa-hero-net" id="kasa-net-tutar">₺0</div>
+            <div class="kasa-hero-sub" id="kasa-net-label">Net Kar</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1px;opacity:0.5;text-transform:uppercase;margin-bottom:6px;">Bekleyen</div>
+            <div style="font-size:20px;font-weight:800;color:#fbbf24;" id="kasa-bekleyen">₺0</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div class="kasa-hero-stat">
+            <div class="kasa-hero-stat-icon" style="background:rgba(74,222,128,0.15);">📈</div>
+            <div class="kasa-hero-stat-val" style="color:#4ade80;" id="kasa-rpt-gelir">₺0</div>
+            <div class="kasa-hero-stat-lbl">Gelir</div>
+          </div>
+          <div class="kasa-hero-stat">
+            <div class="kasa-hero-stat-icon" style="background:rgba(248,113,113,0.15);">📉</div>
+            <div class="kasa-hero-stat-val" style="color:#f87171;" id="kasa-rpt-gider">₺0</div>
+            <div class="kasa-hero-stat-lbl">Gider</div>
+          </div>
+          <div class="kasa-hero-stat">
+            <div class="kasa-hero-stat-icon" style="background:rgba(147,197,253,0.15);">✅</div>
+            <div class="kasa-hero-stat-val" style="color:#93c5fd;" id="kasa-tahsil">₺0</div>
+            <div class="kasa-hero-stat-lbl">Tahsil</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ NAKİT vs IBAN ════ -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        <div class="kasa-mini-card" style="border-left:3px solid #4ade80;">
+          <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">💵 Nakit</div>
+          <div style="font-size:20px;font-weight:800;color:var(--green);" id="kasa-nakit">₺0</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px;" id="kasa-nakit-adet">0 sipariş</div>
+        </div>
+        <div class="kasa-mini-card" style="border-left:3px solid #a78bfa;">
+          <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">🏦 IBAN</div>
+          <div style="font-size:20px;font-weight:800;color:#7c3aed;" id="kasa-iban">₺0</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px;" id="kasa-iban-adet">0 sipariş</div>
+        </div>
+      </div>
+
+      <!-- ════ GELİR LİSTESİ ════ -->
+      <div style="margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-size:12px;font-weight:800;color:var(--text);text-transform:uppercase;letter-spacing:0.8px;">📥 Gelirler</div>
+          <div style="font-size:11px;color:var(--text3);" id="kasa-gelir-sayisi"></div>
+        </div>
+        <div id="list-kasa" style="display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+
+      <!-- ════ GİDER LİSTESİ ════ -->
+      <div style="margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-size:12px;font-weight:800;color:var(--text);text-transform:uppercase;letter-spacing:0.8px;">📤 Giderler</div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="openGiderModal()">+ Ekle</button>
+        </div>
+        <div id="list-giderler-kasa" style="display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+
+      <!-- ════ GRAFİK (katlanabilir) ════ -->
+      <div class="kasa-mini-card" style="margin-bottom:14px;">
+        <button type="button" onclick="kasaGrafikToggle()" style="width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:none;cursor:pointer;font-family:Inter,sans-serif;padding:0;">
+          <span style="font-size:12px;font-weight:700;color:var(--text);">📊 Son 30 Gün Grafiği</span>
+          <span id="kasa-grafik-chevron" style="font-size:14px;color:var(--text3);transition:transform .2s;">›</span>
         </button>
-        <button type="button" id="fin-tab-gg" onclick="finTabSec('gg',this)"
-          style="flex:1;padding:10px 6px;background:none;border:none;font-family:Inter,sans-serif;font-size:13px;font-weight:700;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-2px;">
-          📊 Gelir / Gider
-        </button>
-      </div>
-
-      <!-- KASA SEKMESİ -->
-      <div id="fin-panel-kasa">
-      <!-- Dönem filtresi -->
-      <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
-        <button type="button" class="musteri-chip active" id="kasa-btn-gun" onclick="kasaSetPeriod('gun',this)">Bugün</button>
-        <button type="button" class="musteri-chip" id="kasa-btn-ay" onclick="kasaSetPeriod('ay',this)">Bu Ay</button>
-        <button type="button" class="musteri-chip" id="kasa-btn-yil" onclick="kasaSetPeriod('yil',this)">Bu Yıl</button>
-        <button type="button" class="musteri-chip" id="kasa-btn-tumu" onclick="kasaSetPeriod('tumu',this)">Tümü</button>
-      </div>
-
-      <!-- KASA RAPORU özet kutusu -->
-      <div class="card" style="margin-bottom:14px;background:linear-gradient(135deg,#0d1b3e,#1a3a6e);color:#fff;border:none;">
-        <div class="card-body">
-          <div style="font-size:12px;font-weight:700;letter-spacing:1px;opacity:0.6;margin-bottom:6px;">KASA DURUMU</div>
-          <div style="font-size:28px;font-weight:900;color:#4ade80;" id="kasa-net-tutar">₺0</div>
-          <div style="font-size:11px;opacity:0.6;margin-top:2px;" id="kasa-net-label">Tahsil edilen</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;">
-            <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:10px;">
-              <div style="font-size:10px;opacity:0.6;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">📥 Teslim Alınanlar</div>
-              <div id="kasa-rpt-alinan-sayisi" style="font-size:11px;opacity:0.8;margin-top:4px;"></div>
-              <div id="kasa-rpt-alinan-ucret" style="font-size:14px;font-weight:800;color:#93c5fd;margin-top:2px;"></div>
-              <div id="kasa-rpt-alinan-odeme" style="font-size:11px;opacity:0.7;"></div>
-              <div id="kasa-rpt-alinan-borc" style="font-size:11px;color:#fca5a5;"></div>
-            </div>
-            <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:10px;">
-              <div style="font-size:10px;opacity:0.6;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">📤 Teslim Edilenler</div>
-              <div id="kasa-rpt-edilen-sayisi" style="font-size:11px;opacity:0.8;margin-top:4px;"></div>
-              <div id="kasa-rpt-edilen-ucret" style="font-size:14px;font-weight:800;color:#6ee7b7;margin-top:2px;"></div>
-              <div id="kasa-rpt-edilen-odeme" style="font-size:11px;opacity:0.7;"></div>
-              <div id="kasa-rpt-edilen-borc" style="font-size:11px;color:#fca5a5;"></div>
-            </div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
-            <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:10px;">
-              <div style="font-size:10px;opacity:0.6;font-weight:700;text-transform:uppercase;">📈 Gelir</div>
-              <div id="kasa-rpt-gelir" style="font-size:16px;font-weight:800;color:#4ade80;margin-top:4px;">₺0</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:10px;">
-              <div style="font-size:10px;opacity:0.6;font-weight:700;text-transform:uppercase;">📉 Gider</div>
-              <div id="kasa-rpt-gider" style="font-size:16px;font-weight:800;color:#f87171;margin-top:4px;">₺0</div>
-            </div>
-          </div>
+        <div id="kasa-grafik-wrap" style="display:none;margin-top:12px;">
+          <canvas id="kasa-grafik-canvas" height="160"></canvas>
         </div>
       </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="background:#fef2f2;">💸</div>
-          <div><div class="stat-label">Toplam</div><div class="stat-value" id="kasa-alacak" style="color:var(--red);">₺0</div></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:#f0fdf4;">✅</div>
-          <div><div class="stat-label">Tahsil</div><div class="stat-value" id="kasa-tahsil" style="color:var(--green);">₺0</div></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:#eff6ff;">💵</div>
-          <div><div class="stat-label">Nakit</div><div class="stat-value" id="kasa-nakit" style="color:var(--blue);">₺0</div></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:#fffbeb;">⏳</div>
-          <div><div class="stat-label">Bekleyen</div><div class="stat-value" id="kasa-bekleyen" style="color:var(--yellow);">₺0</div></div>
-        </div>
-      </div>
-      <div class="card"><div class="card-body" id="list-kasa"></div></div>
-      </div><!-- /fin-panel-kasa -->
-
-      <!-- GELİR/GİDER SEKMESİ -->
-      <div id="fin-panel-gg" style="display:none;">
-      <div class="stats-grid" style="margin-bottom:16px;">
-        <div class="stat-card">
-          <div class="stat-icon" style="background:#f0fdf4;">📈</div>
-          <div><div class="stat-label" id="gg-label-gelir">Bu Ay Gelir</div><div class="stat-value" id="gg-gelir" style="color:var(--green);">₺0</div></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:var(--red-bg);">📉</div>
-          <div><div class="stat-label" id="gg-label-gider">Bu Ay Gider</div><div class="stat-value" id="gg-gider" style="color:var(--red);">₺0</div></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:#eff6ff;">💵</div>
-          <div><div class="stat-label" id="gg-label-nakit">Bu Ay Nakit</div><div class="stat-value" id="gg-nakit" style="color:var(--blue);">₺0</div></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:#f5f3ff;">🏦</div>
-          <div><div class="stat-label" id="gg-label-iban">Bu Ay IBAN</div><div class="stat-value" id="gg-iban" style="color:var(--purple);">₺0</div></div>
-        </div>
-      </div>
-      <div class="card" style="margin-bottom:16px;">
-        <div class="card-body">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <div style="font-size:13px;font-weight:700;color:var(--text);">Net Kar / Zarar</div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;">
-              <button type="button" class="btn btn-secondary btn-sm" id="gg-btn-gun" onclick="ggSetPeriod('gun')">Bugün</button>
-              <button type="button" class="btn btn-secondary btn-sm" id="gg-btn-ay" onclick="ggSetPeriod('ay')">Bu Ay</button>
-              <button type="button" class="btn btn-secondary btn-sm" id="gg-btn-yil" onclick="ggSetPeriod('yil')">Bu Yıl</button>
-              <button type="button" class="btn btn-secondary btn-sm" id="gg-btn-tumu" onclick="ggSetPeriod('tumu')">Tümü</button>
-            </div>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px;background:var(--bg);border-radius:10px;gap:8px;">
-            <div style="text-align:center;flex:1;">
-              <div style="font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:600;">GELİR</div>
-              <div style="font-size:16px;font-weight:800;color:var(--green);" id="gg-p-gelir">₺0</div>
-            </div>
-            <div style="font-size:20px;color:var(--text3);">−</div>
-            <div style="text-align:center;flex:1;">
-              <div style="font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:600;">GİDER</div>
-              <div style="font-size:16px;font-weight:800;color:var(--red);" id="gg-p-gider">₺0</div>
-            </div>
-            <div style="font-size:20px;color:var(--text3);">=</div>
-            <div style="text-align:center;flex:1;">
-              <div style="font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:600;">NET KAR</div>
-              <div style="font-size:18px;font-weight:800;" id="gg-p-kar">₺0</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="section-header" style="margin-bottom:12px;">
-        <div class="section-title">Giderler</div>
-        <button type="button" class="btn btn-primary btn-sm" onclick="openGiderModal()">+ Gider Ekle</button>
-      </div>
-      <div class="card"><div class="card-body" id="list-giderler"></div></div>
-
-      <!-- GRAFİK -->
-      <div class="card" style="margin-top:16px;">
-        <div class="card-body">
-          <div style="display:flex;gap:0;margin-bottom:14px;border-bottom:2px solid var(--border);">
-            <button type="button" id="grafik-tab-aylik" onclick="grafikSetTab('aylik')"
-              style="flex:1;padding:8px;background:none;border:none;font-family:Inter,sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:var(--blue);border-bottom:2px solid var(--blue);margin-bottom:-2px;">
-              📊 Aylık
-            </button>
-            <button type="button" id="grafik-tab-gunluk" onclick="grafikSetTab('gunluk')"
-              style="flex:1;padding:8px;background:none;border:none;font-family:Inter,sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-2px;">
-              📈 Günlük
-            </button>
-          </div>
-          <div id="grafik-panel-aylik">
-            <canvas id="grafik-aylik" height="200"></canvas>
-          </div>
-          <div id="grafik-panel-gunluk" style="display:none;">
-            <canvas id="grafik-gunluk" height="200"></canvas>
-          </div>
-        </div>
-      </div>
-      </div><!-- /fin-panel-gg -->
 
     </div>
 
@@ -3726,11 +3781,7 @@ function renderPage(id) {
   else if (id==='musteriler') renderMusteriler();
   else if (id==='dashboard') renderDashboard();
   else if (id==='rota') renderRota();
-  else if (id==='kasa') {
-    const ggPanel = document.getElementById('fin-panel-gg');
-    if (ggPanel && ggPanel.style.display !== 'none') renderGelirGider();
-    else renderKasa();
-  }
+  else if (id==='kasa') { renderKasa(); }
   else if (id==='silinenler') renderSilinenler();
   else if (id==='ayarlar') renderAyarlar();
   else if (id==='gelir-gider') { showPage('kasa'); finTabSec('gg', document.getElementById('fin-tab-gg')); return; }
@@ -5139,106 +5190,235 @@ let kasaPeriod = 'gun';
 
 function kasaSetPeriod(period, btn) {
   kasaPeriod = period;
+  if (period==='gun') kasaSecilenGun = new Date(); // günlük moda geçince bugüne dön
   ['gun','ay','yil','tumu'].forEach(p => {
     const b = document.getElementById('kasa-btn-'+p);
-    if (b) { b.classList.toggle('active', p===period); }
+    if (b) b.classList.toggle('active', p===period);
   });
   renderKasa();
 }
 
 function renderKasa() {
   const now = new Date();
+  // Tarih şeridini güncelle
+  _kasaTarihSeridiRender();
+
+  // Seçili güne göre tarih belirle
+  const secilenGun = kasaSecilenGun || now;
 
   function inPeriod(s) {
     const d = new Date(s.odemeTarihi || s.odeme_tarihi || s.tarih);
-    if (kasaPeriod==='gun') return d.toDateString()===now.toDateString();
+    if (kasaPeriod==='gun') return d.toDateString()===secilenGun.toDateString();
+    if (kasaPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+    if (kasaPeriod==='yil') return d.getFullYear()===now.getFullYear();
+    return true;
+  }
+  function giderInPeriod(g) {
+    const d = new Date(g.tarih);
+    if (kasaPeriod==='gun') return d.toDateString()===secilenGun.toDateString();
     if (kasaPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
     if (kasaPeriod==='yil') return d.getFullYear()===now.getFullYear();
     return true;
   }
 
-  const alinanlar = data.siparisler.filter(s => s.durum !== 'teslim' && inPeriod(s));
-  const edilenler = data.siparisler.filter(s => s.durum === 'teslim' && inPeriod(s));
+  const odenenler = data.siparisler.filter(s => s.odendi && inPeriod(s));
+  const giderler  = (data.giderler||[]).filter(giderInPeriod);
 
-  const calcStats = (liste) => {
-    const urun = liste.reduce((a,s)=>a+s.haliler.filter(h=>h.tip!=='ekucret').reduce((b,h)=>b+(h.tip==='toplu'?(h.adet||1):1),0),0);
-    const m2 = liste.reduce((a,s)=>a+s.haliler.reduce((b,h)=>h.tip==='ekucret'?b:b+(h.tip==='toplu'?(h.adet||1)*(h.m2||0):(h.m2||0)),0),0);
-    const ucret = liste.reduce((a,s)=>a+hesaplaToplam(s),0);
-    const odeme = liste.filter(s=>s.odendi).reduce((a,s)=>a+hesaplaToplam(s),0);
-    return {count:liste.length, urun, m2, ucret, odeme, borc:ucret-odeme};
-  };
-
-  const aS = calcStats(alinanlar);
-  const eS = calcStats(edilenler);
-  const allFiltered = [...alinanlar, ...edilenler];
-
-  let toplam=0, tahsil=0, bekleyen=0, nakit=0;
-  allFiltered.forEach(s => {
+  let gelir=0, nakit=0, iban=0, nakitAdet=0, ibanAdet=0;
+  odenenler.forEach(s => {
     const t = hesaplaToplam(s);
-    toplam += t;
-    if (s.odendi) { tahsil += t; if (s.odemeyontemi !== 'havale') nakit += t; }
-    else bekleyen += t;
+    gelir += t;
+    if (s.odemeyontemi==='havale') { iban+=t; ibanAdet++; }
+    else { nakit+=t; nakitAdet++; }
   });
+  const giderToplam = giderler.reduce((a,g)=>a+(g.tutar||0),0);
+  const kasaNet = gelir - giderToplam;
 
-  const giderToplam = (data.giderler||[]).filter(g=>{
-    const d = new Date(g.tarih);
-    if (kasaPeriod==='gun') return d.toDateString()===now.toDateString();
-    if (kasaPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-    if (kasaPeriod==='yil') return d.getFullYear()===now.getFullYear();
-    return true;
-  }).reduce((a,g)=>a+(g.tutar||0),0);
+  // Bekleyen (dönemden bağımsız tüm bekleyenler)
+  const bekleyen = data.siparisler
+    .filter(s=>!s.odendi && s.durum!=='teslim')
+    .reduce((a,s)=>a+hesaplaToplam(s),0);
 
-  const kasaNet = tahsil - giderToplam;
-  const fmt = n => '₺'+n.toLocaleString('tr-TR',{maximumFractionDigits:1});
-  const setEl = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
-  // Dönem etiketini güncelle
-  const _periodLbl = {gun:'Bugün',ay:'Bu Ay',yil:'Bu Yıl',tumu:'Tüm Zamanlar'}[kasaPeriod]||'';
-  setEl('kasa-net-label', _periodLbl + ' · Tahsil − Gider');
+  const fmt = n => '₺'+n.toLocaleString('tr-TR');
+  const setEl = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
 
-  setEl('kasa-net-tutar', fmt(kasaNet));
-  setEl('kasa-net-label', `Gelir: ${fmt(tahsil)}  —  Gider: ${fmt(giderToplam)}`);
+  // Dönem etiketi
+  const periodLbl = {
+    gun: secilenGun.toDateString()===now.toDateString() ? 'Bugün' :
+      secilenGun.toLocaleDateString('tr-TR',{day:'numeric',month:'long'}),
+    ay:'Bu Ay', yil:'Bu Yıl', tumu:'Tüm Zamanlar'
+  }[kasaPeriod]||'';
+  setEl('kasa-hero-period', periodLbl);
 
-  setEl('kasa-rpt-alinan-sayisi', `Sipariş:${aS.count} / Ürün:${aS.urun} / M2:${aS.m2.toFixed(1)}`);
-  setEl('kasa-rpt-alinan-ucret', `Ücret: ${fmt(aS.ucret)} / Ödeme: ${fmt(aS.odeme)}`);
-  setEl('kasa-rpt-alinan-odeme', '');
-  setEl('kasa-rpt-alinan-borc', aS.borc>0 ? `Borç: ${fmt(aS.borc)}` : '✓ Borç yok');
-
-  setEl('kasa-rpt-edilen-sayisi', `Sipariş:${eS.count} / Ürün:${eS.urun} / M2:${eS.m2.toFixed(1)}`);
-  setEl('kasa-rpt-edilen-ucret', `Ücret: ${fmt(eS.ucret)} / Ödeme: ${fmt(eS.odeme)}`);
-  setEl('kasa-rpt-edilen-odeme', '');
-  setEl('kasa-rpt-edilen-borc', eS.borc>0 ? `Borç: ${fmt(eS.borc)}` : '✓ Borç yok');
-
-  setEl('kasa-rpt-gelir', fmt(tahsil));
-  setEl('kasa-rpt-gider', fmt(giderToplam));
-  setEl('kasa-alacak', fmt(toplam));
-  setEl('kasa-tahsil', fmt(tahsil));
-  setEl('kasa-nakit', fmt(nakit));
+  // Net kart
+  const netEl = document.getElementById('kasa-net-tutar');
+  if (netEl) {
+    netEl.textContent = fmt(kasaNet);
+    netEl.className = 'kasa-hero-net ' + (kasaNet>=0?'pozitif':'negatif');
+  }
+  setEl('kasa-net-label', `${fmt(gelir)} gelir − ${fmt(giderToplam)} gider`);
   setEl('kasa-bekleyen', fmt(bekleyen));
+  setEl('kasa-rpt-gelir', fmt(gelir));
+  setEl('kasa-rpt-gider', fmt(giderToplam));
+  setEl('kasa-tahsil', fmt(gelir));
+  setEl('kasa-nakit', fmt(nakit));
+  setEl('kasa-nakit-adet', nakitAdet + ' sipariş');
+  setEl('kasa-iban', fmt(iban));
+  setEl('kasa-iban-adet', ibanAdet + ' sipariş');
+  setEl('kasa-gelir-sayisi', odenenler.length + ' sipariş');
 
-  const el = document.getElementById('list-kasa');
-  const teslimler = sortByTarih([...edilenler, ...alinanlar.filter(s=>s.odendi)]);
-  el.innerHTML = teslimler.map(s => {
+  // Gelir listesi
+  const listEl = document.getElementById('list-kasa');
+  const sorted = [...odenenler].sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||''));
+  listEl.innerHTML = sorted.map(s => {
     const m = data.musteriler.find(x=>x.id==s.musteriId);
     const t = hesaplaToplam(s);
-    const totalAdet = s.haliler.filter(h=>h.tip!=='ekucret').reduce((a,h)=>a+(h.tip==='toplu'?(h.adet||1):1),0);
-    const totalM2 = s.haliler.reduce((a,h)=>h.tip==='ekucret'?a:a+(h.tip==='toplu'?(h.adet||1)*(h.m2||0):(h.m2||0)),0);
-    const yontemIcon = s.odemeyontemi==='havale'?'🏦':'💵';
-    const yontemLabel = s.odemeyontemi==='havale'?'IBAN':'Nakit';
-    const isKoltuk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
-    return `<div class="kasa-row" onclick="toggleCard('kc-${s.id}',this)" style="cursor:pointer;">
+    const isHavale = s.odemeyontemi==='havale';
+    const isKoltuk = s.servisTip==='koltuk';
+    const totalAdet = s.haliler.filter(h=>h.tip!=='ekucret').reduce((a,h)=>a+(h.adet||1),0);
+    const totalM2   = s.haliler.reduce((a,h)=>h.tip==='ekucret'?a:a+(h.m2||0),0);
+    const badgeBg   = isHavale ? '#f5f3ff' : '#f0fdf4';
+    const badgeClr  = isHavale ? '#7c3aed' : '#059669';
+    const badgeTxt  = isHavale ? '🏦 IBAN' : '💵 Nakit';
+    return `<div class="kasa-gelir-row" onclick="openKartDetay('${s.id}')">
+      <div class="kasa-gelir-badge" style="background:${isKoltuk?'#f5f3ff':'#eff6ff'};">${isKoltuk?'🛋️':'🪢'}</div>
       <div style="flex:1;min-width:0;">
-        <div style="font-weight:600;">${isKoltuk?'🛋️ ':'<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAGNklEQVR4nO1Wa2xcxRX+zsx97K7tXcePdWoIxrWduolFoU2JWtw4cilxSsNDyKoI+UEDVBQqlVaN+lJlmdKqFdBWSPCDCAlR0gBuqwAiIQIEG5UkDglJ0yZy4ocSQ5zYsbP2rvc1986c/rjr2Ekct+qDHy1HutI87pz55nxzvjnAx/b/bjTfYCcg0Vns9AA9gP4IMYEuxDUvxv/kZpf0udVFB8esr2tph2Qyt+PdPJ6bmfuvAegEZA+gV1bIO9Rnr/1DetVqGMtC9ND7cBO7untHCw9/DpAHZukwF/lgAOIf7GcuHji/YKwtcMQlkfUoK+OSPbsz0bfenDYEpWOxO0FkDhB5IDIgMsxMzF2CBLEQxMxdAiKYO/8FGxbbZDAPn9ZMI54AAwTyFIlzEzTZ/hWHLVuU9+4mkU5JMDcXT0kANBH1F/s1DIwTdWsAdQBCMz4rAbQ4IFcxCoCfAAYuCwCdAHoYzDBTN3UgW98gpVLi7NqvmfoTA/UbW8uPQkowM6Qkve7e6/fF68rz257ae03ziiWnmq6tndj6WGLl9GQuIgRB2hLnPkxiKG0rr+GT2h0f91ceH3i4dyTz+AzdFwKYMSkFPB8in2fh+/DTWRGLl+L+R9oBSwLMAMiSEl8k+Oh8cAUIqAI0NnatBkDwlUZZVQnefu49HNl6xhWfbgYGB0HHji0HgLE5VFwKAMUgE4EBWI7ExGiGf/bNnQEAEEAEzF4oAYBBgv2pJD342FpaXBdDNpUzHkkh9x/eXrPn8GvKhRpd0vg8MIDEHF2ZH8B5IAT2FJzqWr760WcIliSjFPx8HsbzJUkBgMBGkxMrx4nnn83/8Zdbrds2rbWWfKpCwDChItqUvqr6Zsrl/EWTZ/oB7OoCqLuY0gunDQNCSqj0pB586ffe8BtveFMnhz130SJd0dyESE01wlWLUFIThx1y0PzAA/Zo83rv6R+97gkpCErBb1m2NLVhw82m9YZbhe9/HwDeaZvdd8EIEDF8FojJgr3efYvHhhWGduf08WRY47ob1dK7N1pkWbZWqsgayfoNd+P00deULngWhVyyDu39a+nY8F+ooIwW7m+BPBKJWT1YmAIQfN8gFovgru+1E2wJ5JR1ZjiJFzfvMK9u2ptb9osnpXBdwdoHAKipJNhwcEsEAensSHgo+75nw+eqisHZ2AY2PwXMgDGAMSAYGGPgj0/DPzsNPV3A4uoyfOepO8W6hmTJ0LZtnhONgnVwKBKy6JmI8wXo669bc+YH3/11/tZ1TyCTexIA2gB5+QgYA3ZDMGVlIM+DKQQnE0JAODLIhLCN3AfjGDyR8ks/cyUb3w/4uljppAUaHUvZhw5O09kJDwJ/BoD4nAhcAoAdhyPH+kykd0/eUnmZrKyVJIQtHAEv72HkwzHs23uS//TyCS/Tepff1N4eVukUSAgKNIJBgsCGWTgWif5T25f0n3phGlC7gB3Ahc/7LICegHNSiiL9fZT8QqudcxwqP7Bfnx04bd13/w6klPAnuZy5rsXUbvqhqG1ZHvbSKSqmIkQkAmE7XMgqkCAyBQXTUn/7yRUttzkjp7Hyb0cf6R3J/nwBJWQIW/L44jpNx4eM7RWc8Wiljn7iasUPPeFWVVZaV1VVkhsthc7n4WWycCsqAGYIx0Xug2G/7yffpsbakCttG6wNOBJxTTwOymbBjCuA4sOXuAwFacXUkTsm7r3nGtsNV4gXtxx2t5/L+5m+o5MpTwvjKRg2TCQAIQI2jYZTFsXQlmftW1aZcMe3vkq+8jSFHGntP/JyfN+RV5RA/t2fdr2A7m4kEvNQMIPKL3h4aNMq0bC6sQCt8ONlV2DfHVvRMLg5LATh0puGQDFHDZpXheSX7/mSJmiESlxYkrSpKV+ebrrSRSptf/6ZRyfeA3bOVcKLnmNA+bTl8d/suf2+rHJDJTZ+t/kgapfG5Zpv3IBcRoHEAiUaM0aHxqF9RiQWwtTJc6CW5sbJjhsbo8f74Lzy6hSAne+0QaAoRvOWZNXAmsWV7nppydJczqPK6hLkMuqfKsikRYG6mCB1IcgArCULP6/pVwdPTR7G+T/mtwtB0UdblAII6sOxNlA8DkZPMPAv25z1PT3Blf03vH1s/4P2d6NwwU1nuHKtAAAAAElFTkSuQmCC" width="16" height="16" style="display:inline-block;vertical-align:-3px;"> '}${mIsim(m,'?')} <span style="color:var(--text3);font-size:11px;">S${s.id}</span> <span style="color:var(--text3);font-size:10px;font-weight:400;">U${s.musteriId}</span>
-          ${s.durum!=='teslim'?'<span style="font-size:9px;background:var(--blue-light);color:var(--blue);padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px;">AKTİF</span>':''}
-        </div>
-        <div style="font-size:11px;color:var(--text3);">📦 ${totalAdet} adet · ${totalM2.toFixed(1)}m²  ·  ${s.tarih}${s.teslimTarihi?' → '+s.teslimTarihi:''}</div>
+        <div style="font-weight:700;font-size:13px;color:var(--text);">${mIsim(m,'?')}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:1px;">S${s.id} · ${totalAdet} ürün${totalM2>0?' · '+totalM2.toFixed(1)+'m²':''} · ${s.tarih}</div>
       </div>
       <div style="text-align:right;flex-shrink:0;">
-        <div style="font-weight:700;color:${s.odendi?'var(--green)':'var(--red)'};">₺${t.toLocaleString('tr-TR')}</div>
-        <div style="font-size:10px;color:var(--text3);">${s.odendi?yontemIcon+' '+yontemLabel:'⏳ Bekliyor'}</div>
+        <div style="font-size:15px;font-weight:800;color:var(--green);">${fmt(t)}</div>
+        <div style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:${badgeBg};color:${badgeClr};margin-top:3px;display:inline-block;">${badgeTxt}</div>
       </div>
     </div>`;
-  }).join('')||'<div class="empty"><div class="empty-icon">💰</div>Bu dönemde kayıt yok</div>';
+  }).join('') || '<div class="empty"><div class="empty-icon">💰</div>Bu dönemde gelir yok</div>';
+
+  // Gider listesi
+  const giderEl = document.getElementById('list-giderler-kasa');
+  const gSorted = [...giderler].sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||''));
+  giderEl.innerHTML = gSorted.map(g => `
+    <div class="kasa-gider-row">
+      <div class="kasa-gelir-badge" style="background:#fef2f2;">🧾</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:700;font-size:13px;color:var(--text);">${g.aciklama||'Gider'}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:1px;">${g.tarih}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-size:15px;font-weight:800;color:var(--red);">−${fmt(g.tutar||0)}</div>
+        <button onclick="event.stopPropagation();silGider('${g.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:0;margin-top:2px;line-height:1;">×</button>
+      </div>
+    </div>
+  `).join('') || '<div style="text-align:center;padding:12px;color:var(--text3);font-size:12px;">Bu dönemde gider yok</div>';
+
+  // Grafiği güncelle (açıksa)
+  if (document.getElementById('kasa-grafik-wrap').style.display !== 'none') {
+    _kasaGrafikCiz();
+  }
 }
+
+// Tarih şeridi (son 14 gün)
+let kasaSecilenGun = new Date();
+function _kasaTarihSeridiRender() {
+  const el = document.getElementById('kasa-tarih-seridi');
+  if (!el) return;
+  if (kasaPeriod !== 'gun') { el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+
+  const now = new Date();
+  const gunler = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    gunler.push(d);
+  }
+
+  // Hangi günlerde veri var?
+  const veriGunler = new Set(data.siparisler
+    .filter(s=>s.odendi)
+    .map(s=>new Date(s.odemeTarihi||s.odeme_tarihi||s.tarih).toDateString())
+  );
+
+  const GUNLER = ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'];
+  el.innerHTML = gunler.map(d => {
+    const isToday = d.toDateString() === now.toDateString();
+    const isSelected = d.toDateString() === kasaSecilenGun.toDateString();
+    const hasData = veriGunler.has(d.toDateString());
+    const cls = ['kasa-day-chip',
+      isSelected?'active':'',
+      isToday?'today':'',
+      hasData?'has-data':''
+    ].filter(Boolean).join(' ');
+    return `<button type="button" class="${cls}" onclick="kasaGunSec('${d.toISOString()}')">
+      <span style="font-size:9px;opacity:0.6;">${GUNLER[d.getDay()]}</span>
+      <span class="kasa-day-num">${d.getDate()}</span>
+      <span class="kasa-day-dot"></span>
+    </button>`;
+  }).join('');
+
+  // Seçili güne scroll
+  setTimeout(() => {
+    const active = el.querySelector('.kasa-day-chip.active');
+    if (active) active.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+  }, 50);
+}
+
+function kasaGunSec(isoStr) {
+  kasaSecilenGun = new Date(isoStr);
+  renderKasa();
+}
+
+// Grafik toggle
+let kasaGrafikInst = null;
+function kasaGrafikToggle() {
+  const wrap = document.getElementById('kasa-grafik-wrap');
+  const chevron = document.getElementById('kasa-grafik-chevron');
+  const isOpen = wrap.style.display !== 'none';
+  wrap.style.display = isOpen ? 'none' : 'block';
+  chevron.style.transform = isOpen ? '' : 'rotate(90deg)';
+  if (!isOpen) _kasaGrafikCiz();
+}
+
+function _kasaGrafikCiz() {
+  const canvas = document.getElementById('kasa-grafik-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (kasaGrafikInst) { kasaGrafikInst.destroy(); kasaGrafikInst = null; }
+
+  const now = new Date();
+  const labels = [], gelirData = [], giderData = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    const dStr = d.toDateString();
+    labels.push(d.getDate()+'/'+(d.getMonth()+1));
+    gelirData.push(data.siparisler
+      .filter(s=>s.odendi && new Date(s.odemeTarihi||s.odeme_tarihi||s.tarih).toDateString()===dStr)
+      .reduce((a,s)=>a+hesaplaToplam(s),0));
+    giderData.push((data.giderler||[])
+      .filter(g=>new Date(g.tarih).toDateString()===dStr)
+      .reduce((a,g)=>a+(g.tutar||0),0));
+  }
+
+  kasaGrafikInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label:'Gelir', data:gelirData, backgroundColor:'rgba(74,222,128,0.7)', borderRadius:4, borderSkipped:false },
+        { label:'Gider', data:giderData, backgroundColor:'rgba(248,113,113,0.6)', borderRadius:4, borderSkipped:false }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      plugins:{ legend:{position:'bottom', labels:{font:{size:10},boxWidth:10,padding:10}} },
+      scales:{
+        x:{ grid:{display:false}, ticks:{font:{size:9}, maxRotation:0, maxTicksLimit:8} },
+        y:{ grid:{color:'rgba(0,0,0,0.05)'}, ticks:{font:{size:9}, callback:v=>'₺'+v.toLocaleString('tr-TR')} }
+      }
+    }
+  });
+}
+
 
 // -- AYARLAR TABS --
 function ayTab(id, btn) {
