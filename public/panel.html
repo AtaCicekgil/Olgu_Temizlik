@@ -3756,13 +3756,13 @@ function saveGider() {
     tutar,
     tarih: document.getElementById('gider-tarih').value
   });
-  save(); closeModal('modal-gider'); renderGelirGider();
+  save(); closeModal('modal-gider'); renderKasa(); renderGelirGider();
   toast('Gider eklendi');
 }
 
 function silGider(id) {
   data.giderler = (data.giderler||[]).filter(g=>g.id!==id);
-  save(); renderGelirGider();
+  save(); renderKasa(); renderGelirGider();
   toast('Gider silindi');
 }
 
@@ -7650,7 +7650,6 @@ document.addEventListener('DOMContentLoaded', () => setTimeout(renderGcStatus, 5
   <button class="mbn-btn" id="mbn-siparisler" onclick="mbnGo('alinacak')">
     <span class="mbn-icon">📋</span>
     <span class="mbn-label">Siparişler</span>
-    <span class="mbn-badge" id="mbn-b-siparis" style="display:none"></span>
   </button>
   <button class="mbn-btn" id="mbn-rota" onclick="mbnGo('rota')">
     <span class="mbn-icon">🗺️</span>
@@ -7719,14 +7718,7 @@ function mbnGo(page) {
   if (activeId) document.getElementById(activeId)?.classList.add('active');
 }
 
-function updateMbnBadges() {
-  const aktif = data.siparisler.filter(s => !['teslim'].includes(s.durum)).length;
-  const el = document.getElementById('mbn-b-siparis');
-  if (el) {
-    el.textContent = aktif > 0 ? aktif : '';
-    el.style.display = aktif > 0 ? 'flex' : 'none';
-  }
-}
+function updateMbnBadges() {}
 </script>
 
 </body>
