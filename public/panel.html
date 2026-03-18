@@ -1618,13 +1618,23 @@ body {
         <!-- Dönem Chip'leri -->
         <div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;">
           <button type="button" class="kasa-period-chip active" id="kasa-btn-gun" onclick="kasaSetPeriod('gun',this)">Bugün</button>
+          <button type="button" class="kasa-period-chip" id="kasa-btn-hafta" onclick="kasaSetPeriod('hafta',this)">Bu Hafta</button>
           <button type="button" class="kasa-period-chip" id="kasa-btn-ay" onclick="kasaSetPeriod('ay',this)">Bu Ay</button>
           <button type="button" class="kasa-period-chip" id="kasa-btn-yil" onclick="kasaSetPeriod('yil',this)">Bu Yıl</button>
           <button type="button" class="kasa-period-chip" id="kasa-btn-tumu" onclick="kasaSetPeriod('tumu',this)">Tümü</button>
+          <button type="button" class="kasa-period-chip" id="kasa-btn-aralik" onclick="kasaSetPeriod('aralik',this)">📅 Aralık</button>
         </div>
 
         <!-- Tarih Şeridi (sadece Bugün modunda gün seçimi) -->
         <div id="kasa-tarih-seridi" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:12px;"></div>
+        <!-- Tarih Aralığı Seçici (sadece Aralık modunda) -->
+        <div id="kasa-aralik-panel" style="display:none;margin-bottom:12px;">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="date" id="kasa-aralik-bas" class="form-input" style="flex:1;" onchange="kasaAralikGuncelle()">
+            <span style="color:var(--text3);">—</span>
+            <input type="date" id="kasa-aralik-bit" class="form-input" style="flex:1;" onchange="kasaAralikGuncelle()">
+          </div>
+        </div>
       </div>
 
       <!-- ════ ANA ÖZET KARTI ════ -->
@@ -3043,7 +3053,7 @@ async function _syncToSupabase() {
     }
     if (data.giderler.length > 0) {
       await sb.from('giderler').upsert(data.giderler.map(g => ({
-        id: g.id, tutar: g.tutar, aciklama: g.aciklama||null, tarih: g.tarih||new Date().toISOString().split('T')[0]
+        id: g.id, kategori: g.kategori||null, tutar: g.tutar, aciklama: g.aciklama||null, tarih: g.tarih||new Date().toISOString().split('T')[0]
       })), {onConflict:'id'});
     }
     await sb.from('ayarlar').update({
@@ -3153,7 +3163,7 @@ async function _loadFromSupabase() {
       data.counters.siparis = Math.max(...siparisler.map(s=>parseInt(s.id)||0), 200);
     }
     if (giderler?.length) {
-      data.giderler = giderler.map(g => ({id:g.id, tutar:g.tutar, aciklama:g.aciklama||'', tarih:g.tarih}));
+      data.giderler = giderler.map(g => ({id:g.id, kategori:g.kategori||g.aciklama||'Gider', aciklama:g.aciklama||'', tutar:g.tutar, tarih:g.tarih}));
     }
     if (cinsler?.length) {
       const katSira = ['Halı','Koltuk','Perde','Kuru Temizleme','Bakım Hizmetleri'];
@@ -3423,11 +3433,22 @@ let ggPeriod = 'gun';
 
 function ggSetPeriod(period) {
   ggPeriod = period;
-  ['gun','ay','yil','tumu'].forEach(p => {
+  ['gun','hafta','ay','yil','tumu','aralik'].forEach(p => {
     const btn = document.getElementById('gg-btn-'+p);
     if (btn) { btn.style.background = p===period ? 'var(--blue)' : ''; btn.style.color = p===period ? '#fff' : ''; }
   });
-  const labels = {gun:'Bugün', ay:'Bu Ay', yil:'Bu Yıl', tumu:'Tüm Zamanlar'};
+  // Aralık paneli
+  const aralikPanel = document.getElementById('gg-aralik-panel');
+  if (aralikPanel) aralikPanel.style.display = period==='aralik' ? 'block' : 'none';
+  // Varsayılan tarihler
+  if (period==='aralik') {
+    const now = new Date();
+    const bas = document.getElementById('gg-aralik-bas');
+    const bit = document.getElementById('gg-aralik-bit');
+    if (bas && !bas.value) bas.value = new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
+    if (bit && !bit.value) bit.value = now.toISOString().split('T')[0];
+  }
+  const labels = {gun:'Bugün', hafta:'Bu Hafta', ay:'Bu Ay', yil:'Bu Yıl', tumu:'Tüm Zamanlar', aralik:'Seçilen Aralık'};
   const lbl = labels[period]||'';
   ['gelir','gider','nakit','iban'].forEach(k => {
     const el = document.getElementById('gg-label-'+k);
@@ -3436,14 +3457,20 @@ function ggSetPeriod(period) {
   renderGelirGider();
 }
 
+function ggAralikGuncelle() {
+  if (ggPeriod==='aralik') renderGelirGider();
+}
+
 function ggFilterSiparisler() {
   const now = new Date();
   return data.siparisler.filter(s => {
     if (!s.odendi) return false;
     const d = new Date(s.odemeTarihi || s.odeme_tarihi || s.tarih);
     if (ggPeriod==='gun') return d.toDateString()===now.toDateString();
+    if (ggPeriod==='hafta') { const w=new Date(now); w.setDate(now.getDate()-now.getDay()+1); w.setHours(0,0,0,0); return d>=w && d<=now; }
     if (ggPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
     if (ggPeriod==='yil') return d.getFullYear()===now.getFullYear();
+    if (ggPeriod==='aralik') { const b=document.getElementById('gg-aralik-bas')?.value; const e=document.getElementById('gg-aralik-bit')?.value; if(b&&e) return d>=new Date(b) && d<=new Date(e+'T23:59:59'); }
     return true;
   });
 }
@@ -3453,8 +3480,10 @@ function ggFilterGiderler() {
   return (data.giderler||[]).filter(g => {
     const d = new Date(g.tarih);
     if (ggPeriod==='gun') return d.toDateString()===now.toDateString();
+    if (ggPeriod==='hafta') { const w=new Date(now); w.setDate(now.getDate()-now.getDay()+1); w.setHours(0,0,0,0); return d>=w && d<=now; }
     if (ggPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
     if (ggPeriod==='yil') return d.getFullYear()===now.getFullYear();
+    if (ggPeriod==='aralik') { const b=document.getElementById('gg-aralik-bas')?.value; const e=document.getElementById('gg-aralik-bit')?.value; if(b&&e) return d>=new Date(b) && d<=new Date(e+'T23:59:59'); }
     return true;
   });
 }
@@ -3492,18 +3521,24 @@ function renderGelirGider() {
   if (!giderler.length) {
     giderEl.innerHTML='<div class="empty"><div class="empty-icon">📭</div>Gider kaydı yok</div>';
   } else {
-    giderEl.innerHTML = giderler.map(g =>
-      `<div class="kasa-row">
-        <div>
-          <div style="font-weight:600;font-size:13px;">${g.kategori||'Gider'}</div>
-          <div style="font-size:11px;color:var(--text3);">${g.aciklama||''} · ${g.tarih}</div>
+    const GIDER_IKON2 = {'Kira':'🏠','Elektrik':'⚡','Su':'💧','Personel':'👷','Yakıt':'🚗','Kimyasal':'🧴','Tamir':'🔧','Diğer':'📦'};
+    giderEl.innerHTML = giderler.map(g => {
+      const kat = g.kategori || g.aciklama?.split(' ')[0] || 'Gider';
+      const ikon = GIDER_IKON2[kat] || '🧾';
+      const aciklama = g.aciklama && g.aciklama !== kat ? g.aciklama : '';
+      return `<div class="kasa-gider-row" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--white);">
+        <div style="width:36px;height:36px;border-radius:10px;background:#fef2f2;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">${ikon}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;font-size:13px;color:var(--text);">${kat}</div>
+          ${aciklama ? `<div style="font-size:11px;color:var(--text2);">${aciklama}</div>` : ''}
+          <div style="font-size:11px;color:var(--text3);">${g.tarih}</div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="font-weight:700;color:var(--red);">−₺${(g.tutar||0).toLocaleString('tr-TR')}</div>
-          <button class="btn btn-danger btn-sm" onclick="silGider(${g.id})">×</button>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:15px;font-weight:800;color:var(--red);">−₺${(g.tutar||0).toLocaleString('tr-TR')}</div>
+          <button onclick="silGider(${g.id})" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:0;margin-top:2px;display:block;margin-left:auto;">×</button>
         </div>
-      </div>`
-    ).join('');
+      </div>`;
+    }).join('');
   }
 
   // Grafik çiz
@@ -5201,12 +5236,26 @@ let kasaPeriod = 'gun';
 
 function kasaSetPeriod(period, btn) {
   kasaPeriod = period;
-  if (period==='gun') kasaSecilenGun = new Date(); // günlük moda geçince bugüne dön
-  ['gun','ay','yil','tumu'].forEach(p => {
+  if (period==='gun') kasaSecilenGun = new Date();
+  ['gun','hafta','ay','yil','tumu','aralik'].forEach(p => {
     const b = document.getElementById('kasa-btn-'+p);
     if (b) b.classList.toggle('active', p===period);
   });
+  // Aralık paneli
+  const aralikPanel = document.getElementById('kasa-aralik-panel');
+  if (aralikPanel) aralikPanel.style.display = period==='aralik' ? 'block' : 'none';
+  if (period==='aralik') {
+    const now = new Date();
+    const bas = document.getElementById('kasa-aralik-bas');
+    const bit = document.getElementById('kasa-aralik-bit');
+    if (bas && !bas.value) bas.value = new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
+    if (bit && !bit.value) bit.value = now.toISOString().split('T')[0];
+  }
   renderKasa();
+}
+
+function kasaAralikGuncelle() {
+  if (kasaPeriod==='aralik') renderKasa();
 }
 
 function renderKasa() {
@@ -5217,18 +5266,26 @@ function renderKasa() {
   // Seçili güne göre tarih belirle
   const secilenGun = kasaSecilenGun || now;
 
+  const _haftaBasi = () => { const w=new Date(now); w.setDate(now.getDate()-((now.getDay()+6)%7)); w.setHours(0,0,0,0); return w; };
+  const _aralikBas = () => new Date(document.getElementById('kasa-aralik-bas')?.value||'');
+  const _aralikBit = () => { const d=new Date(document.getElementById('kasa-aralik-bit')?.value||''); d.setHours(23,59,59); return d; };
+
   function inPeriod(s) {
     const d = new Date(s.odemeTarihi || s.odeme_tarihi || s.tarih);
     if (kasaPeriod==='gun') return d.toDateString()===secilenGun.toDateString();
+    if (kasaPeriod==='hafta') return d>=_haftaBasi() && d<=now;
     if (kasaPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
     if (kasaPeriod==='yil') return d.getFullYear()===now.getFullYear();
+    if (kasaPeriod==='aralik') return d>=_aralikBas() && d<=_aralikBit();
     return true;
   }
   function giderInPeriod(g) {
     const d = new Date(g.tarih);
     if (kasaPeriod==='gun') return d.toDateString()===secilenGun.toDateString();
+    if (kasaPeriod==='hafta') return d>=_haftaBasi() && d<=now;
     if (kasaPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
     if (kasaPeriod==='yil') return d.getFullYear()===now.getFullYear();
+    if (kasaPeriod==='aralik') return d>=_aralikBas() && d<=_aralikBit();
     return true;
   }
 
@@ -5257,7 +5314,8 @@ function renderKasa() {
   const periodLbl = {
     gun: secilenGun.toDateString()===now.toDateString() ? 'Bugün' :
       secilenGun.toLocaleDateString('tr-TR',{day:'numeric',month:'long'}),
-    ay:'Bu Ay', yil:'Bu Yıl', tumu:'Tüm Zamanlar'
+    hafta:'Bu Hafta', ay:'Bu Ay', yil:'Bu Yıl', tumu:'Tüm Zamanlar',
+    aralik: (() => { const b=document.getElementById('kasa-aralik-bas')?.value; const e=document.getElementById('kasa-aralik-bit')?.value; return (b&&e)?b+' – '+e:'Seçilen Aralık'; })()
   }[kasaPeriod]||'';
   setEl('kasa-hero-period', periodLbl);
 
@@ -5305,6 +5363,7 @@ function renderKasa() {
   }).join('') || '<div class="empty"><div class="empty-icon">💰</div>Bu dönemde gelir yok</div>';
 
   // Gider listesi
+  const GIDER_IKON = {'Kira':'🏠','Elektrik':'⚡','Su':'💧','Personel':'👷','Yakıt':'🚗','Kimyasal':'🧴','Tamir':'🔧','Diğer':'📦'};
   const giderEl = document.getElementById('list-giderler-kasa');
   const gSorted = [...giderler].sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||''));
   giderEl.innerHTML = gSorted.map(g => `
