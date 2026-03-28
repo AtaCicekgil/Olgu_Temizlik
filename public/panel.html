@@ -4128,7 +4128,7 @@ function siparisKarti(s, ctx) {
         ${s.not?`<div style="font-size:11px;color:var(--yellow);margin-top:3px;font-weight:600;background:var(--yellow-bg);padding:2px 6px;border-radius:4px;display:inline-block;">📝 ${s.not}</div>`:''}
         ${s.etiketNo?`<span style="font-size:11px;font-weight:700;background:#f0fdf4;color:#16a34a;padding:2px 7px;border-radius:4px;display:inline-block;margin-top:3px;margin-left:${s.not?'4px':'0'};">🏷 ${s.etiketNo}</span>`:''}
         <div style="font-size:10px;color:var(--text3);margin-top:3px;">
-          ${isKoltuk?'📅 Randevu: ':''}${s.tarih}${s.saat?' ⏰'+s.saat:''}${!isKoltuk&&s.teslimTarihi?' → 🎯'+s.teslimTarihi:''}${fotoCount>0?' · 📷'+fotoCount:''}
+          ${isKoltuk?'📅 Randevu: ':'📥 '}${s.tarih||'—'}${s.saat?' ⏰'+s.saat:''}${fotoCount>0?' · 📷'+fotoCount:''}
         </div>
       </div>
     </div>
@@ -4755,10 +4755,17 @@ function openKartDetay(sid) {
     </div>` : '';
 
   const isKoltukCard = s.servisTip === 'koltuk';
-  const tarihBolum = `<div style="font-size:12px;color:var(--text3);margin-bottom:12px;">
-    ${s.tarih?`${isKoltukCard?'📅 Randevu':'📅 Alındı'}: <b>${s.tarih}</b>${s.saat?' <b>⏰'+s.saat+'</b>':''}`:''}
-    ${!isKoltukCard&&s.teslimTarihi?` &nbsp;🎯 Teslim: <b>${s.teslimTarihi}</b>`:''}
-    ${s.not?`<div style="margin-top:4px;color:var(--yellow);font-weight:600;background:var(--yellow-bg);padding:3px 8px;border-radius:4px;display:inline-block;">📝 ${s.not}</div>`:''}
+  const fmtTarih = (t) => t ? new Date((t.includes('T')?t:t+'T12:00:00')).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'}) : null;
+  const tarihBolum = `<div style="display:flex;flex-direction:column;gap:6px;font-size:12px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:12px;">
+    ${s.olusturma ? `<div style="display:flex;gap:6px;"><span style="color:var(--text3);flex-shrink:0;">🗓 Oluşturuldu:</span><b style="color:var(--text);">${fmtTarih(s.olusturma)}</b></div>` : ''}
+    ${s.tarih ? `<div style="display:flex;gap:6px;"><span style="color:var(--text3);flex-shrink:0;">${isKoltukCard?'📅 Randevu':'📥 Teslim Alındı'}:</span><b style="color:var(--text);">${s.tarih}${s.saat?' · ⏰'+s.saat:''}</b></div>` : ''}
+    ${!isKoltukCard&&s.teslimTarihi ? `<div style="display:flex;gap:6px;"><span style="color:var(--text3);flex-shrink:0;">🎯 Hedef Teslim:</span><b style="color:var(--text);">${s.teslimTarihi}</b></div>` : ''}
+    ${s.not ? `<div style="display:flex;gap:6px;align-items:center;"><span style="color:var(--text3);flex-shrink:0;">📝 Not:</span><span style="font-weight:600;color:var(--yellow);">${s.not}</span></div>` : ''}
+    <div style="display:flex;gap:6px;align-items:center;">
+      <span style="color:var(--text3);flex-shrink:0;">🏷 Etiket:</span>
+      <span id="kd-etiket-val" style="font-weight:700;color:${s.etiketNo?'#16a34a':'var(--text3)'};">${s.etiketNo||'—'}</span>
+      <button onclick="event.stopPropagation();etiketNoDuzenle('${s.id}')" style="background:var(--blue-light);border:none;color:var(--blue);font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;cursor:pointer;font-family:Inter,sans-serif;flex-shrink:0;">✏️</button>
+    </div>
   </div>`;
 
   const odemeStr = s.odendi
@@ -6820,6 +6827,25 @@ function durumAra() {
   const tel=_durumMusteriTel(); if(!tel){toast('Telefon numarası yok');return;}
   window.open('tel:'+tel.replace(/\D/g,''));
 }
+// Etiket No düzenleme
+function etiketNoDuzenle(sid) {
+  const s = data.siparisler.find(x=>x.id==sid);
+  if (!s) return;
+  const mevcut = s.etiketNo || '';
+  const yeni = prompt('Etiket No girin:', mevcut);
+  if (yeni === null) return; // iptal
+  s.etiketNo = yeni.trim();
+  save();
+  const sb = _getSb();
+  if (sb) {
+    const sid2 = parseInt(String(sid).replace(/[^0-9]/g,'')) || null;
+    if (sid2) sb.from('siparisler').update({etiket_no: s.etiketNo||null}).eq('id', sid2).then(()=>{});
+  }
+  renderAll();
+  openKartDetay(sid);
+  toast('Etiket No ' + (s.etiketNo ? 'güncellendi: ' + s.etiketNo : 'temizlendi'));
+}
+
 // Teslim mesajı WA/SMS
 function odemeAl(sid){
   pendingOdemeAl = sid;
