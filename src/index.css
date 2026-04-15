@@ -294,6 +294,3 @@ button, .btn {
   -ms-user-select: none;
   user-select: none;
 }
-/* Hide scrollbar for tracking progress steps on mobile */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

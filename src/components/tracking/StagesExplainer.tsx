@@ -99,25 +99,12 @@ const StagesExplainer: React.FC = () => {
                   {step.label}
                 </p>
 
-                {/* Description */}
-                <p className="text-[11px] leading-snug" style={{ color: `${color.text}99` }}>
-                  {step.description}
-                </p>
               </motion.div>
             );
           })}
         </div>
 
         {/* Bottom note */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-          className="text-center text-xs text-gray-400 mt-8"
-        >
-          Her durum değişikliğinde SMS ile bilgilendirilirsiniz.
-        </motion.p>
       </div>
     </section>
   );

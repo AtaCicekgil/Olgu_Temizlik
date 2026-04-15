@@ -5,11 +5,8 @@ import {
   CalendarCheck,
   Package,
   Hash,
-  MessageSquare,
-  Clock,
-  CheckCheck,
 } from 'lucide-react';
-import { TrackingOrder, ORDER_STEPS, getStepIndex } from '../../types/tracking';
+import { TrackingOrder } from '../../types/tracking';
 import OrderProgressSteps from './OrderProgressSteps';
 import StatusBadge from './StatusBadge';
 
@@ -20,7 +17,6 @@ interface Props {
 
 const TrackingResultCard: React.FC<Props> = ({ order, onNewSearch }) => {
   const isDelivered = order.currentStatus === 'teslim';
-  const currentStepMeta = ORDER_STEPS[getStepIndex(order.currentStatus)];
 
   // Build completedDates map from history
   const completedDates = Object.fromEntries(
@@ -66,15 +62,6 @@ const TrackingResultCard: React.FC<Props> = ({ order, onNewSearch }) => {
             <StatusBadge status={order.currentStatus} />
           </div>
 
-          {/* Current step description */}
-          {currentStepMeta && (
-            <div
-              className="mt-4 px-4 py-3 rounded-xl text-sm"
-              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}
-            >
-              <p className="text-white/80">{currentStepMeta.description}</p>
-            </div>
-          )}
         </div>
 
         {/* Progress Steps */}
@@ -110,92 +97,6 @@ const TrackingResultCard: React.FC<Props> = ({ order, onNewSearch }) => {
             label="Ürün Sayısı"
             value={`${order.itemCount} adet halı`}
           />
-        </div>
-
-        {/* Item Descriptions */}
-        {order.itemDescriptions.length > 0 && (
-          <div className="px-6 py-4 border-b border-gray-100">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
-              Ürünler
-            </p>
-            <ul className="space-y-1.5">
-              {order.itemDescriptions.map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Latest Note */}
-        {order.latestNote && (
-          <div className="px-6 py-4 border-b border-gray-100">
-            <div className="flex gap-3 p-4 rounded-xl bg-blue-50/60 border border-blue-100">
-              <MessageSquare className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-xs font-semibold text-blue-600 mb-1">Son Güncelleme</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{order.latestNote}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Event Timeline */}
-        <div className="px-6 py-5 border-b border-gray-100">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">
-            Etkinlik Geçmişi
-          </p>
-          <ol className="relative space-y-0">
-            {[...order.history].reverse().map((event, idx, arr) => {
-              const stepMeta = ORDER_STEPS.find((s) => s.status === event.status);
-              const isFirst = idx === 0;
-              const isLast = idx === arr.length - 1;
-              return (
-                <motion.li
-                  key={`${event.status}-${idx}`}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.06, duration: 0.3 }}
-                  className="relative flex gap-4 pb-4 last:pb-0"
-                >
-                  {/* Timeline line */}
-                  {!isLast && (
-                    <div className="absolute left-3.5 top-7 bottom-0 w-px bg-gray-100" />
-                  )}
-
-                  {/* Dot */}
-                  <div
-                    className={`relative z-10 flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full mt-0.5 ${
-                      isFirst
-                        ? 'bg-blue-100 ring-2 ring-blue-200'
-                        : 'bg-gray-100'
-                    }`}
-                  >
-                    {isFirst ? (
-                      <CheckCheck className="w-3.5 h-3.5 text-blue-600" />
-                    ) : (
-                      <Clock className="w-3 h-3 text-gray-400" />
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0 pt-0.5">
-                    <div className="flex items-baseline gap-2 flex-wrap">
-                      <span className={`text-sm font-semibold ${isFirst ? 'text-blue-700' : 'text-gray-700'}`}>
-                        {stepMeta?.label ?? event.status}
-                      </span>
-                      <span className="text-xs text-gray-400">{formatDateTime(event.timestamp)}</span>
-                    </div>
-                    {event.note && (
-                      <p className="mt-1 text-xs text-gray-500 leading-relaxed">{event.note}</p>
-                    )}
-                  </div>
-                </motion.li>
-              );
-            })}
-          </ol>
         </div>
 
         {/* Footer actions */}
