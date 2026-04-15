@@ -13,6 +13,7 @@ const Header: React.FC = () => {
     { name: 'Ana Sayfa', href: '/' },
     { name: 'Hizmetler', href: '/hizmetler' },
     { name: 'Galeri', href: '/galeri' },
+    { name: 'Sipariş Takip', href: '/takip' },
     { name: 'Hakkımızda', href: '/hakkimizda' },
     { name: 'İletişim', href: '/iletisim' },
   ];

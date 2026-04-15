@@ -14,6 +14,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Tracking from './pages/Tracking';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/iletisim" element={<Contact />} />
                 <Route path="/giris" element={<Login />} />
                 <Route path="/kayit" element={<Register />} />
+                <Route path="/takip" element={<Tracking />} />
               </Routes>
             </Layout>
           </div>
