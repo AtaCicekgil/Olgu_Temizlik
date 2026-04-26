@@ -26,7 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {children}
       </main>
       <Footer />
-      <WhatsAppButton />
+      {!location.pathname.startsWith('/panel') && <WhatsAppButton />}
     </div>
   );
 };
