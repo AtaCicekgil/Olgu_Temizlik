@@ -9138,7 +9138,7 @@ function gcLogout() {
 function gcSilentRefresh() {
   const t = gcGetToken();
   if (!t || !t.access_token) return;
-  const kalanMs = t.expires_at - Date.now();
+  const kalanMs = (t.expires_at || 0) - Date.now();
   if (kalanMs <= 0) {
     // Zaten süresi dolmuş — uyarı göster
     gcClearToken();
@@ -9194,7 +9194,8 @@ function gcNormalizeTel(tel) {
 // Ana sync fonksiyonu — yeni kayıt veya güncelleme
 async function gcSyncMusteri(musteri, mod) {
   if (!gcIsLoggedIn()) return; // bağlı değilse sessizce geç
-  const token = gcGetToken().access_token;
+  const token = gcGetToken()?.access_token;
+  if (!token) return;
   const tel = gcNormalizeTel(musteri.tel);
 
   try {
@@ -9288,7 +9289,8 @@ async function gcUpdateContact(token, musteri) {
 // Google Rehber'den kişi sil
 async function gcDeleteContact(resourceName) {
   if (!gcIsLoggedIn()) return;
-  const token = gcGetToken().access_token;
+  const token = gcGetToken()?.access_token;
+  if (!token) return;
   try {
     await fetch(`https://people.googleapis.com/v1/${resourceName}:deleteContact`, {
       method: 'DELETE',
