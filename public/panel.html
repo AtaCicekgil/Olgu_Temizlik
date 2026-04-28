@@ -8673,10 +8673,11 @@ function musteriNotEkle(musteriId) {
   if (!m) return;
   m.notlar = m.notlar || [];
   m.notlar.push({ metin, tarih: new Date().toISOString() });
+  inp.value = '';
   save();
-  // Supabase sync
   const sb = _getSb();
-  if (sb) sb.from('musteriler').update({ notlar: m.notlar }).eq('id', parseInt(musteriId)).then(()=>{});
+  if (sb) sb.from('musteriler').update({ notlar: m.notlar }).eq('id', parseInt(musteriId))
+    .catch(e => console.warn('Not sync hatası:', e?.message));
   profilRenderNotlar(musteriId);
   toast('Not eklendi');
 }
@@ -8688,7 +8689,8 @@ function musteriNotSil(musteriId, idx) {
   m.notlar.splice(idx, 1);
   save();
   const sb = _getSb();
-  if (sb) sb.from('musteriler').update({ notlar: m.notlar }).eq('id', parseInt(musteriId)).then(()=>{});
+  if (sb) sb.from('musteriler').update({ notlar: m.notlar }).eq('id', parseInt(musteriId))
+    .catch(e => console.warn('Not silme sync hatası:', e?.message));
   profilRenderNotlar(musteriId);
 }
 
