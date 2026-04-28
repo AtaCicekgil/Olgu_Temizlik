@@ -52,7 +52,7 @@ html[data-tema="karanlik"] {
   --blue: #6b84f8;
   --blue-dark: #4f6ef7;
   --blue-light: #1e2a5e;
-  --navy: #e2e8f0;
+  --navy: #0f172a;
   --white: #1e2030;
   --bg: #151622;
   --border: #2d3155;
@@ -66,6 +66,42 @@ html[data-tema="karanlik"] {
   --yellow: #fbbf24;
   --yellow-bg: #2a1f06;
   background: #151622 !important;
+}
+html[data-tema="karanlik"] .topbar {
+  background: rgba(30,32,48,0.92);
+}
+html[data-tema="karanlik"] #mobile-bottom-nav {
+  background: rgba(30,32,48,0.97);
+}
+html[data-tema="karanlik"] .kasa-hero-card {
+  background: linear-gradient(135deg, #1e2030 0%, #0d1230 100%);
+}
+html[data-tema="karanlik"] .kasa-period-chip.active,
+html[data-tema="karanlik"] .kasa-day-chip.active {
+  background: #2d3155;
+  border-color: var(--blue);
+  color: #e2e8f0;
+}
+html[data-tema="karanlik"] .kasa-day-chip.active .kasa-day-num { color: #e2e8f0; }
+html[data-tema="karanlik"] .wizard-total-bar {
+  background: #0d1230;
+}
+html[data-tema="karanlik"] .msg-box {
+  background: #1e2a5e;
+  border-color: #2d3155;
+  color: #a5b4fc;
+}
+html[data-tema="karanlik"] .iban-box {
+  background: #1e2a5e;
+  border-color: #2d3155;
+  color: #a5b4fc;
+}
+html[data-tema="karanlik"] .toast {
+  background: #2d3155;
+}
+html[data-tema="karanlik"] input[type="date"]::-webkit-calendar-picker-indicator,
+html[data-tema="karanlik"] input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -220,7 +256,7 @@ body {
   background: rgba(255,255,255,0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(79,110,247,0.12);
+  border-bottom: 1px solid var(--border);
   box-shadow: 0 1px 20px rgba(79,110,247,0.07);
   padding: 10px 16px;
   display: flex;
@@ -249,7 +285,7 @@ body {
   margin-right: 8px;
 }
 
-.content { padding: 20px; padding-top: 140px; padding-bottom: 24px; flex: 1; background: #eef2f7; min-height: 100vh; overflow-x: hidden; width: 100%; box-sizing: border-box; }
+.content { padding: 20px; padding-top: 140px; padding-bottom: 24px; flex: 1; background: var(--bg); min-height: 100vh; overflow-x: hidden; width: 100%; box-sizing: border-box; }
 
 .page { display: none; }
 .page.active { display: block; }
@@ -313,12 +349,14 @@ body {
   border-left: 3px solid var(--border);
 }
 .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-.card[data-durum="alinacak"]  { border-left-color: #3b82f6; }
-.card[data-durum="alindi"]    { border-left-color: #10b981; }
-.card[data-durum="yikanıyor"] { border-left-color: #8b5cf6; }
-.card[data-durum="hazir"]     { border-left-color: #0e9f6e; }
-.card[data-durum="dagitimda"] { border-left-color: #f59e0b; }
-.card[data-durum="teslim"]    { border-left-color: #94a3b8; }
+.card[data-durum="alinacak"]    { border-left-color: #3b82f6; }
+.card[data-durum="alindi"]      { border-left-color: #10b981; }
+.card[data-durum="yikanıyor"]   { border-left-color: #8b5cf6; }
+.card[data-durum="hazir"]       { border-left-color: #0e9f6e; }
+.card[data-durum="dagitimda"]   { border-left-color: #f59e0b; }
+.card[data-durum="teslim"]      { border-left-color: #94a3b8; }
+.card[data-durum="randevu"]     { border-left-color: #7c3aed; }
+.card[data-durum="tamamlandi"]  { border-left-color: #059669; }
 
 .card-header {
   padding: 13px 16px;
@@ -345,14 +383,16 @@ body {
   white-space: nowrap;
 }
 
-.badge-alinacak  { background:#eff6ff; color:#1d4ed8; }
-.badge-alindi    { background:#f0fdf4; color:#15803d; }
-.badge-yikanıyor { background:#faf5ff; color:#7e22ce; }
-.badge-hazir     { background:#f0fdf4; color:#0e9f6e; }
-.badge-dagitimda { background:#fffbeb; color:#b45309; }
-.badge-teslim    { background:#f1f5f9; color:#475569; }
-.badge-odenmedi  { background:#fef2f2; color:#dc2626; }
-.badge-odendi    { background:#f0fdf4; color:#15803d; }
+.badge-alinacak   { background:#eff6ff; color:#1d4ed8; }
+.badge-alindi     { background:#f0fdf4; color:#15803d; }
+.badge-yikanıyor  { background:#faf5ff; color:#7e22ce; }
+.badge-hazir      { background:#f0fdf4; color:#0e9f6e; }
+.badge-dagitimda  { background:#fffbeb; color:#b45309; }
+.badge-teslim     { background:#f1f5f9; color:#475569; }
+.badge-odenmedi   { background:#fef2f2; color:#dc2626; }
+.badge-odendi     { background:#f0fdf4; color:#15803d; }
+.badge-randevu    { background:#f5f3ff; color:#7c3aed; }
+.badge-tamamlandi { background:#f0fdf4; color:#059669; }
 
 .hali-row {
   display: flex;
@@ -542,7 +582,9 @@ body {
   opacity: 0;
   transition: opacity 0.25s;
   pointer-events: none;
-  white-space: nowrap;
+  white-space: normal;
+  max-width: min(340px, 90vw);
+  text-align: center;
   box-shadow: 0 8px 28px rgba(0,0,0,0.25);
   letter-spacing: 0.1px;
 }
@@ -1248,6 +1290,28 @@ body {
 .musteri-chip:hover { border-color: var(--blue); color: var(--blue); }
 .musteri-chip.active { border-color: var(--blue); background: var(--blue); color: #fff; }
 
+.koltuk-tab-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--white);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text2);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+.koltuk-tab-btn.active {
+  border-color: var(--purple);
+  background: var(--blue-light);
+  color: var(--purple);
+}
+html[data-tema="karanlik"] .koltuk-tab-btn.active {
+  background: #2d1f5e;
+}
+
 @media (max-width: 768px) {
   .sidebar { transform: translateX(-100%); }
   .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,0.3); }
@@ -1255,7 +1319,7 @@ body {
   .hamburger { display: block; }
   .topbar { left: 0; }
   .date-strip-wrap { left: 0; }
-  .content { padding: 14px; padding-top: 140px; overflow-x: hidden; }
+  .content { padding: 14px; padding-top: 128px; overflow-x: hidden; }
   .main { overflow-x: hidden; }
 }
 
@@ -1490,6 +1554,12 @@ iframe[title*="chat" i] { display: none !important; }
   <button class="nav-btn" onclick="showPage('istatistik')" data-page="istatistik">
     <span class="nav-icon">📊</span> Genel Durum
   </button>
+  <button class="nav-btn" onclick="showPage('takvim')" data-page="takvim">
+    <span class="nav-icon">📅</span> Takvim
+  </button>
+  <button class="nav-btn" onclick="showPage('stok')" data-page="stok">
+    <span class="nav-icon">🧴</span> Stok Takibi
+  </button>
   <button class="nav-btn" onclick="showPage('ayarlar')" data-page="ayarlar">
     <span class="nav-icon">⚙️</span> Ayarlar
   </button>
@@ -1551,7 +1621,7 @@ iframe[title*="chat" i] { display: none !important; }
       <div id="dash-yaklasan-section"></div>
     </div>
     <!-- TOPLU AKSİYON BARI -->
-    <div id="toplu-aksiyon-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:2px solid var(--blue);padding:10px 14px;z-index:600;box-shadow:0 -4px 20px rgba(0,0,0,0.12);"></div>
+    <div id="toplu-aksiyon-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:2px solid var(--blue);padding:10px 14px;padding-bottom:max(10px,calc(10px + env(safe-area-inset-bottom,0px)));z-index:600;box-shadow:0 -4px 20px rgba(0,0,0,0.12);"></div>
 
     <div class="page" id="page-alinacak">
       <div class="tur-tabs" id="tur-tabs-alinacak" style="display:flex;gap:6px;margin-bottom:12px;">
@@ -1569,11 +1639,11 @@ iframe[title*="chat" i] { display: none !important; }
       <div id="list-yikanıyor"></div>
     </div>
     <div class="page" id="page-hazir">
-
+      <button type="button" onclick="topluWaGonderDurum('hazir')" style="width:100%;padding:11px;background:#25d366;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;">💬 Tüm Hazırlara WhatsApp Gönder</button>
       <div id="list-hazir"></div>
     </div>
     <div class="page" id="page-dagitimda">
-      <button type="button" onclick="topluWaGonder()" style="width:100%;padding:11px;background:#25d366;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;">💬 Tüm Dağıtımdakilere WhatsApp Gönder</button>
+      <button type="button" onclick="topluWaGonderDurum('dagitimda')" style="width:100%;padding:11px;background:#25d366;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;">💬 Tüm Dağıtımdakilere WhatsApp Gönder</button>
       <div id="list-dagitimda"></div>
     </div>
     <div class="page" id="page-teslim">
@@ -1585,9 +1655,9 @@ iframe[title*="chat" i] { display: none !important; }
     <!-- KOLTUK RANDEVULARI SAYFASI -->
     <div class="page" id="page-koltuk">
       <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <button type="button" class="tur-tab-btn active" id="ktab-randevu"   onclick="koltukTabSec('randevu',this)"   style="flex:1;padding:8px;border-radius:10px;border:2px solid #7c3aed;background:#f5f3ff;font-size:13px;font-weight:800;color:#7c3aed;cursor:pointer;font-family:Inter,sans-serif;">📅 Randevu</button>
-        <button type="button" class="tur-tab-btn"        id="ktab-tamamlandi" onclick="koltukTabSec('tamamlandi',this)" style="flex:1;padding:8px;border-radius:10px;border:2px solid var(--border);background:var(--white);font-size:13px;font-weight:800;color:var(--text2);cursor:pointer;font-family:Inter,sans-serif;">✅ Tamamlandı</button>
-        <button type="button" class="tur-tab-btn"        id="ktab-teslim"    onclick="koltukTabSec('teslim',this)"    style="flex:1;padding:8px;border-radius:10px;border:2px solid var(--border);background:var(--white);font-size:13px;font-weight:800;color:var(--text2);cursor:pointer;font-family:Inter,sans-serif;">📦 Teslim</button>
+        <button type="button" class="koltuk-tab-btn active" id="ktab-randevu"    onclick="koltukTabSec('randevu',this)"   >📅 Randevu</button>
+        <button type="button" class="koltuk-tab-btn"        id="ktab-tamamlandi" onclick="koltukTabSec('tamamlandi',this)">✅ Tamamlandı</button>
+        <button type="button" class="koltuk-tab-btn"        id="ktab-teslim"     onclick="koltukTabSec('teslim',this)"   >📦 Teslim</button>
       </div>
       <div id="list-koltuk-randevu"></div>
     </div>
@@ -1599,7 +1669,8 @@ iframe[title*="chat" i] { display: none !important; }
         <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;">
           <div style="position:relative;flex:1;">
             <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;">🔍</span>
-            <input class="form-input" id="siparis-ara-input" placeholder="Ara..." oninput="renderSiparisArama()" onkeyup="renderSiparisArama()" onchange="renderSiparisArama()" style="padding-left:34px;margin:0;">
+            <input class="form-input" id="siparis-ara-input" placeholder="Ara..." oninput="renderSiparisArama();_araTemizBtn('siparis-ara-input','siparis-ara-temizle')" onkeyup="renderSiparisArama();_araTemizBtn('siparis-ara-input','siparis-ara-temizle')" style="padding-left:34px;padding-right:30px;margin:0;">
+            <button id="siparis-ara-temizle" onclick="document.getElementById('siparis-ara-input').value='';renderSiparisArama();_araTemizBtn('siparis-ara-input','siparis-ara-temizle')" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:16px;cursor:pointer;color:var(--text3);padding:0;line-height:1;">×</button>
           </div>
           <button type="button" onclick="toggleFiltrePaneli('siparis')" id="siparis-filtre-toggle-btn"
             style="flex-shrink:0;padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;">
@@ -1628,7 +1699,8 @@ iframe[title*="chat" i] { display: none !important; }
         <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;">
           <div style="position:relative;flex:1;">
             <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;">🔍</span>
-            <input class="form-input" id="musteri-ara-input" placeholder="Ara..." oninput="renderMusteriler()" onkeyup="renderMusteriler()" onchange="renderMusteriler()" style="padding-left:34px;margin:0;">
+            <input class="form-input" id="musteri-ara-input" placeholder="Ara..." oninput="renderMusteriler();_araTemizBtn('musteri-ara-input','musteri-ara-temizle')" onkeyup="renderMusteriler();_araTemizBtn('musteri-ara-input','musteri-ara-temizle')" style="padding-left:34px;padding-right:30px;margin:0;">
+            <button id="musteri-ara-temizle" onclick="document.getElementById('musteri-ara-input').value='';renderMusteriler();_araTemizBtn('musteri-ara-input','musteri-ara-temizle')" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:16px;cursor:pointer;color:var(--text3);padding:0;line-height:1;">×</button>
           </div>
           <button type="button" onclick="musteriHaritaAc()" title="Tüm adresleri haritada göster"
             style="flex-shrink:0;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
@@ -1667,8 +1739,9 @@ iframe[title*="chat" i] { display: none !important; }
       </div>
       <div style="display:flex;gap:8px;margin-bottom:12px;">
         <button type="button" onclick="rotaMapsAc()" style="flex:1;padding:11px;background:#1a56db;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">🗺️ Google Maps Rotası</button>
-        <button type="button" onclick="rotaAdresSirala()" style="padding:11px 12px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text2);" title="Adrese göre otomatik sırala">📍</button>
-        <button type="button" onclick="rotaSiralamaToggle()" id="rota-sirala-btn" style="padding:11px 14px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text2);">↕️</button>
+        <button type="button" onclick="suruculKonumPaylas()" style="padding:8px 12px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--text2);display:flex;flex-direction:column;align-items:center;gap:1px;" title="Konumunu paylaş"><span style="font-size:14px;">📡</span><span>Konum</span></button>
+        <button type="button" onclick="rotaAdresSirala()" style="padding:8px 12px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--text2);display:flex;flex-direction:column;align-items:center;gap:1px;" title="Adrese göre otomatik sırala"><span style="font-size:14px;">📍</span><span>Adres</span></button>
+        <button type="button" onclick="rotaSiralamaToggle()" id="rota-sirala-btn" style="padding:8px 12px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--text2);display:flex;flex-direction:column;align-items:center;gap:1px;"><span style="font-size:14px;">↕️</span><span>Sırala</span></button>
       </div>
       <div id="rota-sirala-hint" style="display:none;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#166534;font-weight:600;">
         ✋ Kartları sürükleyerek sıralamayı değiştir. <button onclick="rotaSiralamaToggle()" style="background:none;border:none;color:#166534;font-weight:700;cursor:pointer;text-decoration:underline;">Bitti</button>
@@ -1797,6 +1870,14 @@ iframe[title*="chat" i] { display: none !important; }
         <button class="btn btn-danger btn-sm" onclick="silTumSilinenler()">Tümünü Temizle</button>
       </div>
       <div id="list-silinenler"></div>
+    </div>
+
+    <div class="page" id="page-takvim">
+      <div id="takvim-icerik"></div>
+    </div>
+
+    <div class="page" id="page-stok">
+      <div id="stok-icerik"></div>
     </div>
 
     <div class="page" id="page-istatistik">
@@ -2647,7 +2728,11 @@ iframe[title*="chat" i] { display: none !important; }
             <div class="profil-id" id="profil-id">—</div>
           </div>
         </div>
-        <button class="profil-close" onclick="closeModal('modal-profil')">×</button>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button onclick="musteriSilProfil()" style="background:var(--red-bg);border:1px solid #fecaca;color:var(--red);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">🗑 Sil</button>
+          <button onclick="musteriBlrlestir()" style="background:var(--blue-light);border:1px solid var(--border);color:var(--blue);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">🔗 Birleştir</button>
+          <button class="profil-close" onclick="closeModal('modal-profil')">×</button>
+        </div>
       </div>
       <div class="profil-stats-row">
         <div class="profil-stat">
@@ -2667,12 +2752,14 @@ iframe[title*="chat" i] { display: none !important; }
 
     <div class="profil-tabs">
       <button type="button" class="profil-tab active" onclick="profilTab('gecmis',this)">📋 Geçmiş</button>
+      <button type="button" class="profil-tab" onclick="profilTab('notlar',this)">📝 Notlar</button>
       <button type="button" class="profil-tab" onclick="profilTab('odemeler',this)">💰 Ödemeler</button>
       <button type="button" class="profil-tab" onclick="profilTab('bilgiler',this)">👤 Bilgiler</button>
     </div>
 
     <div class="profil-body">
       <div id="profil-tab-gecmis"></div>
+      <div id="profil-tab-notlar" style="display:none;"></div>
       <div id="profil-tab-odemeler" style="display:none;"></div>
       <div id="profil-tab-bilgiler" style="display:none;"></div>
     </div>
@@ -2833,7 +2920,7 @@ function _appBaslat(){
 }
 
 let data = {
-  musteriler: [], siparisler: [], silinenler: [], giderler: [],
+  musteriler: [], siparisler: [], silinenler: [], giderler: [], stok: [],
   cinsler: [
     // HALI — MAKİNE
     { id:'c1',  kategori:'Halı', ad:'Makine Halısı',              fiyat:80,  fiyatTip:'m2' },
@@ -3080,9 +3167,11 @@ function updateDateStripCounts() {
 
 // -- HIDE DATE STRIP ON SOME PAGES --
 function toggleDateStrip(show) {
-  document.getElementById('date-strip-wrap').style.display = show ? '' : 'none';
-  // Topbar ~60px sabit, date-strip ~56px — gizlenince padding azalt
-  document.querySelector('.content').style.paddingTop = show ? '' : '68px';
+  const strip = document.getElementById('date-strip-wrap');
+  strip.style.display = show ? '' : 'none';
+  // Topbar 57px sabit + date-strip ~56px = 113px, ya da sadece topbar = 68px
+  const content = document.querySelector('.content');
+  if (content) content.style.paddingTop = show ? '128px' : '68px';
 }
 
 
@@ -3495,6 +3584,9 @@ const PAGE_META = {
   dashboard: ['Dashboard','Günlük özet ve durum'],
   koltuk:    ['🛋️ Koltuk Randevuları','Yerinde yıkama randevuları'],
   rota:      ['Şoför Rotası','Bugünkü alım ve teslimatlar'],
+  stok:      ['🧴 Stok Takibi','Malzeme ve ürün stoku'],
+  takvim:    ['📅 Takvim','Aylık sipariş takvimi'],
+  istatistik:['📊 Genel Durum','Özet istatistikler'],
 };
 
 function hesaplaToplam(s) {
@@ -3649,8 +3741,8 @@ function showPage(id) {
   if (titleEl) titleEl.textContent = meta[0];
   if (subEl) subEl.textContent = meta[1];
   const btn = document.getElementById('topbar-new-btn');
-  if (btn) btn.style.display = ['kasa','silinenler','ayarlar','rota'].includes(id) ? 'none' : '';
-  toggleDateStrip(!['kasa','silinenler','ayarlar','musteriler','dashboard','rota'].includes(id));
+  if (btn) btn.style.display = ['kasa','silinenler','ayarlar','rota','stok','istatistik','takvim'].includes(id) ? 'none' : '';
+  toggleDateStrip(!['kasa','silinenler','ayarlar','musteriler','dashboard','rota','stok','istatistik','takvim'].includes(id));
   updateDateStripCounts();
   renderPage(id);
   closeSidebar();
@@ -4038,20 +4130,25 @@ async function silGider(id) {
   toast('Gider silindi');
 }
 
-// ── Toplu WhatsApp (Dağıtımda) ──────────────────────────
-function topluWaGonder() {
-  const dagitimda = data.siparisler.filter(s => s.durum === 'dagitimda');
-  if (!dagitimda.length) { toast('Dağıtımda sipariş yok'); return; }
-  const tmpl = data.settings.mesajlar?.dagitimda || 'Sayın {isim}, halılarınız dağıtıma çıkarılmıştır. En kısa sürede adresinize teslim edilecektir.';
+// ── Toplu WhatsApp ───────────────────────────────────────
+function topluWaGonder() { topluWaGonderDurum('dagitimda'); }
+
+function topluWaGonderDurum(durum) {
+  const STATUS_LABELS = { hazir: 'Hazır', dagitimda: 'Dağıtımda' };
+  const liste = data.siparisler.filter(s => s.durum === durum);
+  if (!liste.length) { toast(`${STATUS_LABELS[durum]||durum} siparişi yok`); return; }
+  const tmpl = data.settings.mesajlar?.[durum] || `Sayın {isim}, halılarınız hakkında bilgilendirme. ${data.settings.isletmeAd||''}`;
+  // Onay — birden fazlaysa say
+  if (liste.length > 1 && !confirm(`${liste.length} müşteriye WhatsApp mesajı açılacak. Devam?`)) return;
   let acilan = 0;
-  dagitimda.forEach(s => {
+  liste.forEach(s => {
     const m = data.musteriler.find(x=>x.id==s.musteriId);
     if (!m?.tel) return;
     let t = telIlk(m.tel).replace(/\D/g,'');
     if (t.startsWith('0')) t = '90' + t.slice(1);
     else if (!t.startsWith('90')) t = '90' + t;
     const mesaj = mesajSablonuIsle(tmpl, s, m);
-    setTimeout(() => window.open('https://wa.me/'+t+'?text='+encodeURIComponent(mesaj), '_blank'), acilan * 600);
+    setTimeout(() => window.open('https://wa.me/'+t+'?text='+encodeURIComponent(mesaj), '_blank'), acilan * 700);
     acilan++;
   });
   toast(acilan + ' müşteriye mesaj açıldı');
@@ -4220,6 +4317,8 @@ function renderPage(id) {
   else if (id==='ayarlar') renderAyarlar();
   else if (id==='gelir-gider') { showPage('kasa'); finTabSec('gg', document.getElementById('fin-tab-gg')); return; }
   else if (id==='koltuk') renderKoltukRandevular();
+  else if (id==='stok') renderStok();
+  else if (id==='takvim') renderTakvim();
 }
 
 function sortByTarih(liste) {
@@ -4279,6 +4378,12 @@ function siparisFiltreSec(btn) {
     c.classList.toggle('active', siparisAktifFiltreler.has(c.dataset.filtre));
   });
   renderSiparisArama();
+}
+
+function _araTemizBtn(inputId, btnId) {
+  const inp = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if (inp && btn) btn.style.display = inp.value ? 'block' : 'none';
 }
 
 function renderSiparisArama() {
@@ -4434,13 +4539,30 @@ function renderSiparisListesi(cid, durum) {
     const msg = selectedDate ? 'Bu tarihte sipariş yok' : 'Sipariş yok';
     el.innerHTML=`<div class="empty"><div class="empty-icon">📭</div>${msg}</div>`; return;
   }
+  // Sayfa özet başlığı
+  const si = durum ? STATUS_INFO[durum] : null;
+  const toplamTutar = liste.reduce((a,s)=>a+hesaplaToplam(s),0);
+  const odenmemisCount = liste.filter(s=>!s.odendi).length;
+  const ozetBanner = (durum && !selectedDate) ? `<div style="display:flex;align-items:center;justify-content:space-between;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:10px;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:16px;">${si?.icon||''}</span>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);">${liste.length} sipariş</div>
+        ${odenmemisCount&&durum!=='teslim'?`<div style="font-size:11px;color:var(--text3);">${odenmemisCount} ödenmemiş</div>`:''}
+      </div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:15px;font-weight:800;color:var(--blue);">₺${toplamTutar.toLocaleString('tr-TR')}</div>
+      <div style="font-size:10px;color:var(--text3);">toplam tutar</div>
+    </div>
+  </div>` : '';
   // Toplu seçim butonu
   const topluBtn = (durum && tur !== 'koltuk') ? `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
     <button class="btn btn-secondary btn-sm" style="font-size:11px;" onclick="topluSecimBaslat('${durum}')">☑ Toplu Taşı</button>
   </div>` : '';
   // Tarih seçili değilse grupla, seçiliyse düz listele
   if (selectedDate) {
-    el.innerHTML = topluBtn + liste.map(s=>siparisKarti(s,'pg')).join('');
+    el.innerHTML = ozetBanner + topluBtn + liste.map(s=>siparisKarti(s,'pg')).join('');
   } else {
     const grouped = {};
     liste.forEach(s => {
@@ -4448,7 +4570,7 @@ function renderSiparisListesi(cid, durum) {
       if (!grouped[lbl]) grouped[lbl] = [];
       grouped[lbl].push(s);
     });
-    el.innerHTML = topluBtn + Object.entries(grouped).map(([lbl, items]) =>
+    el.innerHTML = ozetBanner + topluBtn + Object.entries(grouped).map(([lbl, items]) =>
       `<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;padding:10px 0 6px;border-top:1px solid var(--border);margin-top:4px;">${lbl}</div>` +
       items.map(s=>siparisKarti(s,'pg')).join('')
     ).join('');
@@ -5134,8 +5256,29 @@ function saveDetay() {
   s.teslimTarihi = document.getElementById('detay-teslim-tarihi').value||null;
   const tekSel = document.getElementById('detay-teknisyen');
   s.teknisyen = tekSel ? (tekSel.value||null) : (s.teknisyen||null);
-  save(); closeModal('modal-siparis-detay'); renderAll();
+  save();
+  // Hedefli Supabase update (tüm sync yerine)
+  _supabaseSiparisPatch(s);
+  closeModal('modal-siparis-detay'); renderAll();
   toast('Sipariş güncellendi ✓');
+}
+
+async function _supabaseSiparisPatch(s) {
+  const sb = _getSb(); if (!sb) return;
+  const numSid = parseInt(String(s.id).replace(/[^0-9]/g,''));
+  if (!numSid) return;
+  try {
+    await sb.from('siparisler').update({
+      tarih: s.tarih||null,
+      saat: s.saat||null,
+      teslim_tarihi: s.teslimTarihi||null,
+      not_: s.not||null,
+      teknisyen: s.teknisyen||null,
+      durum: s.durum,
+      odendi: s.odendi||false,
+      etiket_no: s.etiketNo||null
+    }).eq('id', numSid);
+  } catch(e) { console.warn('Sipariş patch:', e.message); }
 }
 
 function toggleCard(id,hdr) {
@@ -5344,11 +5487,15 @@ function _topluBarGoster(durum) {
       <button class="btn btn-danger btn-sm" onclick="topluSecimIptal()">İptal</button>
     </div>`;
   bar.style.display = 'block';
+  const fab = document.getElementById('fab-plus');
+  if (fab) fab.style.display = 'none';
 }
 
 function _topluBarGizle() {
   const bar = document.getElementById('toplu-aksiyon-bar');
   if (bar) bar.style.display = 'none';
+  const fab = document.getElementById('fab-plus');
+  if (fab) fab.style.display = '';
 }
 
 function topluTasi(hedefDurum) {
@@ -5535,6 +5682,31 @@ function rotaMapsAc() {
   }
 }
 
+// ── Sürücü Konum Paylaşımı ──────────────────────────────────────────────────
+function suruculKonumPaylas() {
+  if (!navigator.geolocation) { toast('Konum servisi desteklenmiyor'); return; }
+  toast('Konum alınıyor…');
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+      const url = `https://maps.google.com/?q=${lat},${lng}`;
+      if (navigator.share) {
+        navigator.share({ title: 'Sürücü Konumu', text: 'Anlık konum', url }).catch(()=>{});
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => toast('Konum bağlantısı kopyalandı!'));
+      } else {
+        window.open(url, '_blank');
+      }
+    },
+    err => {
+      if (err.code === 1) toast('Konum izni verilmedi');
+      else toast('Konum alınamadı');
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
 // -- KOLTUK YIKAMA --
 let koltukFiltre = 'aktif';
 
@@ -5680,6 +5852,379 @@ function renderDashboard() {
       yaklaşanSection.innerHTML = '';
     }
   }
+}
+
+// ── Takvim ──────────────────────────────────────────────────────────────────
+let _takvimAy = null; // null = bu ay
+
+function renderTakvim() {
+  const el = document.getElementById('takvim-icerik');
+  if (!el) return;
+
+  const now = new Date();
+  if (!_takvimAy) _takvimAy = { y: now.getFullYear(), m: now.getMonth() };
+  const { y, m } = _takvimAy;
+
+  const ayIlk = new Date(y, m, 1);
+  const aySon = new Date(y, m + 1, 0);
+  const bugun = now.toISOString().split('T')[0];
+
+  // O aya ait siparişleri tarihlerine göre grupla
+  const ayBasStr = ayIlk.toISOString().split('T')[0];
+  const aySonStr = aySon.toISOString().split('T')[0];
+
+  const ayAdi = ayIlk.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
+
+  // Haftanın başlangıcı: Pazartesi
+  const haftaBaslangic = ayIlk.getDay() === 0 ? 6 : ayIlk.getDay() - 1;
+
+  // Günlük sipariş sayıları
+  const gunSiparisler = {};
+  data.siparisler.forEach(s => {
+    const t = s.tarih || '';
+    if (t >= ayBasStr && t <= aySonStr) {
+      gunSiparisler[t] = gunSiparisler[t] || [];
+      gunSiparisler[t].push(s);
+    }
+    // Teslim tarihi de göster
+    const td = s.teslimTarihi || s.teslim_tarihi || '';
+    if (td && td >= ayBasStr && td <= aySonStr && td !== t) {
+      gunSiparisler[td] = gunSiparisler[td] || [];
+      // teslim tarihindeki görünüm için sadece koltuk teslim işaretli
+    }
+  });
+
+  // Koltuk randevuları da ekle
+  (data.koltukRandevular || []).forEach(r => {
+    const t = r.tarih || '';
+    if (t >= ayBasStr && t <= aySonStr) {
+      gunSiparisler[t] = gunSiparisler[t] || [];
+      gunSiparisler[t]._koltuk = (gunSiparisler[t]._koltuk || 0) + 1;
+    }
+  });
+
+  // Takvim grid oluştur
+  const gunler = ['Pt','Sa','Ça','Pe','Cu','Ct','Pz'];
+  let gunHucreleri = '';
+  // Boş günler (ay başından önce)
+  for (let i = 0; i < haftaBaslangic; i++) {
+    gunHucreleri += `<div style="min-height:60px;"></div>`;
+  }
+  // Gerçek günler
+  for (let d = 1; d <= aySon.getDate(); d++) {
+    const tarih = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const siparisler = gunSiparisler[tarih] || [];
+    const koltukSayisi = siparisler._koltuk || 0;
+    const normalSayisi = siparisler.filter ? siparisler.filter(s=>s.id).length : 0;
+    const bugunMu = tarih === bugun;
+    const renkler = siparisler.filter ? siparisler.filter(s=>s.id).reduce((acc, s) => {
+      const si = STATUS_INFO[s.durum];
+      if (si) acc[s.durum] = (acc[s.durum]||0) + 1;
+      return acc;
+    }, {}) : {};
+
+    gunHucreleri += `
+      <div onclick="takvimGunAc('${tarih}')" style="min-height:60px;background:${bugunMu?'var(--blue)':'var(--white)'};border:1.5px solid ${bugunMu?'var(--blue)':'var(--border)'};border-radius:8px;padding:6px;cursor:pointer;position:relative;"
+        onmouseover="if('${bugunMu}'!=='true')this.style.background='var(--bg)'" onmouseout="if('${bugunMu}'!=='true')this.style.background='var(--white)'">
+        <div style="font-size:12px;font-weight:${bugunMu?800:600};color:${bugunMu?'#fff':'var(--text1)'};">${d}</div>
+        ${normalSayisi > 0 ? `<div style="margin-top:3px;display:flex;flex-direction:column;gap:2px;">
+          ${Object.entries(renkler).slice(0,2).map(([dur,cnt])=>{
+            const si = STATUS_INFO[dur];
+            return `<div style="font-size:9px;background:${bugunMu?'rgba(255,255,255,0.25)':'var(--blue-light)'};color:${bugunMu?'#fff':'var(--blue)'};border-radius:3px;padding:1px 3px;font-weight:700;">${si?.icon||''} ${cnt}</div>`;
+          }).join('')}
+          ${Object.keys(renkler).length > 2 ? `<div style="font-size:9px;color:${bugunMu?'rgba(255,255,255,0.7)':'var(--text3)'};">+${Object.keys(renkler).length-2}</div>` : ''}
+        </div>` : ''}
+        ${koltukSayisi > 0 ? `<div style="font-size:9px;background:${bugunMu?'rgba(255,255,255,0.25)':'#f5f3ff'};color:${bugunMu?'#fff':'#7c3aed'};border-radius:3px;padding:1px 3px;font-weight:700;margin-top:2px;">🛋 ${koltukSayisi}</div>` : ''}
+      </div>
+    `;
+  }
+
+  el.innerHTML = `
+    <div style="padding-bottom:80px;">
+      <!-- Ay Navigasyonu -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <button onclick="takvimAyDegistir(-1)" style="padding:8px 14px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;font-size:16px;cursor:pointer;">‹</button>
+        <div style="font-size:16px;font-weight:800;color:var(--text1);">${ayAdi}</div>
+        <button onclick="takvimAyDegistir(1)" style="padding:8px 14px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;font-size:16px;cursor:pointer;">›</button>
+      </div>
+
+      <!-- Haftanın günleri başlık -->
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;">
+        ${gunler.map(g=>`<div style="text-align:center;font-size:10px;font-weight:700;color:var(--text3);padding:4px 0;">${g}</div>`).join('')}
+      </div>
+
+      <!-- Takvim grid -->
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px;">
+        ${gunHucreleri}
+      </div>
+
+      <!-- Ay özeti -->
+      <div style="background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;">
+        <div style="font-weight:700;font-size:13px;color:var(--text1);margin-bottom:10px;">Ay Özeti</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          ${Object.entries(STATUS_INFO).map(([dur,si]) => {
+            const sayisi = data.siparisler.filter(s=>s.durum===dur && s.tarih>=ayBasStr && s.tarih<=aySonStr).length;
+            if (!sayisi) return '';
+            return `<div style="text-align:center;padding:8px;background:var(--bg);border-radius:8px;">
+              <div style="font-size:16px;">${si.icon}</div>
+              <div style="font-size:14px;font-weight:800;color:var(--text1);">${sayisi}</div>
+              <div style="font-size:9px;color:var(--text3);">${si.label}</div>
+            </div>`;
+          }).filter(Boolean).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function takvimAyDegistir(delta) {
+  if (!_takvimAy) { const n = new Date(); _takvimAy = { y: n.getFullYear(), m: n.getMonth() }; }
+  let { y, m } = _takvimAy;
+  m += delta;
+  if (m < 0) { m = 11; y--; }
+  if (m > 11) { m = 0; y++; }
+  _takvimAy = { y, m };
+  renderTakvim();
+}
+
+function takvimGunAc(tarih) {
+  const siparisler = data.siparisler.filter(s => s.tarih === tarih || s.teslimTarihi === tarih || s.teslim_tarihi === tarih);
+  const koltuklar = (data.koltukRandevular || []).filter(r => r.tarih === tarih);
+
+  if (!siparisler.length && !koltuklar.length) return;
+
+  // Basit bottom sheet
+  let mevcut = document.getElementById('modal-takvim-gun');
+  if (!mevcut) {
+    mevcut = document.createElement('div');
+    mevcut.id = 'modal-takvim-gun';
+    mevcut.className = 'modal';
+    mevcut.style.cssText = 'display:flex;align-items:flex-end;justify-content:center;z-index:9999;';
+    mevcut.onclick = function(e){ if(e.target===this){ this.style.display='none'; document.body.style.overflow=''; } };
+    document.body.appendChild(mevcut);
+  }
+
+  const tarihLabel = new Date(tarih+'T00:00:00').toLocaleDateString('tr-TR', {day:'numeric', month:'long', year:'numeric'});
+  mevcut.innerHTML = `
+    <div class="modal-box" style="max-width:440px;width:95%;border-radius:18px 18px 0 0;padding:20px;background:var(--white);max-height:80vh;overflow-y:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div style="font-size:16px;font-weight:800;color:var(--text1);">📅 ${tarihLabel}</div>
+        <button onclick="document.getElementById('modal-takvim-gun').style.display='none';document.body.style.overflow=''" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);">×</button>
+      </div>
+      ${siparisler.length ? `
+        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:8px;">Siparişler (${siparisler.length})</div>
+        ${siparisler.map(s => {
+          const m = data.musteriler.find(x=>x.id==s.musteriId);
+          const si = STATUS_INFO[s.durum];
+          const t = hesaplaToplam(s);
+          const teslimMi = (s.teslimTarihi === tarih || s.teslim_tarihi === tarih) && s.tarih !== tarih;
+          return `<div onclick="document.getElementById('modal-takvim-gun').style.display='none';document.body.style.overflow='';openKartDetay('${s.id}')" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px;"
+            onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+                <span style="font-size:11px;font-weight:700;color:var(--blue);">S${s.id}</span>
+                <span class="badge ${si?.badge||''}">${si?.icon||''} ${si?.label||''}</span>
+                ${teslimMi ? '<span style="font-size:10px;color:#7c3aed;font-weight:700;">📦 Teslim</span>' : ''}
+              </div>
+              <div style="font-size:13px;font-weight:600;color:var(--text1);">${mIsim(m,'Bilinmiyor')}</div>
+            </div>
+            <div style="font-weight:800;color:var(--blue);">₺${t.toLocaleString('tr-TR')}</div>
+          </div>`;
+        }).join('')}
+      ` : ''}
+      ${koltuklar.length ? `
+        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;margin:10px 0 8px;">Koltuk Randevuları (${koltuklar.length})</div>
+        ${koltuklar.map(r => {
+          const m = data.musteriler.find(x=>x.id==r.musteriId);
+          return `<div style="padding:10px 12px;border:1.5px solid #e9d5ff;border-radius:10px;margin-bottom:6px;background:#faf5ff;">
+            <div style="font-weight:700;font-size:13px;color:#7c3aed;">🛋 ${mIsim(m,'Bilinmiyor')}</div>
+            <div style="font-size:11px;color:var(--text3);">${r.saat||''} ${r.adres||''}</div>
+          </div>`;
+        }).join('')}
+      ` : ''}
+    </div>
+  `;
+  mevcut.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+// ── Stok Takibi ─────────────────────────────────────────────────────────────
+function renderStok() {
+  const el = document.getElementById('stok-icerik');
+  if (!el) return;
+  data.stok = data.stok || [];
+  const stok = data.stok;
+
+  // Düşük stok uyarısı eşiği
+  const kritik = stok.filter(s => s.miktar <= (s.kritikSeviye||0) && s.kritikSeviye > 0);
+
+  el.innerHTML = `
+    <div style="padding-bottom:80px;">
+      ${kritik.length ? `
+        <div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+          <span style="font-size:20px;">⚠️</span>
+          <div>
+            <div style="font-weight:700;color:#b91c1c;font-size:13px;">Kritik Stok Uyarısı</div>
+            <div style="font-size:12px;color:#ef4444;">${kritik.map(s=>s.ad).join(', ')} azaldı</div>
+          </div>
+        </div>
+      ` : ''}
+
+      <button onclick="stokYeniEkle()" style="width:100%;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:14px;">+ Yeni Ürün Ekle</button>
+
+      ${stok.length === 0 ? `
+        <div class="empty" style="padding:40px 0;">
+          <div class="empty-icon">🧴</div>
+          <div>Stok kaydı yok</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px;">Deterjan, kimyasal ve malzemeleri buraya ekleyin</div>
+        </div>
+      ` : stok.map((s,i) => {
+        const kritikMi = s.kritikSeviye > 0 && s.miktar <= s.kritikSeviye;
+        const pct = s.maksimum > 0 ? Math.min(100, Math.round((s.miktar / s.maksimum) * 100)) : null;
+        const barRenk = kritikMi ? '#ef4444' : pct > 50 ? '#22c55e' : '#f59e0b';
+        return `
+          <div style="background:var(--white);border:1.5px solid ${kritikMi?'#fecaca':'var(--border)'};border-radius:12px;padding:14px;margin-bottom:10px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <div style="font-size:24px;flex-shrink:0;">${s.ikon||'📦'}</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:14px;color:var(--text1);">${s.ad}</div>
+                <div style="font-size:11px;color:var(--text3);">${s.kategori||'Genel'} · ${s.birim||'adet'}</div>
+              </div>
+              <div style="text-align:right;flex-shrink:0;">
+                <div style="font-size:20px;font-weight:800;color:${kritikMi?'#ef4444':'var(--text1)'};">${s.miktar}</div>
+                ${s.kritikSeviye > 0 ? `<div style="font-size:10px;color:var(--text3);">Min: ${s.kritikSeviye}</div>` : ''}
+              </div>
+            </div>
+            ${pct !== null ? `
+              <div style="height:6px;background:var(--border);border-radius:3px;margin-bottom:10px;overflow:hidden;">
+                <div style="height:100%;width:${pct}%;background:${barRenk};border-radius:3px;transition:width 0.3s;"></div>
+              </div>
+            ` : ''}
+            <div style="display:flex;gap:6px;">
+              <button onclick="stokGuncelle(${i},-1)" style="flex:1;padding:8px;background:var(--red-bg);border:1px solid #fecaca;border-radius:8px;font-size:16px;font-weight:800;cursor:pointer;color:var(--red);">−</button>
+              <button onclick="stokMiktarGir(${i})" style="flex:2;padding:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:var(--text2);">Miktar Gir</button>
+              <button onclick="stokGuncelle(${i},1)" style="flex:1;padding:8px;background:var(--green-bg);border:1px solid #bbf7d0;border-radius:8px;font-size:16px;font-weight:800;cursor:pointer;color:var(--green);">+</button>
+              <button onclick="stokDuzenle(${i})" style="padding:8px 10px;background:var(--white);border:1.5px solid var(--border);border-radius:8px;font-size:13px;cursor:pointer;color:var(--text2);">⋯</button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function stokGuncelle(idx, delta) {
+  if (!data.stok[idx]) return;
+  data.stok[idx].miktar = Math.max(0, (data.stok[idx].miktar || 0) + delta);
+  save(); renderStok();
+}
+
+function stokMiktarGir(idx) {
+  const s = data.stok[idx];
+  if (!s) return;
+  const yeni = prompt(`"${s.ad}" için yeni miktar:`, s.miktar);
+  if (yeni === null) return;
+  const n = parseFloat(yeni);
+  if (isNaN(n) || n < 0) { toast('Geçersiz miktar'); return; }
+  s.miktar = n;
+  save(); renderStok();
+}
+
+function stokYeniEkle() {
+  _stokModalAc(null);
+}
+
+function stokDuzenle(idx) {
+  _stokModalAc(idx);
+}
+
+function _stokModalAc(idx) {
+  const s = idx !== null ? data.stok[idx] : null;
+  let mevcut = document.getElementById('modal-stok-ekle');
+  if (!mevcut) {
+    mevcut = document.createElement('div');
+    mevcut.id = 'modal-stok-ekle';
+    mevcut.className = 'modal';
+    mevcut.style.cssText = 'display:flex;align-items:flex-end;justify-content:center;z-index:9999;';
+    mevcut.onclick = function(e){ if(e.target===this) _stokModalKapat(); };
+    document.body.appendChild(mevcut);
+  }
+
+  const ikonlar = ['🧴','🧪','🧹','🪣','🧼','📦','🪣','🛢️','💧','🔧'];
+  mevcut.innerHTML = `
+    <div class="modal-box" style="max-width:420px;width:95%;border-radius:18px 18px 0 0;padding:20px;background:var(--white);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div style="font-size:16px;font-weight:800;color:var(--text1);">${s ? 'Ürünü Düzenle' : 'Yeni Ürün'}</div>
+        <button onclick="_stokModalKapat()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);">×</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+        ${ikonlar.map(ik=>`<button onclick="this.parentNode.querySelectorAll('button').forEach(b=>b.style.background='');this.style.background='var(--blue-light)';document.getElementById('stok-ikon').value=this.textContent" style="font-size:20px;padding:6px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;background:${s?.ikon===ik?'var(--blue-light)':''};">${ik}</button>`).join('')}
+      </div>
+      <input id="stok-ikon" type="hidden" value="${s?.ikon||'📦'}">
+      <input id="stok-ad" class="form-input" style="margin-bottom:8px;" placeholder="Ürün adı (örn: Deterjan)" value="${s?.ad||''}">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <input id="stok-kategori" class="form-input" placeholder="Kategori" value="${s?.kategori||''}">
+        <input id="stok-birim" class="form-input" placeholder="Birim (adet, kg, L)" value="${s?.birim||'adet'}">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+        <div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:3px;">Mevcut</div>
+          <input id="stok-miktar" class="form-input" type="number" min="0" placeholder="0" value="${s?.miktar||0}">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:3px;">Kritik Eşik</div>
+          <input id="stok-kritik" class="form-input" type="number" min="0" placeholder="0" value="${s?.kritikSeviye||0}">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:3px;">Maksimum</div>
+          <input id="stok-max" class="form-input" type="number" min="0" placeholder="0" value="${s?.maksimum||0}">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        ${idx !== null ? `<button onclick="_stokSil(${idx})" class="btn btn-danger" style="flex:1;">Sil</button>` : ''}
+        <button onclick="_stokKaydet(${idx})" class="btn btn-primary" style="flex:2;">Kaydet</button>
+      </div>
+    </div>
+  `;
+  mevcut.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function _stokKaydet(idx) {
+  const ad = document.getElementById('stok-ad')?.value.trim();
+  if (!ad) { toast('Ürün adı zorunlu'); return; }
+  const kayit = {
+    ad,
+    ikon: document.getElementById('stok-ikon')?.value || '📦',
+    kategori: document.getElementById('stok-kategori')?.value.trim() || 'Genel',
+    birim: document.getElementById('stok-birim')?.value.trim() || 'adet',
+    miktar: parseFloat(document.getElementById('stok-miktar')?.value) || 0,
+    kritikSeviye: parseFloat(document.getElementById('stok-kritik')?.value) || 0,
+    maksimum: parseFloat(document.getElementById('stok-max')?.value) || 0,
+  };
+  if (idx !== null && idx !== undefined) {
+    data.stok[idx] = { ...data.stok[idx], ...kayit };
+  } else {
+    data.stok.push(kayit);
+  }
+  save();
+  _stokModalKapat();
+  renderStok();
+  toast('Stok kaydedildi');
+}
+
+function _stokSil(idx) {
+  if (!confirm('Bu ürünü stoktan kaldırmak istiyor musunuz?')) return;
+  data.stok.splice(idx, 1);
+  save();
+  _stokModalKapat();
+  renderStok();
+}
+
+function _stokModalKapat() {
+  const m = document.getElementById('modal-stok-ekle');
+  if (m) m.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 function renderIstatistik() {
@@ -5893,11 +6438,7 @@ function koltukTabSec(tab, btn) {
   ['randevu','tamamlandi','teslim'].forEach(t => {
     const b = document.getElementById('ktab-'+t);
     if (!b) return;
-    if (t === tab) {
-      b.style.borderColor = '#7c3aed'; b.style.background = '#f5f3ff'; b.style.color = '#7c3aed';
-    } else {
-      b.style.borderColor = 'var(--border)'; b.style.background = 'var(--white)'; b.style.color = 'var(--text2)';
-    }
+    b.classList.toggle('active', t === tab);
   });
   renderKoltukRandevular();
 }
@@ -5923,7 +6464,19 @@ function renderOdenmedi() {
   let liste=data.siparisler.filter(s=>s.durum==='teslim'&&!s.odendi);
   if (selectedDate) liste=liste.filter(s=>s.tarih===selectedDate);
   liste=sortByTarih(liste);
-  el.innerHTML=liste.length?liste.map(s=>siparisKarti(s,'pg')).join(''):`<div class="empty"><div class="empty-icon">✅</div>Bekleyen ödeme yok</div>`;
+  if (!liste.length) { el.innerHTML=`<div class="empty"><div class="empty-icon">✅</div>Bekleyen ödeme yok</div>`; return; }
+  const toplamAlacak = liste.reduce((a,s)=>a+hesaplaToplam(s),0);
+  const banner = `<div style="display:flex;align-items:center;justify-content:space-between;background:#fef2f2;border:1.5px solid #fecaca;border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--red);">💸 ${liste.length} ödeme bekliyor</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px;">Teslim edildi ama ödeme alınmadı</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:18px;font-weight:800;color:var(--red);">₺${toplamAlacak.toLocaleString('tr-TR')}</div>
+      <div style="font-size:10px;color:var(--text3);">toplam alacak</div>
+    </div>
+  </div>`;
+  el.innerHTML = banner + liste.map(s=>siparisKarti(s,'pg')).join('');
 }
 
 function musteriTag(m) {
@@ -7833,9 +8386,11 @@ function _mesajSecAc(mesaj, s, m) {
 // Eski modal-mesaj-gonder referansları
 function _mgSend(tip) { _mesajGonder(tip); }
 let profilMusteriId = null;
+let _aktifProfilId = null;
 
 function openProfil(musteriId) {
   profilMusteriId = musteriId;
+  _aktifProfilId = musteriId;
   const m = data.musteriler.find(x=>x.id==musteriId);
   if (!m) return;
 
@@ -7861,6 +8416,7 @@ function openProfil(musteriId) {
   document.querySelectorAll('.profil-tab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.profil-tab').classList.add('active');
   document.getElementById('profil-tab-gecmis').style.display = '';
+  document.getElementById('profil-tab-notlar').style.display = 'none';
   document.getElementById('profil-tab-odemeler').style.display = 'none';
   document.getElementById('profil-tab-bilgiler').style.display = 'none';
 
@@ -7874,9 +8430,10 @@ function profilOverlayClick(e) {
 function profilTab(tab, btn) {
   document.querySelectorAll('.profil-tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  ['gecmis','odemeler','bilgiler'].forEach(t => {
+  ['gecmis','notlar','odemeler','bilgiler'].forEach(t => {
     document.getElementById('profil-tab-'+t).style.display = t===tab ? '' : 'none';
   });
+  if (tab === 'notlar') profilRenderNotlar(_aktifProfilId);
 }
 
 function profilRenderGecmis(musteriId) {
@@ -8061,6 +8618,200 @@ function profilNotKaydet(musteriId, deger) {
     const sb = _getSb();
     if (sb) sb.from('musteriler').update({not_: deger}).eq('id', parseInt(musteriId)).then(()=>{});
   }, 600);
+}
+
+// ── Profil: Notlar sekmesi ──────────────────────────────────────────────────
+function profilRenderNotlar(musteriId) {
+  const el = document.getElementById('profil-tab-notlar');
+  if (!el) return;
+  const m = data.musteriler.find(x=>x.id==musteriId);
+  if (!m) return;
+  m.notlar = m.notlar || [];
+  const sorted = [...m.notlar].sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||''));
+  el.innerHTML = `
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <input id="profil-not-yeni" class="form-input" style="flex:1;font-size:13px;" placeholder="Yeni not ekle…" onkeydown="if(event.key==='Enter'){musteriNotEkle('${musteriId}');event.preventDefault();}">
+      <button class="btn btn-primary" style="padding:0 14px;white-space:nowrap;" onclick="musteriNotEkle('${musteriId}')">+ Ekle</button>
+    </div>
+    ${sorted.length === 0
+      ? '<div class="empty" style="padding:28px 0;"><div class="empty-icon">📝</div>Henüz not yok</div>'
+      : sorted.map(n => {
+          const origIdx = m.notlar.indexOf(n);
+          return `
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;color:var(--text1);word-break:break-word;">${(n.metin||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:4px;">${_tarihFormat(n.tarih)}</div>
+            </div>
+            <button onclick="musteriNotSil('${musteriId}',${origIdx})" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--text3);padding:0;flex-shrink:0;" title="Sil">🗑</button>
+          </div>`;
+        }).join('')
+    }
+  `;
+}
+
+function musteriNotEkle(musteriId) {
+  const inp = document.getElementById('profil-not-yeni');
+  if (!inp) return;
+  const metin = inp.value.trim();
+  if (!metin) { toast('Not boş olamaz'); return; }
+  const m = data.musteriler.find(x=>x.id==musteriId);
+  if (!m) return;
+  m.notlar = m.notlar || [];
+  m.notlar.push({ metin, tarih: new Date().toISOString() });
+  save();
+  // Supabase sync
+  const sb = _getSb();
+  if (sb) sb.from('musteriler').update({ notlar: m.notlar }).eq('id', parseInt(musteriId)).then(()=>{});
+  profilRenderNotlar(musteriId);
+  toast('Not eklendi');
+}
+
+function musteriNotSil(musteriId, idx) {
+  const m = data.musteriler.find(x=>x.id==musteriId);
+  if (!m || !m.notlar) return;
+  if (!confirm('Bu notu silmek istiyor musunuz?')) return;
+  m.notlar.splice(idx, 1);
+  save();
+  const sb = _getSb();
+  if (sb) sb.from('musteriler').update({ notlar: m.notlar }).eq('id', parseInt(musteriId)).then(()=>{});
+  profilRenderNotlar(musteriId);
+}
+
+function _tarihFormat(iso) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleString('tr-TR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  } catch { return iso; }
+}
+
+// ── Profil: Müşteri Sil ──────────────────────────────────────────────────────
+function musteriSilProfil() {
+  const musteriId = _aktifProfilId;
+  if (!musteriId) return;
+  const m = data.musteriler.find(x=>x.id==musteriId);
+  if (!m) return;
+  const siparisCount = data.siparisler.filter(s=>s.musteriId==musteriId).length;
+  const onay = confirm(`${mIsim(m)} müşterisini silmek istiyor musunuz?\n\nBu müşteriye ait ${siparisCount} sipariş de silinecek. Bu işlem geri alınamaz.`);
+  if (!onay) return;
+  // Siparişleri sil
+  data.siparisler = data.siparisler.filter(s=>s.musteriId!=musteriId);
+  // Müşteriyi sil
+  data.musteriler = data.musteriler.filter(x=>x.id!=musteriId);
+  save();
+  closeModal('modal-profil');
+  renderAll();
+  toast(`${mIsim(m)} silindi`);
+  // Supabase sync
+  const sb = _getSb();
+  if (sb) {
+    sb.from('siparisler').delete().eq('musteri_id', parseInt(musteriId)).then(()=>{});
+    sb.from('musteriler').delete().eq('id', parseInt(musteriId)).then(()=>{});
+  }
+}
+
+// ── Profil: Müşteri Birleştir ──────────────────────────────────────────────
+function musteriBlrlestir() {
+  const musteriId = _aktifProfilId;
+  if (!musteriId) return;
+  const m = data.musteriler.find(x=>x.id==musteriId);
+  if (!m) return;
+
+  // Diğer müşterileri listele (kendisi hariç)
+  const diger = data.musteriler.filter(x=>x.id!=musteriId);
+  if (!diger.length) { toast('Başka müşteri yok'); return; }
+
+  // Seçim modal yoksa inline oluştur
+  let mevcut = document.getElementById('modal-birlestir');
+  if (!mevcut) {
+    mevcut = document.createElement('div');
+    mevcut.id = 'modal-birlestir';
+    mevcut.className = 'modal';
+    mevcut.style.cssText = 'display:flex;align-items:flex-end;justify-content:center;z-index:9999;';
+    mevcut.onclick = function(e){ if(e.target===this) closeBirlestirModal(); };
+    document.body.appendChild(mevcut);
+  }
+
+  mevcut.innerHTML = `
+    <div class="modal-box" style="max-width:420px;width:95%;border-radius:18px 18px 0 0;padding:20px;background:var(--white);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div style="font-size:16px;font-weight:800;color:var(--text1);">🔗 Müşteri Birleştir</div>
+        <button onclick="closeBirlestirModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);">×</button>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">
+        <strong>${mIsim(m)}</strong> müşterisinin tüm siparişleri seçilen müşteriye aktarılacak. ${mIsim(m)} silinecek.
+      </div>
+      <input id="birlestir-ara" class="form-input" style="margin-bottom:10px;" placeholder="Müşteri ara…" oninput="_birlestirAra()">
+      <div id="birlestir-liste" style="max-height:280px;overflow-y:auto;">
+        ${diger.map(x=>`
+          <div onclick="musteriBlrlestirOnayla('${musteriId}','${x.id}')"
+            style="padding:10px 12px;border-radius:10px;border:1px solid var(--border);margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px;"
+            onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
+            <div style="width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;">${(x.ad||'?').charAt(0).toUpperCase()}</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text1);">${mIsim(x)}</div>
+              <div style="font-size:11px;color:var(--text3);">U${x.id} · ${x.tel||'Tel yok'} · ${data.siparisler.filter(s=>s.musteriId==x.id).length} sipariş</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  mevcut.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function _birlestirAra() {
+  const q = (document.getElementById('birlestir-ara')?.value||'').toLowerCase();
+  const musteriId = _aktifProfilId;
+  const diger = data.musteriler.filter(x=>x.id!=musteriId);
+  const filtered = q ? diger.filter(x=>mIsim(x).toLowerCase().includes(q)||(x.tel||'').includes(q)) : diger;
+  const liste = document.getElementById('birlestir-liste');
+  if (!liste) return;
+  liste.innerHTML = filtered.map(x=>`
+    <div onclick="musteriBlrlestirOnayla('${musteriId}','${x.id}')"
+      style="padding:10px 12px;border-radius:10px;border:1px solid var(--border);margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px;"
+      onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
+      <div style="width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;">${(x.ad||'?').charAt(0).toUpperCase()}</div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text1);">${mIsim(x)}</div>
+        <div style="font-size:11px;color:var(--text3);">U${x.id} · ${x.tel||'Tel yok'} · ${data.siparisler.filter(s=>s.musteriId==x.id).length} sipariş</div>
+      </div>
+    </div>
+  `).join('') || '<div class="empty" style="padding:20px 0;font-size:13px;color:var(--text3);text-align:center;">Sonuç bulunamadı</div>';
+}
+
+function musteriBlrlestirOnayla(kaynakId, hedefId) {
+  const kaynak = data.musteriler.find(x=>x.id==kaynakId);
+  const hedef = data.musteriler.find(x=>x.id==hedefId);
+  if (!kaynak || !hedef) return;
+  const onay = confirm(`${mIsim(kaynak)} müşterisinin tüm siparişleri ${mIsim(hedef)} müşterisine aktarılacak.\n\n${mIsim(kaynak)} silinecek. Devam?`);
+  if (!onay) return;
+  // Siparişleri aktar
+  data.siparisler.filter(s=>s.musteriId==kaynakId).forEach(s=>{ s.musteriId = hedefId; });
+  // Notları birleştir
+  hedef.notlar = hedef.notlar || [];
+  (kaynak.notlar||[]).forEach(n=>hedef.notlar.push(n));
+  // Kaynağı sil
+  data.musteriler = data.musteriler.filter(x=>x.id!=kaynakId);
+  save();
+  // Supabase
+  const sb = _getSb();
+  if (sb) {
+    sb.from('siparisler').update({ musteri_id: parseInt(hedefId) }).eq('musteri_id', parseInt(kaynakId)).then(()=>{});
+    sb.from('musteriler').delete().eq('id', parseInt(kaynakId)).then(()=>{});
+    sb.from('musteriler').update({ notlar: hedef.notlar }).eq('id', parseInt(hedefId)).then(()=>{});
+  }
+  closeBirlestirModal();
+  closeModal('modal-profil');
+  renderAll();
+  toast(`${mIsim(kaynak)} → ${mIsim(hedef)} aktarıldı`);
+}
+
+function closeBirlestirModal() {
+  const m = document.getElementById('modal-birlestir');
+  if (m) m.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 function profilWaMesaj(musteriId) {
