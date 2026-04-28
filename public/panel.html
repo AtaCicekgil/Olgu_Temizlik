@@ -4529,7 +4529,16 @@ function renderSiparisListesi(cid, durum) {
   }
   // Tarih filtresi uygula
   if (selectedDate) liste = liste.filter(s => s.tarih === selectedDate);
-  liste = sortByTarih(liste);
+  // Teslim sayfasında fiili teslim tarihine göre sırala (yeni üste), diğerlerinde alım/oluşturma tarihine göre
+  if (durum === 'teslim') {
+    liste = [...liste].sort((a, b) => {
+      const ta = a.teslimGerceklesmeTarihi || a.tarih || '';
+      const tb = b.teslimGerceklesmeTarihi || b.tarih || '';
+      return tb.localeCompare(ta);
+    });
+  } else {
+    liste = sortByTarih(liste);
+  }
   if (!liste.length) {
     const msg = selectedDate ? 'Bu tarihte sipariş yok' : 'Sipariş yok';
     el.innerHTML=`<div class="empty"><div class="empty-icon">📭</div>${msg}</div>`; return;
