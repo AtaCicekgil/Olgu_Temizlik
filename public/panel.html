@@ -3329,14 +3329,15 @@ async function _syncToSupabase() {
       await sb.from('siparisler').upsert({
         id: sid, musteri_id: mid, servis_tip: s.servisTip||'hali',
         durum: s.durum, tarih: s.tarih||null, saat: s.saat||null,
-        teslim_tarihi: s.teslimTarihi||null, not_: s.not||null,
+        teslim_tarihi: s.teslimTarihi||null,
+        teslim_gerceklesme_tarihi: s.teslimGerceklesmeTarihi||null,
+        not_: s.not||null,
         odendi: s.odendi||false, etiket_no: s.etiketNo||null,
         teknisyen: s.teknisyen||null,
         olusturma: s.olusturma||null
       }, {onConflict:'id'});
       if (s.haliler && s.haliler.length > 0) {
-        await sb.from('siparis_kalemleri').delete().eq('siparis_id', sid);
-        await sb.from('siparis_kalemleri').insert(s.haliler.map(h => ({
+        const yeniKalemler = s.haliler.map(h => ({
           siparis_id: sid,
           tip_: h.tip||'tekli',
           cins_ad: h.tip==='ekucret' ? (h.aciklama||null) : (h.cinsAd||h.ad||null),
@@ -3345,7 +3346,14 @@ async function _syncToSupabase() {
           birim_fiyat: h.tip==='ekucret' ? (h.tutar||0) : (h.ozelFiyat??h.birimFiyat??h.fiyat??null),
           toplam: h.tip==='ekucret' ? (h.tutar||0) : (h.toplam||null),
           not_: h.m2Sonra ? 'sonra' : null
-        })));
+        }));
+        // Delete → Insert: localStorage kaynak kayıt, hata olursa data güvende
+        try {
+          await sb.from('siparis_kalemleri').delete().eq('siparis_id', sid);
+          await sb.from('siparis_kalemleri').insert(yeniKalemler);
+        } catch(kErr) {
+          console.warn('Kalem sync hatası (localStorage güvende):', kErr?.message);
+        }
       }
       // Fotoğraf URL'lerini DB'ye kaydet
       const fotoUrls = [
@@ -3433,18 +3441,19 @@ async function _loadFromSupabase() {
       data.musteriler = musteriler.map(m => ({
         id: m.id, ad: m.ad||'', soyad: m.soyad||'',
         tel: m.tel||'', adres: m.adres||'', not: m.not_||'',
+        notlar: m.notlar||[],
         google_resource_name: m.google_resource_name||null
       }));
       data.counters.musteri = Math.max(...musteriler.map(m=>parseInt(m.id)||0), 100);
-    } else {
-      // Supabase'de müşteri yoksa localStorage'ı da temizle
-      data.musteriler = [];
     }
+    // else: Supabase boş/hatalı döndü — mevcut localStorage verisi korunuyor, üzerine yazmıyoruz
     if (siparisler?.length) {
       data.siparisler = siparisler.map(s => ({
         id: s.id, musteriId: s.musteri_id||null,
         servisTip:s.servis_tip||'hali', durum:s.durum, tarih:s.tarih||'',
-        saat:s.saat||'', teslimTarihi:s.teslim_tarihi||'', not:s.not_||'',
+        saat:s.saat||'', teslimTarihi:s.teslim_tarihi||'',
+        teslimGerceklesmeTarihi:s.teslim_gerceklesme_tarihi||'',
+        not:s.not_||'',
         etiketNo:s.etiket_no||'',
         teknisyen:s.teknisyen||null,
         odendi:s.odendi||false, olusturma:s.olusturma,
@@ -4102,6 +4111,7 @@ async function saveGider() {
 }
 
 async function silGider(id) {
+  if (!confirm('Bu gideri silmek istiyor musunuz?')) return;
   const sb = _getSb();
   if (sb) {
     try {
@@ -4550,8 +4560,17 @@ function renderSiparisListesi(cid, durum) {
     el.innerHTML = ozetBanner + topluBtn + liste.map(s=>siparisKarti(s,'pg')).join('');
   } else {
     const grouped = {};
+    const isTeslimPage = (durum === 'teslim');
     liste.forEach(s => {
-      const lbl = tarihLabel(s.tarih);
+      let lbl;
+      if (isTeslimPage) {
+        // Teslim sayfası: fiili teslim tarihi ile grupla
+        const gt = s.teslimGerceklesmeTarihi;
+        lbl = gt ? ('📦 Teslim: ' + new Date(gt+'T00:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'}))
+                 : ('📥 Alım: ' + tarihLabel(s.tarih).replace('📅 ',''));
+      } else {
+        lbl = tarihLabel(s.tarih);
+      }
       if (!grouped[lbl]) grouped[lbl] = [];
       grouped[lbl].push(s);
     });
@@ -4654,7 +4673,8 @@ function siparisKarti(s, ctx) {
     </div>`:''}
     <div style="font-size:11px;color:var(--text2);margin:8px 0;display:flex;flex-wrap:wrap;gap:10px;">
       ${s.tarih?`<span>📥 Alındı: <b>${s.tarih}</b></span>`:''}
-      ${s.teslimTarihi?`<span>📦 Teslim: <b>${s.teslimTarihi}</b></span>`:''}
+      ${s.teslimGerceklesmeTarihi?`<span>📦 Teslim Edildi: <b style="color:var(--green);">${s.teslimGerceklesmeTarihi}</b></span>`:
+        (s.teslimTarihi?`<span>🎯 Hedef: <b>${s.teslimTarihi}</b></span>`:'')}
       ${s.odendi&&s.odemeTarih?`<span>💰 Ödeme: <b>${new Date(s.odemeTarih.split('T')[0]+'T12:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})}</b></span>`:''}
       ${s.odendi&&s.odemeyontemi?`<span>${s.odemeyontemi==='havale'?'🏦 IBAN':'💵 Nakit'}</span>`:''}
     </div>`;
@@ -4694,7 +4714,12 @@ function siparisKarti(s, ctx) {
         ${s.not?`<div style="font-size:11px;color:var(--yellow);margin-top:3px;font-weight:600;background:var(--yellow-bg);padding:2px 6px;border-radius:4px;display:inline-block;">📝 ${s.not}</div>`:''}
         ${s.etiketNo?`<span style="font-size:11px;font-weight:700;background:#f0fdf4;color:#16a34a;padding:2px 7px;border-radius:4px;display:inline-block;margin-top:3px;margin-left:${s.not?'4px':'0'};">🏷 ${s.etiketNo}</span>`:''}
         <div style="font-size:10px;color:var(--text3);margin-top:3px;">
-          ${isKoltuk?'📅 Randevu: ':'📥 '}${s.tarih||'—'}${s.saat?' ⏰'+s.saat:''}${fotoCount>0?' · 📷'+fotoCount:''}
+          ${isKoltuk
+            ? `📅 Randevu: ${s.tarih||'—'}${s.saat?' ⏰'+s.saat:''}`
+            : (s.durum==='teslim' && s.teslimGerceklesmeTarihi
+                ? `📥 Alındı: ${s.tarih||'—'} · 📦 Teslim: <b style="color:var(--green);">${s.teslimGerceklesmeTarihi}</b>`
+                : `📥 ${s.tarih||'—'}${s.saat?' ⏰'+s.saat:''}`)
+          }${fotoCount>0?' · 📷'+fotoCount:''}
         </div>
       </div>
     </div>
@@ -5257,6 +5282,7 @@ async function _supabaseSiparisPatch(s) {
       tarih: s.tarih||null,
       saat: s.saat||null,
       teslim_tarihi: s.teslimTarihi||null,
+      teslim_gerceklesme_tarihi: s.teslimGerceklesmeTarihi||null,
       not_: s.not||null,
       teknisyen: s.teknisyen||null,
       durum: s.durum,
@@ -5362,6 +5388,7 @@ function openKartDetay(sid) {
     ${s.olusturma ? `<div style="display:flex;gap:6px;"><span style="color:var(--text3);flex-shrink:0;">🗓 Oluşturuldu:</span><b style="color:var(--text);">${fmtTarih(s.olusturma)}</b></div>` : ''}
     ${s.tarih ? `<div style="display:flex;gap:6px;"><span style="color:var(--text3);flex-shrink:0;">${isKoltukCard?'📅 Randevu':'📥 Teslim Alındı'}:</span><b style="color:var(--text);">${s.tarih}${s.saat?' · ⏰'+s.saat:''}</b></div>` : ''}
     ${!isKoltukCard&&s.teslimTarihi ? `<div style="display:flex;gap:6px;"><span style="color:var(--text3);flex-shrink:0;">🎯 Hedef Teslim:</span><b style="color:${kdGecikti?'#dc2626':'var(--text)'};">${s.teslimTarihi}${kdGecikti?' ⏰ GECİKTİ':''}</b></div>` : ''}
+    ${!isKoltukCard&&s.teslimGerceklesmeTarihi ? `<div style="display:flex;gap:6px;"><span style="color:var(--text3);flex-shrink:0;">📦 Teslim Edildi:</span><b style="color:var(--green);">${fmtTarih(s.teslimGerceklesmeTarihi)}</b></div>` : ''}
     ${s.not ? `<div style="display:flex;gap:6px;align-items:center;"><span style="color:var(--text3);flex-shrink:0;">📝 Not:</span><span style="font-weight:600;color:var(--yellow);">${s.not}</span></div>` : ''}
     ${s.teknisyen ? `<div style="display:flex;gap:6px;align-items:center;"><span style="color:var(--text3);flex-shrink:0;">👤 Teknisyen:</span><span style="font-weight:600;color:var(--text);">${s.teknisyen}</span></div>` : ''}
     <div style="display:flex;gap:6px;align-items:center;">
@@ -8117,6 +8144,7 @@ function onaylaGecis(){
   let mesaj='';
   if(hedef==='teslim'){
     s.odemeyontemi=pendingOdemeYontem;
+    s.teslimGerceklesmeTarihi = new Date().toISOString().split('T')[0]; // fiili teslim tarihi
     if(pendingOdemeAlindi){
       s.odendi=true;
       s.odemeTarih=new Date().toISOString();
@@ -8677,17 +8705,28 @@ function musteriSilProfil() {
   if (!musteriId) return;
   const m = data.musteriler.find(x=>x.id==musteriId);
   if (!m) return;
-  const siparisCount = data.siparisler.filter(s=>s.musteriId==musteriId).length;
-  const onay = confirm(`${mIsim(m)} müşterisini silmek istiyor musunuz?\n\nBu müşteriye ait ${siparisCount} sipariş de silinecek. Bu işlem geri alınamaz.`);
-  if (!onay) return;
-  // Siparişleri sil
+  const siparisler = data.siparisler.filter(s=>s.musteriId==musteriId);
+  if (siparisler.length > 0) {
+    // Siparişi olan müşteriyi silmeden önce çift onay al
+    if (!confirm(`⚠️ DİKKAT: ${mIsim(m)} müşterisine ait ${siparisler.length} sipariş var.\n\nDevam ederseniz bu siparişler "Silinenler" bölümüne taşınır ve 30 gün içinde geri alabilirsiniz.\n\nDevam etmek istiyor musunuz?`)) return;
+    if (!confirm(`Son onay: ${mIsim(m)} ve ${siparisler.length} siparişi silinecek. Eminseniz Tamam'a basın.`)) return;
+    // Siparişleri silinenler'e taşı (geri alınabilir)
+    const now = new Date().toISOString();
+    siparisler.forEach(s => {
+      s.silinmeTarih = now;
+      data.silinenler.unshift(s);
+    });
+    if (data.silinenler.length > 30) data.silinenler = data.silinenler.slice(0, 30);
+  } else {
+    if (!confirm(`${mIsim(m)} müşterisini silmek istiyor musunuz?`)) return;
+  }
+  // Siparişleri ve müşteriyi local'den kaldır
   data.siparisler = data.siparisler.filter(s=>s.musteriId!=musteriId);
-  // Müşteriyi sil
   data.musteriler = data.musteriler.filter(x=>x.id!=musteriId);
   save();
   closeModal('modal-profil');
   renderAll();
-  toast(`${mIsim(m)} silindi`);
+  toast(siparisler.length > 0 ? `${mIsim(m)} silindi — siparişler Silinenler'de` : `${mIsim(m)} silindi`);
   // Supabase sync
   const sb = _getSb();
   if (sb) {
