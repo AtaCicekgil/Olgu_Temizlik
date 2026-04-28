@@ -9101,7 +9101,7 @@ function gcLogin() {
     response_type: 'token',
     scope: GC_SCOPE,
     state: state,
-    prompt: 'consent'
+    prompt: 'select_account'
   });
   window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
 }
@@ -9119,15 +9119,65 @@ function gcLogout() {
   const params = new URLSearchParams(hash.replace('#',''));
   const token = params.get('access_token');
   const expiresIn = parseInt(params.get('expires_in') || '3600');
-  const state = params.get('state');
-  if (token) {
-    gcSaveToken({ access_token: token, expires_at: Date.now() + expiresIn * 1000 });
-    // URL'den hash'i temizle
-    history.replaceState(null, '', window.location.pathname + window.location.search);
-    toast('✅ Google Rehber bağlandı!');
-    setTimeout(renderGcStatus, 300);
+  if (!token) return;
+
+  // iframe içindeyken (sessiz yenileme) — ana pencereye ilet
+  if (window.parent !== window) {
+    try { window.parent.postMessage({ type: 'GC_SILENT_TOKEN', access_token: token, expires_in: expiresIn }, '*'); } catch(e) {}
+    return; // iframe'de uygulamayı açmaya devam etme
   }
+
+  // Normal sayfa yönlendirmesi
+  gcSaveToken({ access_token: token, expires_at: Date.now() + expiresIn * 1000 });
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+  toast('✅ Google Rehber bağlandı!');
+  setTimeout(renderGcStatus, 300);
 })();
+
+// Token süresi kontrolü ve sessiz yenileme
+function gcSilentRefresh() {
+  const t = gcGetToken();
+  if (!t || !t.access_token) return;
+  const kalanMs = t.expires_at - Date.now();
+  if (kalanMs <= 0) {
+    // Zaten süresi dolmuş — uyarı göster
+    gcClearToken();
+    renderGcStatus();
+    toast('⚠️ Google Rehber bağlantısı kesildi — Ayarlar\'dan yeniden bağlayın', 6000);
+    return;
+  }
+  if (kalanMs > 10 * 60 * 1000) return; // 10 dakikadan fazla var, henüz gerekmez
+
+  // 10 dakikadan az kaldı — sessiz iframe ile yenile
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'display:none;width:1px;height:1px;position:absolute;';
+  const silentParams = new URLSearchParams({
+    client_id: GC_CLIENT_ID,
+    redirect_uri: 'https://www.olgutemizlik.com/panel',
+    response_type: 'token',
+    scope: GC_SCOPE,
+    prompt: 'none'
+  });
+  iframe.src = 'https://accounts.google.com/o/oauth2/v2/auth?' + silentParams;
+  document.body.appendChild(iframe);
+  // 15 saniye sonra temizle (yanıt gelmezse)
+  setTimeout(() => { if (iframe.parentNode) iframe.remove(); }, 15000);
+}
+
+// iframe ile gelen token'ı yakala
+window.addEventListener('message', (e) => {
+  if (!e.data || e.data.type !== 'GC_SILENT_TOKEN') return;
+  if (e.data.access_token) {
+    gcSaveToken({ access_token: e.data.access_token, expires_at: Date.now() + (e.data.expires_in||3600) * 1000 });
+    renderGcStatus();
+  }
+});
+
+// Her 5 dakikada bir kontrol et; sayfa yüklenince 60 sn sonra ilk kontrol
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(gcSilentRefresh, 60 * 1000);
+  setInterval(gcSilentRefresh, 5 * 60 * 1000);
+});
 
 // Tel no normalize: her formatı +905XXXXXXXXX'e çevir
 function gcNormalizeTel(tel) {
@@ -9250,21 +9300,26 @@ async function gcDeleteContact(resourceName) {
   }
 }
 
-// Tüm mevcut müşterileri toplu sync et
+// Rehberde olmayan eksik müşterileri toplu ekle (zaten ekli olanları tekrar göndermez)
 async function gcBulkSync() {
   if (!gcIsLoggedIn()) { toast('Önce Google hesabını bağla!'); return; }
+  const eksikler = data.musteriler.filter(m => !m.google_resource_name);
+  if (!eksikler.length) {
+    toast('✅ Tüm müşteriler zaten Google Rehber\'de!');
+    return;
+  }
   const btn = document.getElementById('gc-bulk-btn');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Senkronize ediliyor...'; }
+  if (btn) { btn.disabled = true; btn.textContent = `⏳ ${eksikler.length} müşteri ekleniyor...`; }
   let basarili = 0, hatali = 0;
-  for (const m of data.musteriler) {
+  for (const m of eksikler) {
     try {
-      await gcSyncMusteri(m, m.google_resource_name ? 'update' : 'create');
+      await gcSyncMusteri(m, 'create');
       basarili++;
       await new Promise(r => setTimeout(r, 200)); // rate limit için bekle
     } catch(e) { hatali++; }
   }
-  if (btn) { btn.disabled = false; btn.textContent = '🔄 Tümünü Senkronize Et'; }
-  toast(`✅ ${basarili} müşteri senkronize edildi${hatali > 0 ? `, ${hatali} hata` : ''}`);
+  if (btn) { btn.disabled = false; btn.textContent = '➕ Eksikleri Ekle'; }
+  toast(`✅ ${basarili} yeni müşteri rehbere eklendi${hatali > 0 ? `, ${hatali} hata` : ''}`);
   renderMusteriler();
 }
 
@@ -9282,7 +9337,7 @@ function renderGcStatus() {
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button id="gc-bulk-btn" class="btn btn-secondary" style="font-size:12px;padding:6px 12px;" onclick="gcBulkSync()">🔄 Tümünü Senkronize Et</button>
+        <button id="gc-bulk-btn" class="btn btn-secondary" style="font-size:12px;padding:6px 12px;" onclick="gcBulkSync()">➕ Eksikleri Ekle</button>
         <button class="btn btn-secondary" style="font-size:12px;padding:6px 12px;color:var(--red);" onclick="gcLogout()">Bağlantıyı Kes</button>
       </div>`;
   } else {
