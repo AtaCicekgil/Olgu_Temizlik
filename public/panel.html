@@ -1845,7 +1845,7 @@ iframe[title*="chat" i] { display: none !important; }
       </div>
 
       <!-- ════ GİDER KATEGORİ PASTA ════ -->
-      <div class="kasa-mini-card" style="margin-bottom:14px;" id="kasa-pasta-wrap" style="display:none;">
+      <div class="kasa-mini-card" id="kasa-pasta-wrap" style="margin-bottom:14px;display:none;">
         <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px;">🥧 Gider Dağılımı</div>
         <canvas id="kasa-pasta-canvas" height="180"></canvas>
         <div id="kasa-pasta-legend" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;"></div>
@@ -1929,7 +1929,7 @@ iframe[title*="chat" i] { display: none !important; }
           </div>
           <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
             <span style="font-size:12px;color:var(--text3);">Uygulama Sürümü</span>
-            <span id="ay-versiyon" style="font-size:12px;font-weight:700;color:var(--text2);background:var(--bg);padding:2px 10px;border-radius:6px;">v2.1.0</span>
+            <span id="ay-versiyon" style="font-size:12px;font-weight:700;color:var(--text2);background:var(--bg);padding:2px 10px;border-radius:6px;">v2.2.0</span>
           </div>
         </div></div>
       </div>
@@ -3809,69 +3809,54 @@ function ggFilterGiderler() {
 }
 
 function renderGelirGider() {
-  const now = new Date();
-  // Bu ay sabit kartlar
-  // Üst stat kartları her zaman seçili döneme göre
+  // Null-safe helper — elementler mevcut değilse atla
+  const _set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  const _style = (id, prop, val) => { const el = document.getElementById(id); if (el) el.style[prop] = val; };
+
   const buAySip = ggFilterSiparisler();
   const buAyGid = ggFilterGiderler();
   const buAyGelir = buAySip.reduce((s,x)=>s+hesaplaToplam(x),0);
   const buAyGiderT = buAyGid.reduce((s,g)=>s+(g.tutar||0),0);
   const buAyNakit = buAySip.filter(s=>s.odemeyontemi!=='havale').reduce((s,x)=>s+hesaplaToplam(x),0);
   const buAyIban = buAySip.filter(s=>s.odemeyontemi==='havale').reduce((s,x)=>s+hesaplaToplam(x),0);
-  document.getElementById('gg-gelir').textContent='₺'+buAyGelir.toLocaleString('tr-TR');
-  document.getElementById('gg-gider').textContent='₺'+buAyGiderT.toLocaleString('tr-TR');
-  document.getElementById('gg-nakit').textContent='₺'+buAyNakit.toLocaleString('tr-TR');
-  document.getElementById('gg-iban').textContent='₺'+buAyIban.toLocaleString('tr-TR');
+  _set('gg-gelir', '₺'+buAyGelir.toLocaleString('tr-TR'));
+  _set('gg-gider', '₺'+buAyGiderT.toLocaleString('tr-TR'));
+  _set('gg-nakit', '₺'+buAyNakit.toLocaleString('tr-TR'));
+  _set('gg-iban',  '₺'+buAyIban.toLocaleString('tr-TR'));
 
-  // Periyot kar
-  const pSip = ggFilterSiparisler();
-  const pGid = ggFilterGiderler();
-  const pGelir = pSip.reduce((s,x)=>s+hesaplaToplam(x),0);
-  const pGiderT = pGid.reduce((s,g)=>s+(g.tutar||0),0);
-  const pKar = pGelir - pGiderT;
-  document.getElementById('gg-p-gelir').textContent='₺'+pGelir.toLocaleString('tr-TR');
-  document.getElementById('gg-p-gider').textContent='₺'+pGiderT.toLocaleString('tr-TR');
-  const karEl = document.getElementById('gg-p-kar');
-  karEl.textContent='₺'+Math.abs(pKar).toLocaleString('tr-TR')+(pKar<0?' (Zarar)':'');
-  karEl.style.color = pKar>=0?'var(--green)':'var(--red)';
+  const pGelir = buAyGelir, pGiderT = buAyGiderT, pKar = pGelir - pGiderT;
+  _set('gg-p-gelir', '₺'+pGelir.toLocaleString('tr-TR'));
+  _set('gg-p-gider', '₺'+pGiderT.toLocaleString('tr-TR'));
+  _set('gg-p-kar',   '₺'+Math.abs(pKar).toLocaleString('tr-TR')+(pKar<0?' (Zarar)':''));
+  _style('gg-p-kar', 'color', pKar>=0?'var(--green)':'var(--red)');
 
-  // Gider listesi
+  // Gider listesi (gg sekmesi varsa doldur)
   const giderEl = document.getElementById('list-giderler');
-  const giderler = [...(data.giderler||[])].sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||''));
-  if (!giderler.length) {
-    giderEl.innerHTML='<div class="empty"><div class="empty-icon">📭</div>Gider kaydı yok</div>';
-  } else {
-    const GIDER_IKON2 = {'Kira':'🏠','Elektrik':'⚡','Su':'💧','Personel':'👷','Yakıt':'🚗','Kimyasal':'🧴','Tamir':'🔧','Diğer':'📦'};
-    const GIDER_RENK2 = {'Kira':'#eff6ff','Elektrik':'#fefce8','Su':'#eff6ff','Personel':'#f0fdf4','Yakıt':'#fff7ed','Kimyasal':'#fdf4ff','Tamir':'#f8fafc','Diğer':'#fef2f2'};
-    giderEl.innerHTML = giderler.map(g => {
-      const kat2 = g.kategori || g.aciklama || 'Diğer';
-      const ikon2 = GIDER_IKON2[kat2] || '🧾';
-      const renk2 = GIDER_RENK2[kat2] || '#fef2f2';
-      const ac2 = (g.aciklama && g.aciklama !== kat2) ? g.aciklama : '';
-      const tarih2 = g.tarih ? new Date(g.tarih).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'}) : '';
-      const acHtml2 = ac2 ? '<div style="font-size:12px;color:var(--text2);margin-top:2px;">'+ac2+'</div>' : '';
-      return '<div class="kasa-gider-row">'
-        + '<div style="width:44px;height:44px;border-radius:12px;background:'+renk2+';display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">'+ikon2+'</div>'
-        + '<div style="flex:1;min-width:0;">'
-          + '<div style="font-weight:700;font-size:13px;color:var(--text);">'+kat2+'</div>'
-          + acHtml2
-          + '<div style="font-size:11px;color:var(--text3);margin-top:2px;">📅 '+tarih2+'</div>'
-        + '</div>'
-        + '<div style="text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">'
-          + '<div style="font-size:15px;font-weight:800;color:var(--red);">−₺'+(g.tutar||0).toLocaleString('tr-TR')+'</div>'
-          + '<div style="display:flex;gap:4px;">'
-          + '<button onclick="openGiderModal((data.giderler||[]).find(x=>x.id==='+g.id+'))" style="background:#eff6ff;border:none;color:var(--blue);cursor:pointer;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;font-family:Inter,sans-serif;">Düzenle</button>'
-          + '<button onclick="silGider('+g.id+')" style="background:#fef2f2;border:none;color:var(--red);cursor:pointer;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;font-family:Inter,sans-serif;">Sil</button>'
+  if (giderEl) {
+    const giderler = [...(data.giderler||[])].sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||''));
+    if (!giderler.length) {
+      giderEl.innerHTML='<div class="empty"><div class="empty-icon">📭</div>Gider kaydı yok</div>';
+    } else {
+      const GI = {'Kira':'🏠','Elektrik':'⚡','Su':'💧','Personel':'👷','Yakıt':'🚗','Kimyasal':'🧴','Tamir':'🔧','Diğer':'📦'};
+      const GR = {'Kira':'#eff6ff','Elektrik':'#fefce8','Su':'#eff6ff','Personel':'#f0fdf4','Yakıt':'#fff7ed','Kimyasal':'#fdf4ff','Tamir':'#f8fafc','Diğer':'#fef2f2'};
+      giderEl.innerHTML = giderler.map(g => {
+        const kat = g.kategori || g.aciklama || 'Diğer';
+        const ac = (g.aciklama && g.aciklama !== kat) ? '<div style="font-size:12px;color:var(--text2);margin-top:2px;">'+g.aciklama+'</div>' : '';
+        const tarih = g.tarih ? new Date(g.tarih).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'}) : '';
+        return '<div class="kasa-gider-row">'
+          + '<div style="width:44px;height:44px;border-radius:12px;background:'+(GR[kat]||'#fef2f2')+';display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">'+(GI[kat]||'🧾')+'</div>'
+          + '<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:13px;color:var(--text);">'+kat+'</div>'+ac+'<div style="font-size:11px;color:var(--text3);margin-top:2px;">📅 '+tarih+'</div></div>'
+          + '<div style="text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">'
+            + '<div style="font-size:15px;font-weight:800;color:var(--red);">−₺'+(g.tutar||0).toLocaleString('tr-TR')+'</div>'
+            + '<div style="display:flex;gap:4px;"><button onclick="openGiderModal((data.giderler||[]).find(x=>x.id==='+g.id+'))" style="background:#eff6ff;border:none;color:var(--blue);cursor:pointer;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;font-family:Inter,sans-serif;">Düzenle</button><button onclick="silGider('+g.id+')" style="background:#fef2f2;border:none;color:var(--red);cursor:pointer;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;font-family:Inter,sans-serif;">Sil</button></div>'
           + '</div>'
-        + '</div>'
-      + '</div>';
-    }).join('');
+        + '</div>';
+      }).join('');
+    }
   }
 
-  // Grafik çiz
-  setTimeout(() => {
-    grafikCiz(grafikTab);
-  }, 50);
+  // Grafik varsa çiz
+  setTimeout(() => { grafikCiz(grafikTab); }, 50);
 }
 
 let grafikTab = 'aylik';
@@ -5895,7 +5880,8 @@ function renderTakvim() {
   });
 
   // Koltuk randevuları da ekle
-  (data.koltukRandevular || []).forEach(r => {
+  // Koltuk siparişleri — servisTip:'koltuk' olarak normal siparisler içinde
+  data.siparisler.filter(s => s.servisTip === 'koltuk').forEach(r => {
     const t = r.tarih || '';
     if (t >= ayBasStr && t <= aySonStr) {
       gunSiparisler[t] = gunSiparisler[t] || [];
@@ -5988,8 +5974,8 @@ function takvimAyDegistir(delta) {
 }
 
 function takvimGunAc(tarih) {
-  const siparisler = data.siparisler.filter(s => s.tarih === tarih || s.teslimTarihi === tarih || s.teslim_tarihi === tarih);
-  const koltuklar = (data.koltukRandevular || []).filter(r => r.tarih === tarih);
+  const koltuklar = data.siparisler.filter(s => s.servisTip === 'koltuk' && s.tarih === tarih);
+  const siparisler = data.siparisler.filter(s => s.servisTip !== 'koltuk' && (s.tarih === tarih || s.teslimTarihi === tarih || s.teslim_tarihi === tarih));
 
   if (!siparisler.length && !koltuklar.length) return;
 
@@ -8580,7 +8566,7 @@ function profilRenderBilgiler(m) {
           ${m.tel ? telListesi(m.tel).map(t => `<button onclick="window.open('tel:${t}')" style='background:none;border:none;padding:0;color:var(--blue);font-family:Inter,sans-serif;font-size:14px;cursor:pointer;display:block;'>${telFormat(t)}</button>`).join('') : '—'}
         </span>
       </div>
-      <div class="profil-info-row"><span class="profil-info-key">Adres</span><span class="profil-info-val" style="text-align:right;max-width:200px;">${m.adres||'—'}</span></div>
+      <div class="profil-info-row"><span class="profil-info-key">Adres</span><span class="profil-info-val" style="text-align:right;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${m.adres||''}">${m.adres||'—'}</span></div>
       <div class="profil-info-row"><span class="profil-info-key">Müşteri ID</span><span class="profil-info-val">U${m.id}</span></div>
     </div></div>
 
