@@ -3448,7 +3448,7 @@ async function _syncToSupabase() {
         lokasyon: s.lokasyon||null, hizmet: s.hizmet||null,
         m2: s.m2||null, fiyat: s.fiyat||null, sabit_ucret: s.sabitUcret||null,
         not_: s.not||null, odendi: s.odendi||false,
-        etiket_no: s.etiketNo||null, teknisyen: s.teknisyen||null,
+        etiket_no: s.etiketNo||null,
         olusturma: s.olusturma||null
       };
     }).filter(Boolean);
@@ -5460,7 +5460,6 @@ async function _supabaseSiparisPatch(s, syncKalemler = false) {
       fiyat: s.fiyat||null,
       sabit_ucret: s.sabitUcret||null,
       not_: s.not||null,
-      teknisyen: s.teknisyen||null,
       durum: s.durum,
       odendi: s.odendi||false,
       etiket_no: s.etiketNo||null
@@ -10170,7 +10169,7 @@ function updateMbnBadges() {}
   obs.observe(document.body, { childList: true, subtree: true });
 })();
 
-const APP_VERSION = '3.1.0';
+const APP_VERSION = '3.1.1';
 
 // ── Kalem satırı üretici (haliler → siparis_kalemleri) ──
 function _halilerToKalemRows(sid, haliler) {
