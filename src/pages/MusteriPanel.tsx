@@ -37,7 +37,7 @@ const mockBookings = [
 ];
 
 const MusteriPanel: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState('bookings');
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -55,7 +55,7 @@ const MusteriPanel: React.FC = () => {
   };
 
   const handleSaveProfile = () => {
-    alert('Profil bilgileri güncellendi!');
+    updateUser(profileData);
     setIsEditing(false);
   };
 
