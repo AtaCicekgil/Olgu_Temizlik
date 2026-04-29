@@ -3311,21 +3311,25 @@ async function saveMusteriToSupabase(musteriData, callback) {
   const sb = _getSb();
   if (!sb) { toast('⚠️ Bağlantı yok'); return; }
   try {
-    const { data: inserted, error } = await sb
-      .from('musteriler')
-      .insert({
-        ad: musteriData.ad,
-        soyad: musteriData.soyad || null,
-        tel: musteriData.tel || null,
-        adres: musteriData.adres || null,
-        not_: musteriData.not || null,
-        google_resource_name: musteriData.google_resource_name || null,
-        tip: musteriData.tip || null
-      })
-      .select()
-      .single();
-    if (error) throw error;
-    // Local data'ya ekle
+    const baseInsert = {
+      ad: musteriData.ad,
+      soyad: musteriData.soyad || null,
+      tel: musteriData.tel || null,
+      adres: musteriData.adres || null,
+      not_: musteriData.not || null,
+      google_resource_name: musteriData.google_resource_name || null
+    };
+    // tip kolonu — henüz migration yapılmamışsa insert patlamasın diye try/catch
+    let result = await sb.from('musteriler').insert({ ...baseInsert, tip: musteriData.tip || null }).select().single();
+    if (result.error) {
+      // tip kolonu yoksa (migration bekleniyor) — kolon olmadan tekrar dene
+      if (result.error.message && result.error.message.includes('tip')) {
+        result = await sb.from('musteriler').insert(baseInsert).select().single();
+      }
+      if (result.error) throw result.error;
+    }
+    const inserted = result.data;
+    // Local data'ya ekle (tip her zaman lokal olarak saklanır)
     const yeni = {
       id: inserted.id,
       ad: inserted.ad,
@@ -3334,7 +3338,7 @@ async function saveMusteriToSupabase(musteriData, callback) {
       adres: inserted.adres || '',
       not: inserted.not_ || '',
       google_resource_name: inserted.google_resource_name || null,
-      tip: inserted.tip || null
+      tip: musteriData.tip || null
     };
     data.musteriler.push(yeni);
     data.counters.musteri = Math.max(data.counters.musteri, inserted.id);
@@ -4517,7 +4521,8 @@ function renderSiparisArama() {
     });
   }
 
-  liste = sortByTarih(liste);
+  // Sipariş ID'sine göre sırala (S231 > S230 > ... garantili sıra)
+  liste = [...liste].sort((a, b) => parseInt(b.id) - parseInt(a.id));
 
   if (sonucEl) {
     sonucEl.textContent = (ara || !siparisAktifFiltreler.has('tumu')) ? liste.length + ' sipariş bulundu' : data.siparisler.length + ' sipariş';
