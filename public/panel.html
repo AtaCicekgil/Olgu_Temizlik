@@ -567,6 +567,44 @@ body {
 .empty { text-align: center; padding: 48px 20px; color: var(--text3); font-size: 13px; }
 .empty-icon { font-size: 36px; margin-bottom: 10px; }
 
+/* ── Sync Durum Bileşeni ─────────────────────────────── */
+.sync-state-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 0 10px; height: 34px; border-radius: 10px;
+  border: 1.5px solid var(--border); background: var(--white);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  color: var(--text2); white-space: nowrap; flex-shrink: 0;
+  transition: all 0.2s;
+}
+.sync-state-btn:hover { border-color: var(--blue); color: var(--blue); }
+.sync-icon { font-size: 13px; line-height: 1; }
+.sync-label { font-size: 11px; font-weight: 600; }
+
+.sync-state-btn[data-state="syncing"] {
+  border-color: var(--blue); color: var(--blue);
+  background: var(--blue-light);
+}
+.sync-state-btn[data-state="syncing"] .sync-icon {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+.sync-state-btn[data-state="error"] {
+  border-color: #fca5a5; color: var(--red);
+  background: var(--red-bg);
+}
+.sync-state-btn[data-state="offline"] {
+  border-color: #d1d5db; color: var(--text3);
+  background: var(--bg);
+}
+.sync-state-btn[data-state="pending"] {
+  border-color: #fbbf24; color: #92400e;
+  background: #fffbeb;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+html[data-tema="karanlik"] .sync-state-btn {
+  background: var(--white); border-color: var(--border); color: var(--text2);
+}
+
 .toast {
   position: fixed;
   bottom: 28px;
@@ -1586,10 +1624,9 @@ iframe[title*="chat" i] { display: none !important; }
                font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
         🔍
       </button>
-      <button id="topbar-sync-btn" onclick="manuelSync()" title="Veritabanıyla senkronize et"
-        style="width:34px;height:34px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);
-               font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        🔄
+      <button id="topbar-sync-btn" onclick="manuelSync()" title="Veritabanıyla senkronize et" class="sync-state-btn">
+        <span id="sync-icon" class="sync-icon">✓</span>
+        <span id="sync-label" class="sync-label">Kaydedildi</span>
       </button>
       <button class="btn btn-primary" id="topbar-new-btn" onclick="openYeniSiparis()" style="white-space:nowrap;padding:0 16px;height:38px;font-size:14px;font-weight:700;border-radius:12px;">+ Yeni Sipariş</button>
     </div>
@@ -2963,18 +3000,17 @@ async function cikisYap() {
   location.reload();
 }
 async function manuelSync() {
-  const btn = document.getElementById('topbar-sync-btn');
-  if (btn) { btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'; }
-  toast('☁️ Yükleniyor...');
+  clearTimeout(_syncTimer); // Bekleyen debounce'u iptal et, anında sync
+  _setSyncState('syncing');
   try {
-    const zaman = new Promise((_,rej) => setTimeout(() => rej(new Error('Zaman aşımı')), 20000));
-    await Promise.race([_syncToSupabase(), zaman]);
-    await Promise.race([_loadFromSupabase(), new Promise((_,rej) => setTimeout(() => rej(new Error('Zaman aşımı')), 15000))]);
-    toast('✅ Senkronize edildi');
+    const t20 = new Promise((_,rej) => setTimeout(() => rej(new Error('Zaman aşımı (20s)')), 20000));
+    const t15 = new Promise((_,rej) => setTimeout(() => rej(new Error('Zaman aşımı (15s)')), 15000));
+    await Promise.race([_syncToSupabase(), t20]);
+    await Promise.race([_loadFromSupabase(), t15]);
+    _setSyncState('idle');
   } catch(e) {
-    toast('❌ ' + (e.message || 'Hata'));
-  } finally {
-    if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
+    _setSyncState('error');
+    toast('❌ ' + (e.message || 'Senkronizasyon hatası'));
   }
 }
 function _appBaslat(){
@@ -3380,7 +3416,7 @@ function save() {
       try { localStorage.setItem('olgu_hali_v2', JSON.stringify(d2)); toast('⚠️ Depolama doldu — fotoğraflar kaydedilemedi'); } catch(e2) {}
     }
   }
-  if (_getSb()) _syncToSupabase();
+  if (_getSb()) _debouncedSync();
 }
 
 async function _syncToSupabase() {
@@ -3434,7 +3470,14 @@ async function _syncToSupabase() {
       iban_banka: data.settings.ibanBanka||'', mesajlar: data.settings.mesajlar||{},
       teknisyenler: data.settings.teknisyenler||[]
     }).eq('id',1);
-  } catch(err) { console.warn('Supabase sync:', err.message); }
+    _setSyncState('idle');
+  } catch(err) {
+    console.warn('Supabase sync:', err.message);
+    _setSyncState('error');
+    toast('⚠️ Kaydedilemedi: ' + (err.message || 'Bağlantı hatası'));
+    // 10 saniye sonra otomatik retry
+    setTimeout(() => { if (_getSb()) _syncToSupabase(); }, 10000);
+  }
 }
 
 function load() {
@@ -3612,12 +3655,15 @@ async function _loadFromSupabase() {
     const aktifSayfa = document.querySelector('.page.active');
     if (aktifSayfa) renderPage(aktifSayfa.id.replace('page-',''));
     buildDateStrip();
-    toast('☁️ Senkronize edildi');
+    _setSyncState('idle');
     // Bildirim kontrolü (sadece ilk yüklemede)
     if (!window._bildirimKontrolYapildi) { window._bildirimKontrolYapildi = true; setTimeout(_bildirimKontrol, 3000); }
     // Realtime aboneliği (sadece ilk yüklemede)
     if (!window._realtimeStarted) { window._realtimeStarted = true; _startRealtime(); }
-  } catch(err) { console.warn('Supabase yükleme:', err.message); }
+  } catch(err) {
+    console.warn('Supabase yükleme:', err.message);
+    toast('⚠️ Veri yüklenemedi — ' + (err.message || 'Bağlantı hatası'));
+  }
 }
 
 function saveSettings() {
@@ -4318,13 +4364,23 @@ function siparisleriCsvIndir() {
 }
 
 // ── Supabase Realtime ────────────────────────────────────
+let _realtimeDebounce = null;
+function _realtimeReload() {
+  clearTimeout(_realtimeDebounce);
+  _realtimeDebounce = setTimeout(() => {
+    // Modal açıkken reload ertelenir — race condition önlenir
+    if (document.querySelector('.modal-overlay.open')) return;
+    _loadFromSupabase();
+  }, 2000);
+}
+
 function _startRealtime() {
   const sb = _getSb(); if(!sb) return;
   try {
     sb.channel('panel-realtime')
-      .on('postgres_changes', {event:'*', schema:'public', table:'siparisler'}, () => { _loadFromSupabase(); })
-      .on('postgres_changes', {event:'*', schema:'public', table:'giderler'}, () => { _loadFromSupabase(); })
-      .on('postgres_changes', {event:'*', schema:'public', table:'musteriler'}, () => { _loadFromSupabase(); })
+      .on('postgres_changes', {event:'*', schema:'public', table:'siparisler'}, _realtimeReload)
+      .on('postgres_changes', {event:'*', schema:'public', table:'giderler'}, _realtimeReload)
+      .on('postgres_changes', {event:'*', schema:'public', table:'musteriler'}, _realtimeReload)
       .subscribe();
   } catch(e) { console.warn('Realtime başlatılamadı:', e.message); }
 }
@@ -5393,7 +5449,10 @@ async function _supabaseSiparisPatch(s) {
       odendi: s.odendi||false,
       etiket_no: s.etiketNo||null
     }).eq('id', numSid);
-  } catch(e) { console.warn('Sipariş patch:', e.message); }
+  } catch(e) {
+    console.warn('Sipariş patch:', e.message);
+    toast('⚠️ Sipariş kaydedilemedi: ' + (e.message || 'Bağlantı hatası'));
+  }
 }
 
 function toggleCard(id,hdr) {
@@ -10059,6 +10118,67 @@ function updateMbnBadges() {}
 })();
 
 const APP_VERSION = '2.3.0';
+
+// ── Sync Durum Yönetimi ──────────────────────────────────
+let _syncTimer = null;
+let _lastSyncTime = null;
+
+function _setSyncState(state) {
+  const btn   = document.getElementById('topbar-sync-btn');
+  const icon  = document.getElementById('sync-icon');
+  const label = document.getElementById('sync-label');
+  if (!btn || !icon || !label) return;
+
+  btn.dataset.state = state;
+  btn.style.pointerEvents = state === 'syncing' ? 'none' : '';
+
+  const now = () => {
+    const d = new Date();
+    return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+  };
+
+  switch(state) {
+    case 'idle':
+      _lastSyncTime = now();
+      icon.textContent  = '✓';
+      label.textContent = _lastSyncTime;
+      break;
+    case 'syncing':
+      icon.textContent  = '⟳';
+      label.textContent = 'Kaydediliyor';
+      break;
+    case 'pending':
+      icon.textContent  = '●';
+      label.textContent = 'Bekliyor';
+      break;
+    case 'error':
+      icon.textContent  = '⚠';
+      label.textContent = 'Hata ↺';
+      break;
+    case 'offline':
+      icon.textContent  = '⊘';
+      label.textContent = 'Çevrimdışı';
+      break;
+  }
+}
+
+function _debouncedSync() {
+  clearTimeout(_syncTimer);
+  _setSyncState('pending');
+  _syncTimer = setTimeout(async () => {
+    _setSyncState('syncing');
+    await _syncToSupabase();
+  }, 3000);
+}
+
+// Çevrimiçi / çevrimdışı algılama
+window.addEventListener('offline', () => _setSyncState('offline'));
+window.addEventListener('online',  () => {
+  if (_getSb()) {
+    _setSyncState('pending');
+    _debouncedSync();
+  }
+});
 
 function temaToggle() {
   const karanlik = document.documentElement.dataset.tema === 'karanlik';
