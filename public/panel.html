@@ -8984,7 +8984,7 @@ function musteriDuzenle(id) {
   document.getElementById('modal-musteri-edit').classList.add('open');
 }
 
-function saveMusteriEdit() {
+async function saveMusteriEdit() {
   const id = document.getElementById('musteri-edit-id').value;
   const m = data.musteriler.find(x=>x.id==id); if(!m)return;
   const newTel = document.getElementById('musteri-edit-tel').value.trim();
@@ -9003,6 +9003,16 @@ function saveMusteriEdit() {
   closeModal('modal-musteri-edit');
   if (profilMusteriId) openProfil(profilMusteriId);
   renderMusteriler();
+
+  // Direkt o müşteriyi Supabase'e kaydet
+  const sb = _getSb();
+  if (sb) {
+    const { error } = await sb.from('musteriler').update({
+      ad: m.ad, soyad: m.soyad||null, tel: m.tel||null, adres: m.adres||null, not_: m.not||null
+    }).eq('id', parseInt(String(m.id).replace(/[^0-9]/g,'')));
+    if (error) { toast('⚠️ Veritabanı hatası: ' + error.message); return; }
+  }
+
   toast('Müşteri güncellendi');
   gcSyncMusteri(m, m.google_resource_name ? 'update' : 'create');
 }
