@@ -5632,13 +5632,15 @@ function _topluBarGizle() {
 
 function topluTasi(hedefDurum) {
   if (!secilenSiparisler.size) { toast('Sipariş seçmedin'); return; }
+  const etkilenenler = [];
   secilenSiparisler.forEach(sid => {
     const s = data.siparisler.find(x=>x.id==sid);
-    if (s) s.durum = hedefDurum;
+    if (s) { s.durum = hedefDurum; etkilenenler.push(s); }
   });
   const say = secilenSiparisler.size;
   topluSecimIptal();
   save();
+  etkilenenler.forEach(s => _supabaseSiparisPatch(s));
   toast(`${say} sipariş → ${STATUS_INFO[hedefDurum]?.label||hedefDurum}`);
 }
 // rotaOzelSira: { 'alinacak': [sid, sid, ...], 'teslimAt': [...], 'koltuk': [...] }
@@ -6874,6 +6876,7 @@ function kurumsalSiparisDurumIler(sid) {
   s.durum = sira[idx+1];
   if (s.durum === 'teslim') s.teslimGerceklesmeTarihi = new Date().toISOString().split('T')[0];
   save();
+  _supabaseSiparisPatch(s);
   renderKurumsalSiparisler();
   updateBadges();
   toast(`${s.kurumNo} → ${STATUS_INFO[s.durum]?.label||s.durum}`);
@@ -8583,6 +8586,7 @@ function onaylaGecis(){
     else { const fn=MESAJLAR[hedef]; mesaj=fn?fn(s,m||{ad:'Müşteri',soyad:''}):'' }
   }
   save();
+  _supabaseSiparisPatch(s);
   if(mesaj) navigator.clipboard.writeText(mesaj).then(()=>toast('✅ Mesaj kopyalandı!')).catch(()=>toast('Durum güncellendi'));
   else toast('Durum güncellendi');
   closeModal('modal-durum');renderAll();pendingDurum=null;
@@ -9473,6 +9477,7 @@ function tasiSiparis(sid,hedef){
   const fnTasi=MESAJLAR[hedef];
   const mesajTasi=tmplTasi?mesajSablonuIsle(tmplTasi,s,m2||{ad:'Müşteri',soyad:''}):(fnTasi?fnTasi(s,m2||{ad:'Müşteri',soyad:''}):'');
   save();
+  _supabaseSiparisPatch(s);
   closeModal('modal-tasi');
   renderAll();
   if(mesajTasi){
