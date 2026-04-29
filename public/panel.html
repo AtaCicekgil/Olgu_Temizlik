@@ -2967,13 +2967,15 @@ async function manuelSync() {
   if (btn) { btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'; }
   toast('☁️ Yükleniyor...');
   try {
-    await _syncToSupabase();
-    await _loadFromSupabase();
+    const zaman = new Promise((_,rej) => setTimeout(() => rej(new Error('Zaman aşımı')), 20000));
+    await Promise.race([_syncToSupabase(), zaman]);
+    await Promise.race([_loadFromSupabase(), new Promise((_,rej) => setTimeout(() => rej(new Error('Zaman aşımı')), 15000))]);
     toast('✅ Senkronize edildi');
   } catch(e) {
-    toast('❌ Hata: ' + e.message);
+    toast('❌ ' + (e.message || 'Hata'));
+  } finally {
+    if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
   }
-  if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
 }
 function _appBaslat(){
   load();
@@ -3384,6 +3386,7 @@ function save() {
 async function _syncToSupabase() {
   const sb = _getSb(); if(!sb) return;
   try {
+    // Müşteriler — toplu upsert
     if (data.musteriler.length > 0) {
       const mRows = data.musteriler.map(m => ({
         id: parseInt(String(m.id).replace(/[^0-9]/g,'')) || undefined,
@@ -3392,60 +3395,39 @@ async function _syncToSupabase() {
       }));
       await sb.from('musteriler').upsert(mRows, {onConflict:'id'});
     }
-    for (const s of data.siparisler) {
-      const sid = parseInt(String(s.id).replace(/[^0-9]/g,'')) || null; if(!sid) continue;
-      const mid = s.musteriId ? parseInt(String(s.musteriId).replace(/[^0-9]/g,'')) : null;
-      await sb.from('siparisler').upsert({
-        id: sid, musteri_id: mid, servis_tip: s.servisTip||'hali',
-        durum: s.durum, tarih: s.tarih||null, saat: s.saat||null,
+
+    // Siparişler — toplu upsert (tek istek)
+    const siparisRows = data.siparisler.map(s => {
+      const sid = parseInt(String(s.id).replace(/[^0-9]/g,'')) || null;
+      if (!sid) return null;
+      return {
+        id: sid,
+        musteri_id: s.musteriId ? parseInt(String(s.musteriId).replace(/[^0-9]/g,'')) : null,
+        servis_tip: s.servisTip||'hali', durum: s.durum,
+        tarih: s.tarih||null, saat: s.saat||null,
         teslim_tarihi: s.teslimTarihi||null,
         teslim_gerceklesme_tarihi: s.teslimGerceklesmeTarihi||null,
-        koltuk_no: s.koltukNo||null,
-        kurum_no: s.kurumNo||null,
-        lokasyon: s.lokasyon||null,
-        hizmet: s.hizmet||null,
-        m2: s.m2||null,
-        fiyat: s.fiyat||null,
-        sabit_ucret: s.sabitUcret||null,
-        not_: s.not||null,
-        odendi: s.odendi||false, etiket_no: s.etiketNo||null,
-        teknisyen: s.teknisyen||null,
+        koltuk_no: s.koltukNo||null, kurum_no: s.kurumNo||null,
+        lokasyon: s.lokasyon||null, hizmet: s.hizmet||null,
+        m2: s.m2||null, fiyat: s.fiyat||null, sabit_ucret: s.sabitUcret||null,
+        not_: s.not||null, odendi: s.odendi||false,
+        etiket_no: s.etiketNo||null, teknisyen: s.teknisyen||null,
         olusturma: s.olusturma||null
-      }, {onConflict:'id'});
-      if (s.haliler && s.haliler.length > 0) {
-        const yeniKalemler = s.haliler.map(h => ({
-          siparis_id: sid,
-          tip_: h.tip||'tekli',
-          cins_ad: h.tip==='ekucret' ? (h.aciklama||null) : (h.cinsAd||h.ad||null),
-          kategori: h.tip==='ekucret' ? (h.tutar<0?'indirim':'ekucret') : (h.kategori||null),
-          m2: h.m2||null, adet: h.adet||1,
-          birim_fiyat: h.tip==='ekucret' ? (h.tutar||0) : (h.ozelFiyat??h.birimFiyat??h.fiyat??null),
-          toplam: h.tip==='ekucret' ? (h.tutar||0) : (h.toplam||null),
-          not_: h.m2Sonra ? 'sonra' : null
-        }));
-        // Delete → Insert: localStorage kaynak kayıt, hata olursa data güvende
-        try {
-          await sb.from('siparis_kalemleri').delete().eq('siparis_id', sid);
-          await sb.from('siparis_kalemleri').insert(yeniKalemler);
-        } catch(kErr) {
-          console.warn('Kalem sync hatası (localStorage güvende):', kErr?.message);
-        }
-      }
-      // Fotoğraf URL'lerini DB'ye kaydet
-      const fotoUrls = [
-        ...(s.fotolar?.alirken||[]).map(f=>({siparis_id:sid, tip:'alirken', url: typeof f==='string'?f:f.url})),
-        ...(s.fotolar?.ederken||[]).map(f=>({siparis_id:sid, tip:'ederken', url: typeof f==='string'?f:f.url}))
-      ].filter(f=>f.url && f.url.startsWith('http'));
-      if (fotoUrls.length > 0) {
-        await sb.from('fotograflar').delete().eq('siparis_id', sid);
-        await sb.from('fotograflar').insert(fotoUrls);
-      }
+      };
+    }).filter(Boolean);
+    if (siparisRows.length > 0) {
+      await sb.from('siparisler').upsert(siparisRows, {onConflict:'id'});
     }
+
+    // Giderler — toplu upsert
     if (data.giderler.length > 0) {
       await sb.from('giderler').upsert(data.giderler.map(g => ({
-        id: g.id, kategori: g.kategori||null, tutar: g.tutar, aciklama: g.aciklama||null, tarih: g.tarih||new Date().toISOString().split('T')[0]
+        id: g.id, kategori: g.kategori||null, tutar: g.tutar,
+        aciklama: g.aciklama||null, tarih: g.tarih||new Date().toISOString().split('T')[0]
       })), {onConflict:'id'});
     }
+
+    // Ayarlar
     await sb.from('ayarlar').update({
       isletme_ad: data.settings.isletmeAd||'', isletme_tel: data.settings.isletmeTel||'',
       iban_isim: data.settings.ibanIsim||'', iban_no: data.settings.ibanNo||'',
