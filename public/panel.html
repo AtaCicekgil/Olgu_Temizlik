@@ -7179,7 +7179,7 @@ function renderKasa() {
       <div class="kasa-gelir-badge" style="background:${isKoltuk?'#f5f3ff':'#eff6ff'};">${isKoltuk?'🛋️':'🪢'}</div>
       <div style="flex:1;min-width:0;">
         <div style="font-weight:700;font-size:13px;color:var(--text);">${mIsim(m,'?')}</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:1px;">\${siparisNo(s)} · \${totalAdet} ürün${totalM2>0?' · '+totalM2.toFixed(1)+'m²':''} · ${s.tarih}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:1px;">${siparisNo(s)} · ${totalAdet} ürün${totalM2>0?' · '+totalM2.toFixed(1)+'m²':''} · ${s.tarih}</div>
       </div>
       <div style="text-align:right;flex-shrink:0;">
         <div style="font-size:15px;font-weight:800;color:var(--green);">${fmt(t)}</div>
