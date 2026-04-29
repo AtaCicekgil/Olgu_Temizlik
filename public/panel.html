@@ -1734,9 +1734,9 @@ iframe[title*="chat" i] { display: none !important; }
           </div>
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--border);margin-top:8px;">
             <span style="font-size:11px;font-weight:700;color:var(--text2);flex-shrink:0;">Sırala:</span>
-            <button type="button" class="musteri-chip active" data-siralama="siparis" onclick="musteriSiralamaSec(this)">Sipariş Sayısı</button>
+            <button type="button" class="musteri-chip" data-siralama="siparis" onclick="musteriSiralamaSec(this)">Sipariş Sayısı</button>
             <button type="button" class="musteri-chip" data-siralama="alfabetik" onclick="musteriSiralamaSec(this)">A–Z</button>
-            <button type="button" class="musteri-chip" data-siralama="yeni" onclick="musteriSiralamaSec(this)">Yeni Eklenen</button>
+            <button type="button" class="musteri-chip active" data-siralama="yeni" onclick="musteriSiralamaSec(this)">Yeni Eklenen</button>
           </div>
         </div>
       </div>
@@ -4445,7 +4445,7 @@ function toggleFiltrePaneli(tip) {
 }
 
 let siparisAktifFiltreler = new Set(['tumu']);
-let musteriAktifSiralama = 'siparis';
+let musteriAktifSiralama = 'yeni';
 
 function musteriSiralamaSec(btn) {
   document.querySelectorAll('#page-musteriler [data-siralama]').forEach(c=>c.classList.remove('active'));
