@@ -2967,7 +2967,9 @@ async function manuelSync() {
   if (btn) { btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'; }
   toast('☁️ Yükleniyor...');
   try {
+    await _syncToSupabase();
     await _loadFromSupabase();
+    toast('✅ Senkronize edildi');
   } catch(e) {
     toast('❌ Hata: ' + e.message);
   }
