@@ -3481,8 +3481,7 @@ async function _syncToSupabase() {
     const { error: aErr } = await sb.from('ayarlar').update({
       isletme_ad: data.settings.isletmeAd||'', isletme_tel: data.settings.isletmeTel||'',
       iban_isim: data.settings.ibanIsim||'', iban_no: data.settings.ibanNo||'',
-      iban_banka: data.settings.ibanBanka||'', mesajlar: data.settings.mesajlar||{},
-      teknisyenler: data.settings.teknisyenler||[]
+      iban_banka: data.settings.ibanBanka||'', mesajlar: data.settings.mesajlar||{}
     }).eq('id',1);
     if (aErr) console.warn('Ayar sync:', aErr.message);
 
@@ -10169,7 +10168,7 @@ function updateMbnBadges() {}
   obs.observe(document.body, { childList: true, subtree: true });
 })();
 
-const APP_VERSION = '3.1.1';
+const APP_VERSION = '3.1.2';
 
 // ── Kalem satırı üretici (haliler → siparis_kalemleri) ──
 function _halilerToKalemRows(sid, haliler) {
