@@ -3455,6 +3455,16 @@ async function _syncToSupabase() {
       await sb.from('siparisler').upsert(siparisRows, {onConflict:'id'});
     }
 
+    // Sipariş kalemleri — her sipariş için delete+insert (toplu)
+    for (const s of data.siparisler) {
+      const sid = parseInt(String(s.id).replace(/[^0-9]/g,'')) || null;
+      if (!sid || !s.haliler?.length) continue;
+      try {
+        await sb.from('siparis_kalemleri').delete().eq('siparis_id', sid);
+        await sb.from('siparis_kalemleri').insert(_halilerToKalemRows(sid, s.haliler));
+      } catch(kErr) { console.warn('Kalem sync:', kErr?.message); }
+    }
+
     // Giderler — toplu upsert
     if (data.giderler.length > 0) {
       await sb.from('giderler').upsert(data.giderler.map(g => ({
@@ -5420,13 +5430,13 @@ function saveDetay() {
   const tekSel = document.getElementById('detay-teknisyen');
   s.teknisyen = tekSel ? (tekSel.value||null) : (s.teknisyen||null);
   save();
-  // Hedefli Supabase update (tüm sync yerine)
-  _supabaseSiparisPatch(s);
+  // Hedefli Supabase update — kalemler dahil
+  _supabaseSiparisPatch(s, true);
   closeModal('modal-siparis-detay'); renderAll();
   toast('Sipariş güncellendi ✓');
 }
 
-async function _supabaseSiparisPatch(s) {
+async function _supabaseSiparisPatch(s, syncKalemler = false) {
   const sb = _getSb(); if (!sb) return;
   const numSid = parseInt(String(s.id).replace(/[^0-9]/g,''));
   if (!numSid) return;
@@ -5449,6 +5459,12 @@ async function _supabaseSiparisPatch(s) {
       odendi: s.odendi||false,
       etiket_no: s.etiketNo||null
     }).eq('id', numSid);
+
+    // Kalemler de güncellenmesini istediyse (saveDetay'dan çağrılınca)
+    if (syncKalemler && s.haliler?.length > 0) {
+      await sb.from('siparis_kalemleri').delete().eq('siparis_id', numSid);
+      await sb.from('siparis_kalemleri').insert(_halilerToKalemRows(numSid, s.haliler));
+    }
   } catch(e) {
     console.warn('Sipariş patch:', e.message);
     toast('⚠️ Sipariş kaydedilemedi: ' + (e.message || 'Bağlantı hatası'));
@@ -8451,15 +8467,43 @@ async function wKaydet() {
     };
     data.siparisler.push(siparis);
     save();
-    // Fotoğraf URL'lerini DB'ye kaydet
+
+    // Supabase'e direkt yaz (debounce'u bekleme)
     const sb2 = _getSb();
     if (sb2) {
+      // 1. Siparişi yaz
+      const { error: sipErr } = await sb2.from('siparisler').upsert({
+        id: sid,
+        musteri_id: siparis.musteriId ? parseInt(String(siparis.musteriId).replace(/[^0-9]/g,'')) : null,
+        servis_tip: siparis.servisTip||'hali',
+        durum: siparis.durum,
+        tarih: siparis.tarih||null,
+        saat: siparis.saat||null,
+        teslim_tarihi: siparis.teslimTarihi||null,
+        koltuk_no: siparis.koltukNo||null,
+        kurum_no: siparis.kurumNo||null,
+        not_: siparis.not||null,
+        odendi: false,
+        olusturma: siparis.olusturma
+      }, {onConflict:'id'});
+      if (sipErr) { toast('⚠️ Sipariş DB hatası: ' + sipErr.message); }
+
+      // 2. Kalemleri yaz
+      const kalemRows = _halilerToKalemRows(sid, siparis.haliler);
+      if (kalemRows.length > 0) {
+        await sb2.from('siparis_kalemleri').delete().eq('siparis_id', sid);
+        const { error: kalemErr } = await sb2.from('siparis_kalemleri').insert(kalemRows);
+        if (kalemErr) toast('⚠️ Kalem DB hatası: ' + kalemErr.message);
+      }
+
+      // 3. Fotoğrafları yaz
       const fotoRows = [
         ...(fotolar.alirken||[]).filter(u=>u&&u.startsWith('http')).map(url=>({siparis_id:sid, tip:'alirken', url})),
         ...(fotolar.ederken||[]).filter(u=>u&&u.startsWith('http')).map(url=>({siparis_id:sid, tip:'ederken', url}))
       ];
-      if (fotoRows.length) sb2.from('fotograflar').insert(fotoRows).then(()=>{});
+      if (fotoRows.length) await sb2.from('fotograflar').insert(fotoRows);
     }
+
     closeWizard();
     renderAll();
     toast('Sipariş oluşturuldu: ' + siparisNo(siparis));
@@ -10118,6 +10162,20 @@ function updateMbnBadges() {}
 })();
 
 const APP_VERSION = '2.3.0';
+
+// ── Kalem satırı üretici (haliler → siparis_kalemleri) ──
+function _halilerToKalemRows(sid, haliler) {
+  return (haliler||[]).map(h => ({
+    siparis_id: sid,
+    tip_: h.tip||'tekli',
+    cins_ad: h.tip==='ekucret' ? (h.aciklama||null) : (h.cinsAd||h.ad||null),
+    kategori: h.tip==='ekucret' ? (h.tutar<0?'indirim':'ekucret') : (h.kategori||null),
+    m2: h.m2||null, adet: h.adet||1,
+    birim_fiyat: h.tip==='ekucret' ? (h.tutar||0) : (h.ozelFiyat??h.birimFiyat??h.fiyat??null),
+    toplam: h.tip==='ekucret' ? (h.tutar||0) : (h.toplam||null),
+    not_: h.m2Sonra ? 'sonra' : null
+  }));
+}
 
 // ── Sync Durum Yönetimi ──────────────────────────────────
 let _syncTimer = null;
