@@ -6198,59 +6198,66 @@ function takvimGunAc(tarih) {
 
   if (!alindi.length && !teslim.length) return;
 
-  let mevcut = document.getElementById('modal-takvim-gun');
-  if (!mevcut) {
-    mevcut = document.createElement('div');
-    mevcut.id = 'modal-takvim-gun';
-    mevcut.className = 'modal';
-    mevcut.style.cssText = 'display:flex;align-items:flex-end;justify-content:center;z-index:9999;';
-    mevcut.onclick = function(e){ if(e.target===this){ this.style.display='none'; document.body.style.overflow=''; } };
-    document.body.appendChild(mevcut);
+  let overlay = document.getElementById('modal-takvim-gun');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'modal-takvim-gun';
+    overlay.className = 'modal-overlay';
+    overlay.style.cssText = 'align-items:flex-end;padding:0;';
+    overlay.onclick = function(e){ if(e.target===this) _takvimGunKapat(); };
+    document.body.appendChild(overlay);
   }
 
   const tarihLabel = new Date(tarih+'T00:00:00').toLocaleDateString('tr-TR', {day:'numeric', month:'long', year:'numeric'});
 
-  const kartHtml = (s, tip) => {
+  const sipKart = (s, tip) => {
     const mu = data.musteriler.find(x=>x.id==s.musteriId);
-    const t = hesaplaToplam(s);
+    const tutar = s.servisTip==='kurumsal' ? ((s.m2||0)*(s.fiyat||0)+(s.sabitUcret||0)) : hesaplaToplam(s);
     const adet = (s.haliler||[]).filter(h=>h.tip!=='ekucret').length;
-    const m2 = (s.haliler||[]).filter(h=>h.tip!=='ekucret').reduce((a,h)=>a+(parseFloat(h.m2)||0),0);
-    const renk = tip==='alindi' ? {bg:'#dcfce7',color:'#16a34a',label:'📥 Alındı'} : {bg:'var(--blue-light)',color:'var(--blue)',label:'📦 Teslim'};
-    return `<div onclick="document.getElementById('modal-takvim-gun').style.display='none';document.body.style.overflow='';openKartDetay('${s.id}')"
-      style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;margin-bottom:6px;cursor:pointer;"
-      onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-        <div style="flex:1;min-width:0;">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
-            <span style="font-size:10px;font-weight:700;color:var(--blue);">${siparisNo(s)}</span>
-            <span style="font-size:10px;font-weight:700;background:${renk.bg};color:${renk.color};padding:1px 6px;border-radius:4px;">${renk.label}</span>
-          </div>
-          <div style="font-size:13px;font-weight:700;color:var(--text1);">${mIsim(mu,'Bilinmiyor')}</div>
-          ${adet > 0 || m2 > 0 ? `<div style="font-size:11px;color:var(--text3);margin-top:2px;">${adet > 0 ? adet+' adet' : ''}${adet > 0 && m2 > 0 ? ' · ' : ''}${m2 > 0 ? m2.toLocaleString('tr-TR',{maximumFractionDigits:1})+' m²' : ''}</div>` : ''}
-        </div>
-        <div style="font-size:14px;font-weight:800;color:var(--blue);flex-shrink:0;">₺${t.toLocaleString('tr-TR')}</div>
-      </div>
-    </div>`;
+    const m2top = (s.haliler||[]).filter(h=>h.tip!=='ekucret').reduce((a,h)=>a+(parseFloat(h.m2)||0),0);
+    const rBg = tip==='alindi' ? '#dcfce7' : 'var(--blue-light)';
+    const rClr = tip==='alindi' ? '#16a34a' : 'var(--blue)';
+    const rLbl = tip==='alindi' ? '📥 Alındı' : '📦 Teslim';
+    const sid = s.id;
+    return '<div onclick="_takvimGunKapat();openKartDetay('+JSON.stringify(sid)+')" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;margin-bottom:6px;cursor:pointer;" onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'\'">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">'+
+        '<div style="flex:1;min-width:0;">'+
+          '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">'+
+            '<span style="font-size:10px;font-weight:700;color:var(--blue);">'+siparisNo(s)+'</span>'+
+            '<span style="font-size:10px;font-weight:700;background:'+rBg+';color:'+rClr+';padding:1px 6px;border-radius:4px;">'+rLbl+'</span>'+
+          '</div>'+
+          '<div style="font-size:13px;font-weight:700;color:var(--text1);">'+mIsim(mu,'Bilinmiyor')+'</div>'+
+          (adet > 0 || m2top > 0 ? '<div style="font-size:11px;color:var(--text3);margin-top:2px;">'+(adet>0?adet+' adet':'')+(adet>0&&m2top>0?' · ':'')+(m2top>0?m2top.toLocaleString('tr-TR',{maximumFractionDigits:1})+' m²':'')+'</div>' : '')+
+        '</div>'+
+        '<div style="font-size:14px;font-weight:800;color:var(--blue);flex-shrink:0;">₺'+tutar.toLocaleString('tr-TR')+'</div>'+
+      '</div>'+
+    '</div>';
   };
 
-  mevcut.innerHTML = `
-    <div class="modal-box" style="max-width:440px;width:95%;border-radius:18px 18px 0 0;padding:20px;background:var(--white);max-height:80vh;overflow-y:auto;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-        <div style="font-size:16px;font-weight:800;color:var(--text1);">📅 ${tarihLabel}</div>
-        <button onclick="document.getElementById('modal-takvim-gun').style.display='none';document.body.style.overflow=''" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);">×</button>
-      </div>
-      ${alindi.length ? `
-        <div style="font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;margin-bottom:8px;">📥 Alınan Siparişler (${alindi.length})</div>
-        ${alindi.map(s=>kartHtml(s,'alindi')).join('')}
-      ` : ''}
-      ${teslim.length ? `
-        <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;margin:${alindi.length?'12px':0} 0 8px;">📦 Teslim Edilenler (${teslim.length})</div>
-        ${teslim.map(s=>kartHtml(s,'teslim')).join('')}
-      ` : ''}
-    </div>
-  `;
-  mevcut.style.display = 'flex';
+  let html = '<div style="max-width:440px;width:100%;border-radius:18px 18px 0 0;padding:20px;background:var(--white);max-height:80vh;overflow-y:auto;">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">';
+  html += '<div style="font-size:16px;font-weight:800;color:var(--text1);">📅 '+tarihLabel+'</div>';
+  html += '<button onclick="_takvimGunKapat()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);">×</button>';
+  html += '</div>';
+  if (alindi.length) {
+    html += '<div style="font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;margin-bottom:8px;">📥 Alınan Siparişler ('+alindi.length+')</div>';
+    html += alindi.map(s=>sipKart(s,'alindi')).join('');
+  }
+  if (teslim.length) {
+    html += '<div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;margin:'+(alindi.length?'12px':'0')+' 0 8px;">📦 Teslim Edilenler ('+teslim.length+')</div>';
+    html += teslim.map(s=>sipKart(s,'teslim')).join('');
+  }
+  html += '</div>';
+
+  overlay.innerHTML = html;
+  overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+
+function _takvimGunKapat() {
+  const o = document.getElementById('modal-takvim-gun');
+  if (o) o.classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 // ── Stok Takibi ─────────────────────────────────────────────────────────────
@@ -10252,7 +10259,7 @@ function updateMbnBadges() {}
   obs.observe(document.body, { childList: true, subtree: true });
 })();
 
-const APP_VERSION = '3.1.4';
+const APP_VERSION = '3.1.5';
 
 // ── Kalem satırı üretici (haliler → siparis_kalemleri) ──
 function _halilerToKalemRows(sid, haliler) {
