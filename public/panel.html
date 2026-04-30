@@ -6068,111 +6068,114 @@ function renderTakvim() {
   const ayIlk = new Date(y, m, 1);
   const aySon = new Date(y, m + 1, 0);
   const bugun = now.toISOString().split('T')[0];
-
-  // O aya ait siparişleri tarihlerine göre grupla
   const ayBasStr = ayIlk.toISOString().split('T')[0];
   const aySonStr = aySon.toISOString().split('T')[0];
-
   const ayAdi = ayIlk.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
+
+  // Sadece iki olay: alındı (tarih) ve teslim edildi (teslimGerceklesmeTarihi)
+  const gunAlindi = {}; // tarih → [sipariş]
+  const gunTeslim = {}; // tarih → [sipariş]
+
+  data.siparisler.forEach(s => {
+    if (s.servisTip === 'koltuk') return; // koltuk ayrı
+    // Alındı: müşteriden alınan tarih (tarih), durum alinacak değil = fiilen alınmış
+    const t = s.tarih || '';
+    if (t >= ayBasStr && t <= aySonStr && s.durum !== 'alinacak') {
+      gunAlindi[t] = gunAlindi[t] || [];
+      gunAlindi[t].push(s);
+    }
+    // Teslim edildi: gerçekleşme tarihi
+    const tg = s.teslimGerceklesmeTarihi || '';
+    if (tg >= ayBasStr && tg <= aySonStr) {
+      gunTeslim[tg] = gunTeslim[tg] || [];
+      gunTeslim[tg].push(s);
+    }
+  });
 
   // Haftanın başlangıcı: Pazartesi
   const haftaBaslangic = ayIlk.getDay() === 0 ? 6 : ayIlk.getDay() - 1;
-
-  // Günlük sipariş sayıları
-  const gunSiparisler = {};
-  data.siparisler.forEach(s => {
-    const t = s.tarih || '';
-    if (t >= ayBasStr && t <= aySonStr) {
-      gunSiparisler[t] = gunSiparisler[t] || [];
-      gunSiparisler[t].push(s);
-    }
-    // Teslim tarihi de göster
-    const td = s.teslimTarihi || s.teslim_tarihi || '';
-    if (td && td >= ayBasStr && td <= aySonStr && td !== t) {
-      gunSiparisler[td] = gunSiparisler[td] || [];
-      // teslim tarihindeki görünüm için sadece koltuk teslim işaretli
-    }
-  });
-
-  // Koltuk randevuları da ekle
-  // Koltuk siparişleri — servisTip:'koltuk' olarak normal siparisler içinde
-  data.siparisler.filter(s => s.servisTip === 'koltuk').forEach(r => {
-    const t = r.tarih || '';
-    if (t >= ayBasStr && t <= aySonStr) {
-      gunSiparisler[t] = gunSiparisler[t] || [];
-      gunSiparisler[t]._koltuk = (gunSiparisler[t]._koltuk || 0) + 1;
-    }
-  });
-
-  // Takvim grid oluştur
   const gunler = ['Pt','Sa','Ça','Pe','Cu','Ct','Pz'];
   let gunHucreleri = '';
-  // Boş günler (ay başından önce)
+
   for (let i = 0; i < haftaBaslangic; i++) {
     gunHucreleri += `<div style="min-height:60px;"></div>`;
   }
-  // Gerçek günler
+
   for (let d = 1; d <= aySon.getDate(); d++) {
     const tarih = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const siparisler = gunSiparisler[tarih] || [];
-    const koltukSayisi = siparisler._koltuk || 0;
-    const normalSayisi = siparisler.filter ? siparisler.filter(s=>s.id).length : 0;
+    const alindi = (gunAlindi[tarih] || []).length;
+    const teslim = (gunTeslim[tarih] || []).length;
     const bugunMu = tarih === bugun;
-    const renkler = siparisler.filter ? siparisler.filter(s=>s.id).reduce((acc, s) => {
-      const si = STATUS_INFO[s.durum];
-      if (si) acc[s.durum] = (acc[s.durum]||0) + 1;
-      return acc;
-    }, {}) : {};
+    const var_ = alindi > 0 || teslim > 0;
 
     gunHucreleri += `
-      <div onclick="takvimGunAc('${tarih}')" style="min-height:60px;background:${bugunMu?'var(--blue)':'var(--white)'};border:1.5px solid ${bugunMu?'var(--blue)':'var(--border)'};border-radius:8px;padding:6px;cursor:pointer;position:relative;"
-        onmouseover="if('${bugunMu}'!=='true')this.style.background='var(--bg)'" onmouseout="if('${bugunMu}'!=='true')this.style.background='var(--white)'">
+      <div onclick="${var_ ? `takvimGunAc('${tarih}')` : ''}" style="min-height:60px;background:${bugunMu?'var(--blue)':'var(--white)'};border:1.5px solid ${bugunMu?'var(--blue)':'var(--border)'};border-radius:8px;padding:6px;${var_?'cursor:pointer;':''}"
+        onmouseover="if('${bugunMu}'!=='true')this.style.background='${var_?'var(--bg)':'var(--white)'}'" onmouseout="if('${bugunMu}'!=='true')this.style.background='var(--white)'">
         <div style="font-size:12px;font-weight:${bugunMu?800:600};color:${bugunMu?'#fff':'var(--text1)'};">${d}</div>
-        ${normalSayisi > 0 ? `<div style="margin-top:3px;display:flex;flex-direction:column;gap:2px;">
-          ${Object.entries(renkler).slice(0,2).map(([dur,cnt])=>{
-            const si = STATUS_INFO[dur];
-            return `<div style="font-size:9px;background:${bugunMu?'rgba(255,255,255,0.25)':'var(--blue-light)'};color:${bugunMu?'#fff':'var(--blue)'};border-radius:3px;padding:1px 3px;font-weight:700;">${si?.icon||''} ${cnt}</div>`;
-          }).join('')}
-          ${Object.keys(renkler).length > 2 ? `<div style="font-size:9px;color:${bugunMu?'rgba(255,255,255,0.7)':'var(--text3)'};">+${Object.keys(renkler).length-2}</div>` : ''}
-        </div>` : ''}
-        ${koltukSayisi > 0 ? `<div style="font-size:9px;background:${bugunMu?'rgba(255,255,255,0.25)':'#f5f3ff'};color:${bugunMu?'#fff':'#7c3aed'};border-radius:3px;padding:1px 3px;font-weight:700;margin-top:2px;">🛋 ${koltukSayisi}</div>` : ''}
+        <div style="margin-top:3px;display:flex;flex-direction:column;gap:2px;">
+          ${alindi > 0 ? `<div style="font-size:9px;background:${bugunMu?'rgba(255,255,255,0.25)':'#dcfce7'};color:${bugunMu?'#fff':'#16a34a'};border-radius:3px;padding:1px 3px;font-weight:700;">📥 ${alindi}</div>` : ''}
+          ${teslim > 0 ? `<div style="font-size:9px;background:${bugunMu?'rgba(255,255,255,0.25)':'var(--blue-light)'};color:${bugunMu?'#fff':'var(--blue)'};border-radius:3px;padding:1px 3px;font-weight:700;">📦 ${teslim}</div>` : ''}
+        </div>
       </div>
     `;
   }
 
+  // Ay özeti — bu ay teslim edilenler
+  const ayTeslimler = data.siparisler.filter(s => {
+    const tg = s.teslimGerceklesmeTarihi || '';
+    return tg >= ayBasStr && tg <= aySonStr;
+  });
+  const toplamSiparis = ayTeslimler.length;
+  const toplamAdet = ayTeslimler.reduce((a, s) => a + (s.haliler||[]).filter(h=>h.tip!=='ekucret').length, 0);
+  const toplamM2 = ayTeslimler.reduce((a, s) => {
+    return a + (s.haliler||[]).filter(h=>h.tip!=='ekucret').reduce((b,h) => b + (parseFloat(h.m2)||0), 0);
+  }, 0);
+
+  const ayAlindi = data.siparisler.filter(s => {
+    const t = s.tarih || '';
+    return t >= ayBasStr && t <= aySonStr && s.durum !== 'alinacak' && s.servisTip !== 'koltuk';
+  }).length;
+
   el.innerHTML = `
     <div style="padding-bottom:80px;">
-      <!-- Ay Navigasyonu -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
         <button onclick="takvimAyDegistir(-1)" style="padding:8px 14px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;font-size:16px;cursor:pointer;">‹</button>
         <div style="font-size:16px;font-weight:800;color:var(--text1);">${ayAdi}</div>
         <button onclick="takvimAyDegistir(1)" style="padding:8px 14px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;font-size:16px;cursor:pointer;">›</button>
       </div>
 
-      <!-- Haftanın günleri başlık -->
+      <div style="display:flex;gap:8px;margin-bottom:10px;font-size:11px;font-weight:600;color:var(--text3);">
+        <span style="display:flex;align-items:center;gap:4px;"><span style="background:#dcfce7;color:#16a34a;border-radius:4px;padding:2px 6px;">📥</span> Alındı</span>
+        <span style="display:flex;align-items:center;gap:4px;"><span style="background:var(--blue-light);color:var(--blue);border-radius:4px;padding:2px 6px;">📦</span> Teslim Edildi</span>
+      </div>
+
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;">
         ${gunler.map(g=>`<div style="text-align:center;font-size:10px;font-weight:700;color:var(--text3);padding:4px 0;">${g}</div>`).join('')}
       </div>
 
-      <!-- Takvim grid -->
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px;">
         ${gunHucreleri}
       </div>
 
       <!-- Ay özeti -->
-      <div style="background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;">
-        <div style="font-weight:700;font-size:13px;color:var(--text1);margin-bottom:10px;">Ay Özeti</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-          ${Object.entries(STATUS_INFO).map(([dur,si]) => {
-            const sayisi = data.siparisler.filter(s=>s.durum===dur && s.tarih>=ayBasStr && s.tarih<=aySonStr).length;
-            if (!sayisi) return '';
-            return `<div style="text-align:center;padding:8px;background:var(--bg);border-radius:8px;">
-              <div style="font-size:16px;">${si.icon}</div>
-              <div style="font-size:14px;font-weight:800;color:var(--text1);">${sayisi}</div>
-              <div style="font-size:9px;color:var(--text3);">${si.label}</div>
-            </div>`;
-          }).filter(Boolean).join('')}
+      <div style="background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;">
+        <div style="font-weight:800;font-size:13px;color:var(--text1);margin-bottom:12px;">📅 ${ayAdi} Özeti</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div style="background:#dcfce7;border-radius:10px;padding:12px;text-align:center;">
+            <div style="font-size:22px;font-weight:900;color:#16a34a;">${ayAlindi}</div>
+            <div style="font-size:11px;font-weight:600;color:#16a34a;margin-top:2px;">📥 Alınan Sipariş</div>
+          </div>
+          <div style="background:var(--blue-light);border-radius:10px;padding:12px;text-align:center;">
+            <div style="font-size:22px;font-weight:900;color:var(--blue);">${toplamSiparis}</div>
+            <div style="font-size:11px;font-weight:600;color:var(--blue);margin-top:2px;">📦 Teslim Edilen</div>
+          </div>
         </div>
+        ${toplamSiparis > 0 ? `
+        <div style="background:var(--bg);border-radius:10px;padding:12px;font-size:13px;color:var(--text2);line-height:1.8;">
+          ${toplamAdet > 0 ? `<div>🧺 <strong style="color:var(--text1);">${toplamAdet} adet halı</strong> teslim edildi</div>` : ''}
+          ${toplamM2 > 0 ? `<div>📐 <strong style="color:var(--text1);">${toplamM2.toLocaleString('tr-TR', {maximumFractionDigits:1})} m²</strong> halı teslim edildi</div>` : ''}
+          <div>🏠 <strong style="color:var(--text1);">${toplamSiparis} sipariş</strong> bu ay teslim edildi</div>
+        </div>` : `<div style="text-align:center;color:var(--text3);font-size:12px;padding:8px;">Bu ay henüz teslim yok</div>`}
       </div>
     </div>
   `;
@@ -6189,12 +6192,12 @@ function takvimAyDegistir(delta) {
 }
 
 function takvimGunAc(tarih) {
-  const koltuklar = data.siparisler.filter(s => s.servisTip === 'koltuk' && s.tarih === tarih);
-  const siparisler = data.siparisler.filter(s => s.servisTip !== 'koltuk' && (s.tarih === tarih || s.teslimTarihi === tarih || s.teslim_tarihi === tarih));
+  // Sadece alındı ve teslim edildi olayları
+  const alindi = data.siparisler.filter(s => s.servisTip !== 'koltuk' && s.tarih === tarih && s.durum !== 'alinacak');
+  const teslim = data.siparisler.filter(s => s.servisTip !== 'koltuk' && s.teslimGerceklesmeTarihi === tarih);
 
-  if (!siparisler.length && !koltuklar.length) return;
+  if (!alindi.length && !teslim.length) return;
 
-  // Basit bottom sheet
   let mevcut = document.getElementById('modal-takvim-gun');
   if (!mevcut) {
     mevcut = document.createElement('div');
@@ -6206,42 +6209,43 @@ function takvimGunAc(tarih) {
   }
 
   const tarihLabel = new Date(tarih+'T00:00:00').toLocaleDateString('tr-TR', {day:'numeric', month:'long', year:'numeric'});
+
+  const kartHtml = (s, tip) => {
+    const mu = data.musteriler.find(x=>x.id==s.musteriId);
+    const t = hesaplaToplam(s);
+    const adet = (s.haliler||[]).filter(h=>h.tip!=='ekucret').length;
+    const m2 = (s.haliler||[]).filter(h=>h.tip!=='ekucret').reduce((a,h)=>a+(parseFloat(h.m2)||0),0);
+    const renk = tip==='alindi' ? {bg:'#dcfce7',color:'#16a34a',label:'📥 Alındı'} : {bg:'var(--blue-light)',color:'var(--blue)',label:'📦 Teslim'};
+    return `<div onclick="document.getElementById('modal-takvim-gun').style.display='none';document.body.style.overflow='';openKartDetay('${s.id}')"
+      style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;margin-bottom:6px;cursor:pointer;"
+      onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+            <span style="font-size:10px;font-weight:700;color:var(--blue);">${siparisNo(s)}</span>
+            <span style="font-size:10px;font-weight:700;background:${renk.bg};color:${renk.color};padding:1px 6px;border-radius:4px;">${renk.label}</span>
+          </div>
+          <div style="font-size:13px;font-weight:700;color:var(--text1);">${mIsim(mu,'Bilinmiyor')}</div>
+          ${adet > 0 || m2 > 0 ? `<div style="font-size:11px;color:var(--text3);margin-top:2px;">${adet > 0 ? adet+' adet' : ''}${adet > 0 && m2 > 0 ? ' · ' : ''}${m2 > 0 ? m2.toLocaleString('tr-TR',{maximumFractionDigits:1})+' m²' : ''}</div>` : ''}
+        </div>
+        <div style="font-size:14px;font-weight:800;color:var(--blue);flex-shrink:0;">₺${t.toLocaleString('tr-TR')}</div>
+      </div>
+    </div>`;
+  };
+
   mevcut.innerHTML = `
     <div class="modal-box" style="max-width:440px;width:95%;border-radius:18px 18px 0 0;padding:20px;background:var(--white);max-height:80vh;overflow-y:auto;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
         <div style="font-size:16px;font-weight:800;color:var(--text1);">📅 ${tarihLabel}</div>
         <button onclick="document.getElementById('modal-takvim-gun').style.display='none';document.body.style.overflow=''" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);">×</button>
       </div>
-      ${siparisler.length ? `
-        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:8px;">Siparişler (${siparisler.length})</div>
-        ${siparisler.map(s => {
-          const m = data.musteriler.find(x=>x.id==s.musteriId);
-          const si = STATUS_INFO[s.durum];
-          const t = hesaplaToplam(s);
-          const teslimMi = (s.teslimTarihi === tarih || s.teslim_tarihi === tarih) && s.tarih !== tarih;
-          return `<div onclick="document.getElementById('modal-takvim-gun').style.display='none';document.body.style.overflow='';openKartDetay('${s.id}')" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px;"
-            onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
-            <div style="flex:1;min-width:0;">
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
-                <span style="font-size:11px;font-weight:700;color:var(--blue);">${siparisNo(s)}</span>
-                <span class="badge ${si?.badge||''}">${si?.icon||''} ${si?.label||''}</span>
-                ${teslimMi ? '<span style="font-size:10px;color:#7c3aed;font-weight:700;">📦 Teslim</span>' : ''}
-              </div>
-              <div style="font-size:13px;font-weight:600;color:var(--text1);">${mIsim(m,'Bilinmiyor')}</div>
-            </div>
-            <div style="font-weight:800;color:var(--blue);">₺${t.toLocaleString('tr-TR')}</div>
-          </div>`;
-        }).join('')}
+      ${alindi.length ? `
+        <div style="font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;margin-bottom:8px;">📥 Alınan Siparişler (${alindi.length})</div>
+        ${alindi.map(s=>kartHtml(s,'alindi')).join('')}
       ` : ''}
-      ${koltuklar.length ? `
-        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;margin:10px 0 8px;">Koltuk Randevuları (${koltuklar.length})</div>
-        ${koltuklar.map(r => {
-          const m = data.musteriler.find(x=>x.id==r.musteriId);
-          return `<div style="padding:10px 12px;border:1.5px solid #e9d5ff;border-radius:10px;margin-bottom:6px;background:#faf5ff;">
-            <div style="font-weight:700;font-size:13px;color:#7c3aed;">🛋 ${mIsim(m,'Bilinmiyor')}</div>
-            <div style="font-size:11px;color:var(--text3);">${r.saat||''} ${r.adres||''}</div>
-          </div>`;
-        }).join('')}
+      ${teslim.length ? `
+        <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;margin:${alindi.length?'12px':0} 0 8px;">📦 Teslim Edilenler (${teslim.length})</div>
+        ${teslim.map(s=>kartHtml(s,'teslim')).join('')}
       ` : ''}
     </div>
   `;
@@ -10248,7 +10252,7 @@ function updateMbnBadges() {}
   obs.observe(document.body, { childList: true, subtree: true });
 })();
 
-const APP_VERSION = '3.1.3';
+const APP_VERSION = '3.1.4';
 
 // ── Kalem satırı üretici (haliler → siparis_kalemleri) ──
 function _halilerToKalemRows(sid, haliler) {
