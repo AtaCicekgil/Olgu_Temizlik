@@ -3936,7 +3936,7 @@ function ggFilterSiparisler() {
   const now = new Date();
   return data.siparisler.filter(s => {
     if (!s.odendi) return false;
-    if ((s.tarih||'') < VERI_BASLANGIC) return false;
+    if ((s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
     const d = new Date(s.odemeTarih || s.tarih);
     if (ggPeriod==='gun') return d.toDateString()===now.toDateString();
     if (ggPeriod==='hafta') { const w=new Date(now); w.setDate(now.getDate()-now.getDay()+1); w.setHours(0,0,0,0); return d>=w && d<=now; }
@@ -4048,7 +4048,7 @@ function grafikCizAylik() {
     labels.push(d.toLocaleDateString('tr-TR',{month:'short',year:'2-digit'}));
     const sip = data.siparisler.filter(s => {
       if (!s.odendi) return false;
-      if ((s.tarih||'') < VERI_BASLANGIC) return false;
+      if ((s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
       const sd = new Date(s.odemeTarih||s.tarih);
       return sd.getMonth()===m && sd.getFullYear()===y;
     });
@@ -4074,7 +4074,7 @@ function grafikCizGunluk() {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate()-i);
     const ds = d.toISOString().split('T')[0];
     labels.push(i===0?'Bugün':i===1?'Dün':d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'}));
-    const sip = data.siparisler.filter(s => s.odendi && (s.tarih||'')>=VERI_BASLANGIC && (s.odemeTarih||s.tarih||'').startsWith(ds));
+    const sip = data.siparisler.filter(s => s.odendi && (s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC && (s.odemeTarih||s.tarih||'').startsWith(ds));
     gelirData.push(sip.reduce((s,x)=>s+hesaplaToplam(x),0));
     const gid = (data.giderler||[]).filter(g => g.tarih===ds && (g.tarih||'')>=VERI_BASLANGIC);
     giderData.push(gid.reduce((s,g)=>s+(g.tutar||0),0));
@@ -5928,7 +5928,7 @@ function renderDashboard() {
   // -- Özet banner --
   const aktifSiparisler = data.siparisler.filter(s=>s.durum!=='teslim');
   const buAyGelir = data.siparisler
-    .filter(s=>s.odendi && (s.tarih||'')>=VERI_BASLANGIC && (s.odemeTarih||s.tarih||'').startsWith(today.slice(0,7)))
+    .filter(s=>s.odendi && (s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC && (s.odemeTarih||s.tarih||'').startsWith(today.slice(0,7)))
     .reduce((sum,s)=>sum+hesaplaToplam(s),0);
   const bekleyenOdeme = data.siparisler.filter(s=>s.durum==='teslim'&&!s.odendi).reduce((sum,s)=>sum+hesaplaToplam(s),0);
 
@@ -6450,7 +6450,7 @@ function renderIstatistik() {
   if (!el) return;
 
   // Yalnızca VERI_BASLANGIC sonrası kayıtlar istatistik/gelir hesabına girer
-  const aktifSip = data.siparisler.filter(s => (s.tarih||'') >= VERI_BASLANGIC);
+  const aktifSip = data.siparisler.filter(s => (s.teslimTarihi||s.tarih||'') >= VERI_BASLANGIC);
 
   const m2Hesapla = (siparisler) => siparisler.reduce((acc, s) =>
     acc + (s.haliler||[]).reduce((a, h) => h.tip==='ekucret' ? a : a + (h.tip==='toplu' ? (h.adet||1)*(h.m2||0) : (h.m2||0)), 0), 0);
@@ -6508,7 +6508,7 @@ function renderIstatistik() {
 }
 
 function _istatistikTeslimSure(siparisler) {
-  siparisler = siparisler || data.siparisler.filter(s=>(s.tarih||'')>=VERI_BASLANGIC);
+  siparisler = siparisler || data.siparisler.filter(s=>(s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC);
   // Ortalama teslim süresi (gün): sadece tarih ve teslimTarihi olan tamamlanmış siparişler
   const teslimSiparisler = siparisler.filter(s=>s.durum==='teslim' && s.tarih && s.teslimTarihi);
   if (!teslimSiparisler.length) return '';
@@ -6545,7 +6545,7 @@ function _istatistikTeslimSure(siparisler) {
 }
 
 function _istatistikAylikRapor(siparisler) {
-  siparisler = siparisler || data.siparisler.filter(s=>(s.tarih||'')>=VERI_BASLANGIC);
+  siparisler = siparisler || data.siparisler.filter(s=>(s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC);
   const bugun = new Date();
   const buAy = bugun.toISOString().slice(0,7);
   const oncekiAy = new Date(bugun.getFullYear(), bugun.getMonth()-1, 1).toISOString().slice(0,7);
@@ -6591,7 +6591,7 @@ function _istatistikAylikRapor(siparisler) {
 }
 
 function _istatistikSadakat(siparisler) {
-  siparisler = siparisler || data.siparisler.filter(s=>(s.tarih||'')>=VERI_BASLANGIC);
+  siparisler = siparisler || data.siparisler.filter(s=>(s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC);
   // Sadakat oranı: birden fazla siparişi olan müşteriler / toplam müşteri
   const musteriBazli = {};
   siparisler.forEach(s => {
@@ -6625,7 +6625,7 @@ function _istatistikSadakat(siparisler) {
 }
 
 function _istatistikOdenmemis(siparisler) {
-  siparisler = siparisler || data.siparisler.filter(s=>(s.tarih||'')>=VERI_BASLANGIC);
+  siparisler = siparisler || data.siparisler.filter(s=>(s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC);
   const bugun = new Date().toISOString().split('T')[0];
   // Teslim edilmiş ama ödenmemiş siparişler
   const odenmemis = siparisler.filter(s => s.durum === 'teslim' && !s.odendi);
@@ -7275,7 +7275,7 @@ function renderKasa() {
   const _aralikBit = () => { const d=new Date(document.getElementById('kasa-aralik-bit')?.value||''); d.setHours(23,59,59); return d; };
 
   function inPeriod(s) {
-    if ((s.tarih||'') < VERI_BASLANGIC) return false;
+    if ((s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
     const d = new Date(s.odemeTarih || s.tarih);
     if (kasaPeriod==='gun') return d.toDateString()===secilenGun.toDateString();
     if (kasaPeriod==='hafta') return d>=_haftaBasi() && d<=now;
@@ -7310,7 +7310,7 @@ function renderKasa() {
 
   // Bekleyen (dönemden bağımsız, VERI_BASLANGIC sonrası tüm bekleyenler)
   const bekleyen = data.siparisler
-    .filter(s=>!s.odendi && s.durum!=='teslim' && (s.tarih||'')>=VERI_BASLANGIC)
+    .filter(s=>!s.odendi && s.durum!=='teslim' && (s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC)
     .reduce((a,s)=>a+hesaplaToplam(s),0);
 
   const fmt = n => '₺'+n.toLocaleString('tr-TR');
