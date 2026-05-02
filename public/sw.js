@@ -1,4 +1,4 @@
-const VERSION = '3.1.5';
+const VERSION = '3.1.6';
 const CACHE = 'olgu-v' + VERSION;
 const ASSETS = ['/panel.html', '/manifest.json', '/carpet.svg', '/logo.webp'];
 
