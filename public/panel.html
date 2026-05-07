@@ -3448,6 +3448,8 @@ async function _syncToSupabase() {
         lokasyon: s.lokasyon||null, hizmet: s.hizmet||null,
         m2: s.m2||null, fiyat: s.fiyat||null, sabit_ucret: s.sabitUcret||null,
         not_: s.not||null, odendi: s.odendi||false,
+        odeme_tarih: s.odemeTarih||null,
+        odemeyontemi: s.odemeyontemi||null,
         etiket_no: s.etiketNo||null,
         olusturma: s.olusturma||null
       };
@@ -3565,6 +3567,10 @@ async function _loadFromSupabase() {
     }
     // else: Supabase boş/hatalı döndü — mevcut localStorage verisi korunuyor, üzerine yazmıyoruz
     if (siparisler?.length) {
+      // localStorage'dan odeme bilgilerini kurtarmak için yedek harita (Supabase'de null olabilir)
+      const _lsRaw = (() => { try { return JSON.parse(localStorage.getItem('olgu_hali_v2')||'{}'); } catch(e) { return {}; } })();
+      const _lsOdeme = {};
+      (_lsRaw.siparisler||[]).forEach(ls => { if (ls.id) _lsOdeme[ls.id] = { odemeTarih: ls.odemeTarih||null, odemeyontemi: ls.odemeyontemi||null }; });
       data.siparisler = siparisler.map(s => ({
         id: s.id, musteriId: s.musteri_id||null,
         servisTip:s.servis_tip||'hali', durum:s.durum, tarih:s.tarih||'',
@@ -3581,6 +3587,8 @@ async function _loadFromSupabase() {
         etiketNo:s.etiket_no||'',
         teknisyen:s.teknisyen||null,
         odendi:s.odendi||false, olusturma:s.olusturma,
+        odemeTarih:s.odeme_tarih||_lsOdeme[s.id]?.odemeTarih||null,
+        odemeyontemi:s.odemeyontemi||_lsOdeme[s.id]?.odemeyontemi||null,
         haliler:(kalemler||[]).filter(k=>k.siparis_id===s.id).map(k=>{
           const isEk = k.tip_==='ekucret' || k.kategori==='ekucret' || k.kategori==='indirim';
           if (isEk) {
@@ -3615,6 +3623,10 @@ async function _loadFromSupabase() {
         .map(s=>parseInt((s.kurumNo||'').replace('C',''))||0)
         .reduce((a,b)=>Math.max(a,b), 0);
       data.counters.kurumsal = Math.max(data.counters.kurumsal||0, maxKurumsal);
+      // localStorage'dan kurtarılan odeme_tarih değerleri varsa Supabase'e geri yaz (tek seferlik onarım)
+      if (data.siparisler.some(s=>s.odendi && _lsOdeme[s.id]?.odemeTarih)) {
+        setTimeout(_debouncedSync, 2000);
+      }
     }
     if (giderler?.length) {
       data.giderler = giderler.map(g => ({id:g.id, kategori:g.kategori||(g.aciklama?'':null)||null, aciklama:g.aciklama||'', tutar:g.tutar, tarih:g.tarih}));
@@ -5467,6 +5479,8 @@ async function _supabaseSiparisPatch(s, syncKalemler = false) {
       not_: s.not||null,
       durum: s.durum,
       odendi: s.odendi||false,
+      odeme_tarih: s.odemeTarih||null,
+      odemeyontemi: s.odemeyontemi||null,
       etiket_no: s.etiketNo||null
     }).eq('id', numSid);
     if (updateErr) throw new Error('Sipariş güncelleme: ' + updateErr.message);
@@ -7425,7 +7439,7 @@ function _kasaTarihSeridiRender() {
   // Hangi günlerde veri var?
   const veriGunler = new Set(data.siparisler
     .filter(s=>s.odendi)
-    .map(s=>new Date(s.odemeTarihi||s.odeme_tarihi||s.tarih).toDateString())
+    .map(s=>new Date(s.odemeTarih||s.tarih).toDateString())
   );
 
   const GUNLER = ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'];
@@ -7482,7 +7496,7 @@ function _kasaGrafikCiz() {
     const dStr = d.toDateString();
     labels.push(d.getDate()+'/'+(d.getMonth()+1));
     gelirData.push(data.siparisler
-      .filter(s=>s.odendi && new Date(s.odemeTarihi||s.odeme_tarihi||s.tarih).toDateString()===dStr)
+      .filter(s=>s.odendi && new Date(s.odemeTarih||s.tarih).toDateString()===dStr)
       .reduce((a,s)=>a+hesaplaToplam(s),0));
     giderData.push((data.giderler||[])
       .filter(g=>new Date(g.tarih).toDateString()===dStr)
