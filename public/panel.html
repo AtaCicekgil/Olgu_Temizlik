@@ -3949,7 +3949,7 @@ function ggFilterSiparisler() {
   return data.siparisler.filter(s => {
     if (!s.odendi) return false;
     if ((s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
-    const d = new Date(s.odemeTarih || s.tarih);
+    const d = new Date(s.odemeTarih || s.teslimTarihi || s.tarih);
     if (ggPeriod==='gun') return d.toDateString()===now.toDateString();
     if (ggPeriod==='hafta') { const w=new Date(now); w.setDate(now.getDate()-now.getDay()+1); w.setHours(0,0,0,0); return d>=w && d<=now; }
     if (ggPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
@@ -4061,7 +4061,7 @@ function grafikCizAylik() {
     const sip = data.siparisler.filter(s => {
       if (!s.odendi) return false;
       if ((s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
-      const sd = new Date(s.odemeTarih||s.tarih);
+      const sd = new Date(s.odemeTarih||s.teslimTarihi||s.tarih);
       return sd.getMonth()===m && sd.getFullYear()===y;
     });
     gelirData.push(sip.reduce((s,x)=>s+hesaplaToplam(x),0));
@@ -4086,7 +4086,7 @@ function grafikCizGunluk() {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate()-i);
     const ds = d.toISOString().split('T')[0];
     labels.push(i===0?'Bugün':i===1?'Dün':d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'}));
-    const sip = data.siparisler.filter(s => s.odendi && (s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC && (s.odemeTarih||s.tarih||'').startsWith(ds));
+    const sip = data.siparisler.filter(s => s.odendi && (s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC && (s.odemeTarih||s.teslimTarihi||s.tarih||'').startsWith(ds));
     gelirData.push(sip.reduce((s,x)=>s+hesaplaToplam(x),0));
     const gid = (data.giderler||[]).filter(g => g.tarih===ds && (g.tarih||'')>=VERI_BASLANGIC);
     giderData.push(gid.reduce((s,g)=>s+(g.tutar||0),0));
@@ -5942,7 +5942,7 @@ function renderDashboard() {
   // -- Özet banner --
   const aktifSiparisler = data.siparisler.filter(s=>s.durum!=='teslim');
   const buAyGelir = data.siparisler
-    .filter(s=>s.odendi && (s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC && (s.odemeTarih||s.tarih||'').startsWith(today.slice(0,7)))
+    .filter(s=>s.odendi && (s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC && (s.odemeTarih||s.teslimTarihi||s.tarih||'').startsWith(today.slice(0,7)))
     .reduce((sum,s)=>sum+hesaplaToplam(s),0);
   const bekleyenOdeme = data.siparisler.filter(s=>s.durum==='teslim'&&!s.odendi).reduce((sum,s)=>sum+hesaplaToplam(s),0);
 
@@ -5969,7 +5969,7 @@ function renderDashboard() {
         ${(()=>{
           const buAyBaslangic = today.slice(0,7)+'-01';
           const yeniMusteriler = data.musteriler.filter(m => (m.olusturma||'').startsWith(today.slice(0,7))).length;
-          const odenenlerHepsi = data.siparisler.filter(s=>s.odendi&&(s.odemeTarih||s.tarih||'').startsWith(today.slice(0,7)));
+          const odenenlerHepsi = data.siparisler.filter(s=>s.odendi&&(s.odemeTarih||s.teslimTarihi||s.tarih||'').startsWith(today.slice(0,7)));
           const ort = odenenlerHepsi.length ? Math.round(odenenlerHepsi.reduce((s,x)=>s+hesaplaToplam(x),0)/odenenlerHepsi.length) : 0;
           return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);">
             <div><div style="font-size:18px;font-weight:900;color:#e2e8f0;">${yeniMusteriler}</div><div style="font-size:10px;opacity:0.55;margin-top:2px;">Bu Ay Yeni Müşteri</div></div>
@@ -7290,7 +7290,7 @@ function renderKasa() {
 
   function inPeriod(s) {
     if ((s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
-    const d = new Date(s.odemeTarih || s.tarih);
+    const d = new Date(s.odemeTarih || s.teslimTarihi || s.tarih);
     if (kasaPeriod==='gun') return d.toDateString()===secilenGun.toDateString();
     if (kasaPeriod==='hafta') return d>=_haftaBasi() && d<=now;
     if (kasaPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
@@ -7439,7 +7439,7 @@ function _kasaTarihSeridiRender() {
   // Hangi günlerde veri var?
   const veriGunler = new Set(data.siparisler
     .filter(s=>s.odendi)
-    .map(s=>new Date(s.odemeTarih||s.tarih).toDateString())
+    .map(s=>new Date(s.odemeTarih||s.teslimTarihi||s.tarih).toDateString())
   );
 
   const GUNLER = ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'];
@@ -7496,7 +7496,7 @@ function _kasaGrafikCiz() {
     const dStr = d.toDateString();
     labels.push(d.getDate()+'/'+(d.getMonth()+1));
     gelirData.push(data.siparisler
-      .filter(s=>s.odendi && new Date(s.odemeTarih||s.tarih).toDateString()===dStr)
+      .filter(s=>s.odendi && new Date(s.odemeTarih||s.teslimTarihi||s.tarih).toDateString()===dStr)
       .reduce((a,s)=>a+hesaplaToplam(s),0));
     giderData.push((data.giderler||[])
       .filter(g=>new Date(g.tarih).toDateString()===dStr)
