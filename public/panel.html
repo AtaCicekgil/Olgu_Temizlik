@@ -3948,7 +3948,7 @@ function ggFilterSiparisler() {
   const now = new Date();
   return data.siparisler.filter(s => {
     if (!s.odendi) return false;
-    if ((s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
+    if ((s.odemeTarih||s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
     const d = new Date(s.odemeTarih || s.teslimTarihi || s.tarih);
     if (ggPeriod==='gun') return d.toDateString()===now.toDateString();
     if (ggPeriod==='hafta') { const w=new Date(now); w.setDate(now.getDate()-now.getDay()+1); w.setHours(0,0,0,0); return d>=w && d<=now; }
@@ -4060,7 +4060,7 @@ function grafikCizAylik() {
     labels.push(d.toLocaleDateString('tr-TR',{month:'short',year:'2-digit'}));
     const sip = data.siparisler.filter(s => {
       if (!s.odendi) return false;
-      if ((s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
+      if ((s.odemeTarih||s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
       const sd = new Date(s.odemeTarih||s.teslimTarihi||s.tarih);
       return sd.getMonth()===m && sd.getFullYear()===y;
     });
@@ -4086,7 +4086,7 @@ function grafikCizGunluk() {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate()-i);
     const ds = d.toISOString().split('T')[0];
     labels.push(i===0?'Bugün':i===1?'Dün':d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'}));
-    const sip = data.siparisler.filter(s => s.odendi && (s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC && (s.odemeTarih||s.teslimTarihi||s.tarih||'').startsWith(ds));
+    const sip = data.siparisler.filter(s => s.odendi && (s.odemeTarih||s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC && (s.odemeTarih||s.teslimTarihi||s.tarih||'').startsWith(ds));
     gelirData.push(sip.reduce((s,x)=>s+hesaplaToplam(x),0));
     const gid = (data.giderler||[]).filter(g => g.tarih===ds && (g.tarih||'')>=VERI_BASLANGIC);
     giderData.push(gid.reduce((s,g)=>s+(g.tutar||0),0));
@@ -5942,7 +5942,7 @@ function renderDashboard() {
   // -- Özet banner --
   const aktifSiparisler = data.siparisler.filter(s=>s.durum!=='teslim');
   const buAyGelir = data.siparisler
-    .filter(s=>s.odendi && (s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC && (s.odemeTarih||s.teslimTarihi||s.tarih||'').startsWith(today.slice(0,7)))
+    .filter(s=>s.odendi && (s.odemeTarih||s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC && (s.odemeTarih||s.teslimTarihi||s.tarih||'').startsWith(today.slice(0,7)))
     .reduce((sum,s)=>sum+hesaplaToplam(s),0);
   const bekleyenOdeme = data.siparisler.filter(s=>s.durum==='teslim'&&!s.odendi).reduce((sum,s)=>sum+hesaplaToplam(s),0);
 
@@ -7289,7 +7289,7 @@ function renderKasa() {
   const _aralikBit = () => { const d=new Date(document.getElementById('kasa-aralik-bit')?.value||''); d.setHours(23,59,59); return d; };
 
   function inPeriod(s) {
-    if ((s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
+    if ((s.odemeTarih||s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
     const d = new Date(s.odemeTarih || s.teslimTarihi || s.tarih);
     if (kasaPeriod==='gun') return d.toDateString()===secilenGun.toDateString();
     if (kasaPeriod==='hafta') return d>=_haftaBasi() && d<=now;
