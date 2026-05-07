@@ -9,6 +9,8 @@ export interface ToastMsg {
   level: ToastLevel
 }
 
+let _counter = 0
+
 const bg: Record<ToastLevel, string> = {
   info:    'bg-blue-600',
   success: 'bg-green-600',
@@ -40,7 +42,7 @@ const _notify = () => _listeners.forEach(l => l([..._msgs]))
 
 export const toast = {
   show(text: string, level: ToastLevel = 'info') {
-    const id = `t${Date.now()}`
+    const id = `t${++_counter}`
     _msgs = [..._msgs, { id, text, level }]
     _notify()
     setTimeout(() => { _msgs = _msgs.filter(m => m.id !== id); _notify() }, 4500)

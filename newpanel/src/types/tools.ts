@@ -29,6 +29,7 @@ export type CardType =
   | 'rapor'
   | 'basit'
   | 'onay'
+  | 'yeni_siparis'
 
 export interface ResultCard {
   type:  CardType

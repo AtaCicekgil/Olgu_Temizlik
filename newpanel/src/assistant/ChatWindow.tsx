@@ -4,11 +4,12 @@ import { Spinner } from '../components/ui/Spinner'
 import type { ChatMessage } from '../types/tools'
 
 interface Props {
-  messages: ChatMessage[]
-  loading:  boolean
+  messages:    ChatMessage[]
+  loading:     boolean
+  onSuggest?:  (text: string) => void
 }
 
-export function ChatWindow({ messages, loading }: Props) {
+export function ChatWindow({ messages, loading, onSuggest }: Props) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -25,9 +26,13 @@ export function ChatWindow({ messages, loading }: Props) {
           </p>
           <div className="flex flex-wrap gap-2 justify-center mt-2">
             {SUGGESTIONS.map(s => (
-              <span key={s} className="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full">
+              <button
+                key={s}
+                onClick={() => onSuggest?.(s)}
+                className="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full hover:bg-blue-50 hover:text-blue-600 active:scale-95 transition-all cursor-pointer"
+              >
                 {s}
-              </span>
+              </button>
             ))}
           </div>
         </div>

@@ -45,6 +45,7 @@ export function InputBar({ onSend, loading, placeholder = 'Komut ver veya sor…
       />
       <div className="flex-1 flex items-end bg-gray-50 border border-gray-200 rounded-2xl overflow-hidden focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
         <textarea
+          id="assistant-input"
           ref={textareaRef}
           rows={1}
           value={text}

@@ -2,7 +2,7 @@ import type { GTool } from '../engine/groq'
 import { sb } from '../lib/supabase'
 
 export const musteriTools: GTool[] = [
-  { type:'function', function:{ name:'musteri_sorgula', description:'Müşteri listeler. Ad, tel, tip filtresi.', parameters:{ type:'object', properties:{ ad:{type:'string'}, tel:{type:'string'}, tip:{type:'string',enum:['bireysel','kurumsal']} } } } },
+  { type:'function', function:{ name:'musteri_sorgula', description:'Müşteri arar. Adres dahil tüm bilgileri döner. Ad, tel veya tip ile filtrele.', parameters:{ type:'object', properties:{ ad:{type:'string'}, tel:{type:'string'}, tip:{type:'string',enum:['bireysel','kurumsal']} } } } },
   { type:'function', function:{ name:'musteri_detay', description:'Müşteri bilgileri ve sipariş geçmişi.', parameters:{ type:'object', properties:{ musteri_id:{type:'number'} }, required:['musteri_id'] } } },
   { type:'function', function:{ name:'musteri_ara', description:'Serbest metin ile müşteri ara (ad veya tel).', parameters:{ type:'object', properties:{ sorgu:{type:'string'} }, required:['sorgu'] } } },
   { type:'function', function:{ name:'musteri_olustur', description:'Yeni müşteri oluşturur.', parameters:{ type:'object', properties:{ ad:{type:'string'}, tel:{type:'string'}, tipi:{type:'string',enum:['bireysel','kurumsal']}, adres_mahalle:{type:'string'}, adres_sokak:{type:'string'}, adres_bina:{type:'string'}, adres_daire:{type:'string'}, notlar:{type:'string'} }, required:['ad'] } } },
@@ -51,9 +51,16 @@ async function musteri_ara(args: Record<string, unknown>) {
   return { success: true, data: result, count: result.length }
 }
 
+const ISLETME_AD = import.meta.env.VITE_ISLETME_AD || 'Olgu Temizlik'
+
 async function musteri_olustur(args: Record<string, unknown>) {
+  const ad = String(args.ad || '').trim()
+  if (!ad) return { success: false, error: 'Müşteri adı boş olamaz. Kullanıcıdan adı öğren.' }
+  if (ad.toLowerCase() === ISLETME_AD.toLowerCase()) {
+    return { success: false, error: `"${ad}" işletme adıdır, müşteri adı olarak kullanılamaz. Kullanıcıdan gerçek müşteri adını sor.` }
+  }
   const { data, error } = await sb.from('np_musteriler').insert({
-    ad: args.ad, tel: args.tel || null, tipi: args.tipi || 'bireysel',
+    ad, tel: args.tel || null, tipi: args.tipi || 'bireysel',
     adres_mahalle: args.adres_mahalle || null, adres_sokak: args.adres_sokak || null,
     adres_bina: args.adres_bina || null, adres_daire: args.adres_daire || null,
     notlar: args.notlar || null,

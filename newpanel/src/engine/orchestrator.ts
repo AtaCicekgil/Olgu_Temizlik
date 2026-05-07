@@ -1,14 +1,16 @@
 import { groqChat, type GMessage } from './groq'
 import { buildSystemPrompt } from './context-builder'
-import { ALL_TOOLS, executeTool } from '../tools/index'
+import { executeTool } from '../tools/index'
+import { selectTools } from './tool-router'
 import type { ChatMessage } from '../types/tools'
 
 const MAX_ITER  = 5
 const TIMEOUT_MS = 15_000
 
 export interface RunResult {
-  reply:    string
-  messages: ChatMessage[]  // tool call messages to display
+  reply:        string
+  toolMessages: ChatMessage[]
+  card?:        import('../types/tools').ResultCard
 }
 
 export async function runOrchestrator(
@@ -22,6 +24,9 @@ export async function runOrchestrator(
     ...historyToGroq(history.slice(-6)),
     { role: 'user', content: userText },
   ]
+
+  // Mesaja göre ilgili tool'ları seç (111 yerine ~20-30)
+  const activeTools = selectTools(userText, history)
 
   const toolMessages: ChatMessage[] = []
   let iter = 0
@@ -37,7 +42,7 @@ export async function runOrchestrator(
 
     let res
     try {
-      res = await groqChat(msgs, ALL_TOOLS, combinedSignal)
+      res = await groqChat(msgs, activeTools, combinedSignal)
     } finally {
       clearTimeout(timer)
     }
@@ -45,9 +50,18 @@ export async function runOrchestrator(
     const choice  = res.choices[0]
     const message = choice.message
 
+    // Bazı modeller tool call'ı JSON metin olarak yazar — yakala ve dönüştür
+    if ((!message.tool_calls || message.tool_calls.length === 0) && message.content) {
+      const textTc = parseTextToolCall(message.content)
+      if (textTc) {
+        message.tool_calls = [textTc]
+        message.content = null
+      }
+    }
+
     // No tool calls → final answer
     if (!message.tool_calls || message.tool_calls.length === 0) {
-      return { reply: message.content || '', toolMessages }
+      return { reply: message.content || '', toolMessages, card: extractSiparisCard(toolMessages) }
     }
 
     // Add assistant message with tool calls to Groq context
@@ -104,10 +118,49 @@ export async function runOrchestrator(
   // Exceeded max iterations — ask for final answer without tools
   msgs.push({ role: 'user', content: 'Lütfen şimdiye kadar toplanan bilgilere göre kısa bir özet ver.' })
   const final = await groqChat(msgs, [], signal)
-  return { reply: final.choices[0].message.content || '', toolMessages }
+  return { reply: final.choices[0].message.content || '', toolMessages, card: extractSiparisCard(toolMessages) }
 }
 
 // ── helpers ──────────────────────────────────────────────────────────────────
+
+// siparis_olustur başarılıysa kart çıkar
+function extractSiparisCard(toolMsgs: ChatMessage[]) {
+  for (const tm of toolMsgs) {
+    const idx = tm.toolCalls?.findIndex(tc => tc.name === 'siparis_olustur') ?? -1
+    if (idx === -1) continue
+    const result = tm.toolResults?.[idx] as { success?: boolean; data?: unknown } | undefined
+    if (result?.success && result.data) {
+      return { type: 'yeni_siparis' as const, data: result.data }
+    }
+  }
+  return undefined
+}
+
+// Model bazen tool_call'ı metin olarak döner (çeşitli formatlar)
+// {"type":"function","name":"...","arguments":{}}
+// {"name":"...","arguments":{}}
+function parseTextToolCall(content: string): GToolCall | null {
+  try {
+    const cleaned = content.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
+    const start = cleaned.indexOf('{')
+    if (start === -1) return null
+    const jsonStr = cleaned.slice(start)
+    const p = JSON.parse(jsonStr)
+    const name = p.name || p.function?.name
+    if (name) {
+      const args = p.arguments ?? p.function?.arguments ?? {}
+      return {
+        id: `tc_${Date.now()}`,
+        type: 'function',
+        function: {
+          name,
+          arguments: typeof args === 'string' ? args : JSON.stringify(args),
+        },
+      }
+    }
+  } catch { /* */ }
+  return null
+}
 
 function historyToGroq(history: ChatMessage[]): GMessage[] {
   const out: GMessage[] = []

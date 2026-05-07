@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   Package, Users, TrendingDown, BarChart2,
   MessageSquare, X, ChevronRight, RefreshCw,
@@ -9,7 +9,8 @@ import { sb } from '../lib/supabase'
 import { fmtTL, fmtTarihKisa } from '../lib/utils'
 import { Badge } from '../components/ui/Badge'
 import { Spinner } from '../components/ui/Spinner'
-import { DURUM_LABEL, DURUM_RENK, type Siparis, type Musteri } from '../types/domain'
+import { toast } from '../components/ui/Toast'
+import { DURUM_LABEL, type Siparis, type Musteri } from '../types/domain'
 
 type Section = 'siparisler' | 'musteriler' | 'giderler' | 'analiz'
 
@@ -17,7 +18,7 @@ const NAV: { id: Section; label: string; Icon: React.ElementType }[] = [
   { id: 'siparisler', label: 'Siparişler', Icon: Package },
   { id: 'musteriler', label: 'Müşteriler', Icon: Users },
   { id: 'giderler',   label: 'Giderler',   Icon: TrendingDown },
-  { id: 'analiz',     label: 'Analiz',      Icon: BarChart2 },
+  { id: 'analiz',     label: 'Analiz',     Icon: BarChart2 },
 ]
 
 const DURUM_VARIANT: Record<string, 'default' | 'success' | 'warn' | 'danger' | 'info'> = {
@@ -27,6 +28,22 @@ const DURUM_VARIANT: Record<string, 'default' | 'success' | 'warn' | 'danger' | 
   hazir:      'success',
   dagitimda:  'warn',
   teslim:     'default',
+}
+
+const SONRAKI_DURUM: Record<string, string> = {
+  alinacak:   'alindi',
+  alindi:     'yikanıyor',
+  'yikanıyor':'hazir',
+  hazir:      'dagitimda',
+  dagitimda:  'teslim',
+}
+
+const SONRAKI_LABEL: Record<string, string> = {
+  alinacak:   'Alındı',
+  alindi:     'Yıkamaya',
+  'yikanıyor':'Hazır',
+  hazir:      'Dağıtıma',
+  dagitimda:  'Teslim Et',
 }
 
 export function PanelMode() {
@@ -117,29 +134,83 @@ function SiparislerSection() {
   const [data, setData] = useState<Siparis[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('aktif')
+  const [actionLoading, setActionLoading] = useState<number | null>(null)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
-    let q = sb
-      .from('np_siparisler')
-      .select('*, np_musteriler(ad, tel), np_siparis_kalemleri(toplam)')
-      .order('olusturma', { ascending: false })
-      .limit(50)
+    try {
+      let q = sb
+        .from('np_siparisler')
+        .select('*')
+        .order('olusturma', { ascending: false })
+        .limit(50)
 
-    if (filter === 'aktif') {
-      q = q.in('durum', ['alinacak','alindi','yikanıyor','hazir','dagitimda'])
-    } else if (filter === 'teslim') {
-      q = q.eq('durum', 'teslim')
-    } else if (filter === 'odenmemis') {
-      q = q.eq('durum', 'teslim').eq('odendi', false)
+      if (filter === 'aktif') {
+        q = q.in('durum', ['alinacak','alindi','yikanıyor','hazir','dagitimda'])
+      } else if (filter === 'teslim') {
+        q = q.eq('durum', 'teslim')
+      } else if (filter === 'odenmemis') {
+        q = q.eq('durum', 'teslim').eq('odendi', false)
+      }
+
+      const { data: rows, error } = await q
+      if (error) throw error
+
+      // Her sipariş için müşteri adını ve kalem toplamını ayrı sorgula
+      const siparisler = rows || []
+      const enriched = await Promise.all(siparisler.map(async (s: any) => {
+        const [{ data: musteri }, { data: kalemler }] = await Promise.all([
+          sb.from('np_musteriler').select('ad, tel').eq('id', s.musteri_id).single(),
+          sb.from('np_siparis_kalemleri').select('toplam').eq('siparis_id', s.id),
+        ])
+        return { ...s, np_musteriler: musteri, np_siparis_kalemleri: kalemler || [] }
+      }))
+
+      setData(enriched as unknown as Siparis[])
+    } catch (e) {
+      console.error('Sipariş yüklenemedi:', e)
+    } finally {
+      setLoading(false)
     }
-
-    const { data: rows } = await q
-    setData((rows || []) as unknown as Siparis[])
-    setLoading(false)
   }, [filter])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    load()
+    // Auto-refresh every 30 seconds
+    intervalRef.current = setInterval(load, 30_000)
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
+  }, [load])
+
+  const ilerle = async (siparisId: number, yeniDurum: string) => {
+    setActionLoading(siparisId)
+    const { error } = await sb
+      .from('np_siparisler')
+      .update({ durum: yeniDurum })
+      .eq('id', siparisId)
+    if (error) {
+      toast.error('Durum güncellenemedi')
+    } else {
+      toast.success(`${DURUM_LABEL[yeniDurum as keyof typeof DURUM_LABEL] || yeniDurum} olarak işaretlendi`)
+      load()
+    }
+    setActionLoading(null)
+  }
+
+  const odemeAl = async (siparisId: number) => {
+    setActionLoading(siparisId)
+    const { error } = await sb
+      .from('np_siparisler')
+      .update({ odendi: true })
+      .eq('id', siparisId)
+    if (error) {
+      toast.error('Ödeme alınamadı')
+    } else {
+      toast.success('Ödeme alındı')
+      load()
+    }
+    setActionLoading(null)
+  }
 
   return (
     <div className="p-3 flex flex-col gap-3">
@@ -171,6 +242,8 @@ function SiparislerSection() {
 
       {!loading && data.map((s: any) => {
         const toplam = (s.np_siparis_kalemleri || []).reduce((a: number, k: any) => a + (k.toplam || 0), 0)
+        const sonraki = SONRAKI_DURUM[s.durum]
+        const isWorking = actionLoading === s.id
         return (
           <div key={s.id} className="bg-white rounded-2xl border border-gray-200 p-3 flex flex-col gap-2">
             <div className="flex items-start justify-between gap-2">
@@ -188,9 +261,30 @@ function SiparislerSection() {
               <span>{fmtTarihKisa(s.tarih)}</span>
               <span className="font-semibold text-gray-700">{toplam ? fmtTL(toplam) : '—'}</span>
             </div>
-            {!s.odendi && s.durum === 'teslim' && (
-              <div className="text-xs text-red-500 font-medium">⚠️ Ödeme bekleniyor</div>
-            )}
+
+            {/* Quick action buttons */}
+            <div className="flex gap-2 pt-1">
+              {sonraki && (
+                <button
+                  onClick={() => ilerle(s.id, sonraki)}
+                  disabled={isWorking}
+                  className="flex-1 text-xs py-1.5 rounded-xl bg-blue-50 text-blue-700 font-medium
+                    hover:bg-blue-100 active:scale-95 transition-all disabled:opacity-50"
+                >
+                  {isWorking ? '…' : `→ ${SONRAKI_LABEL[s.durum]}`}
+                </button>
+              )}
+              {s.durum === 'teslim' && !s.odendi && (
+                <button
+                  onClick={() => odemeAl(s.id)}
+                  disabled={isWorking}
+                  className="flex-1 text-xs py-1.5 rounded-xl bg-green-50 text-green-700 font-medium
+                    hover:bg-green-100 active:scale-95 transition-all disabled:opacity-50"
+                >
+                  {isWorking ? '…' : '💰 Ödeme Al'}
+                </button>
+              )}
+            </div>
           </div>
         )
       })}
@@ -319,6 +413,3 @@ function AnalizSection() {
     </div>
   )
 }
-
-// suppress linting warnings
-void (DURUM_RENK as unknown)

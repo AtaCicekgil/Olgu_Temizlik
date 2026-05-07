@@ -41,12 +41,21 @@ export function MessageBubble({ msg }: Props) {
   }
 
   // assistant
+  const displayContent = (() => {
+    let c = msg.content || ''
+    c = c.replace(/<think>[\s\S]*?<\/think>/g, '')  // Qwen3 think bloğu
+    // Tool call JSON içeriyorsa tamamen gizle
+    if (/["']name["']\s*:\s*["'][a-z_]+["']/.test(c) && /["']arguments["']/.test(c)) return ''
+    if (/^\s*\{[\s\S]*"musteri_id"/.test(c)) return ''
+    return c.trim()
+  })()
+
   return (
     <motion.div className="flex justify-start" {...bubble}>
       <div className="max-w-[92%] flex flex-col gap-2">
-        {msg.content && (
+        {displayContent && (
           <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm leading-relaxed text-gray-800 whitespace-pre-wrap">
-            {msg.content}
+            {displayContent}
           </div>
         )}
         {msg.card && <ResultCard card={msg.card} />}

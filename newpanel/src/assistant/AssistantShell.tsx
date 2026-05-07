@@ -1,9 +1,10 @@
-import { useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { Trash2 } from 'lucide-react'
 import { ChatWindow } from './ChatWindow'
 import { InputBar } from './InputBar'
 import { useChatStore } from '../store/chat.store'
 import { runOrchestrator } from '../engine/orchestrator'
+import { toast } from '../components/ui/Toast'
 import type { ChatMessage } from '../types/tools'
 
 interface Props {
@@ -14,34 +15,52 @@ export function AssistantShell({ compact }: Props) {
   const { messages, loading, addMessage, setLoading, clearChat } = useChatStore()
   const abortRef = useRef<AbortController | null>(null)
 
+  // "/" key → focus input
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === '/' && e.target === document.body) {
+        e.preventDefault()
+        document.getElementById('assistant-input')?.focus()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
   const send = useCallback(async (text: string) => {
     if (loading) return
 
-    // Cancel any in-flight request
     abortRef.current?.abort()
     const ctrl = new AbortController()
     abortRef.current = ctrl
 
-    // Add user message
     const userMsg: Omit<ChatMessage, 'id' | 'ts'> = { role: 'user', content: text }
     addMessage(userMsg)
     setLoading(true)
 
     try {
-      const { reply, toolMessages } = await runOrchestrator(messages, text, ctrl.signal)
+      const { reply, toolMessages, card } = await runOrchestrator(messages, text, ctrl.signal)
 
-      // Add tool call trace messages
       for (const tm of toolMessages) {
         addMessage({ role: tm.role, content: tm.content, toolCalls: tm.toolCalls, toolResults: tm.toolResults })
+        if (tm.toolResults) {
+          for (const r of tm.toolResults) {
+            if (!(r as { success: boolean }).success) {
+              const msg = (r as { error?: string }).error
+              toast.error(msg ? `Hata: ${msg}` : 'Bir araç başarısız oldu')
+            }
+          }
+        }
       }
 
-      // Add final assistant reply
       if (reply) {
-        addMessage({ role: 'assistant', content: reply })
+        addMessage({ role: 'assistant', content: reply, card })
       }
     } catch (e) {
       if ((e as Error).name === 'AbortError') return
-      addMessage({ role: 'assistant', content: `⚠️ Hata: ${(e as Error).message}` })
+      const errMsg = (e as Error).message
+      addMessage({ role: 'assistant', content: `⚠️ Hata: ${errMsg}` })
+      toast.error(errMsg)
     } finally {
       setLoading(false)
     }
@@ -67,7 +86,7 @@ export function AssistantShell({ compact }: Props) {
       </div>
 
       {/* Messages */}
-      <ChatWindow messages={messages} loading={loading} />
+      <ChatWindow messages={messages} loading={loading} onSuggest={send} />
 
       {/* Input */}
       <InputBar onSend={send} loading={loading} />

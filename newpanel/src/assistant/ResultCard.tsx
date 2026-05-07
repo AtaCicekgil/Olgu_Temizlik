@@ -3,6 +3,7 @@ import type { ResultCard as IResultCard } from '../types/tools'
 import { Badge } from '../components/ui/Badge'
 import { fmtTL, fmtTarihKisa } from '../lib/utils'
 import { DURUM_LABEL } from '../types/domain'
+import { useModeStore } from '../store/mode.store'
 
 const card = { initial:{ opacity:0, y:6 }, animate:{ opacity:1, y:0 }, transition:{ duration:0.18 } }
 
@@ -15,6 +16,7 @@ export function ResultCard({ card: c }: { card: IResultCard }) {
     case 'musteri_detay':  return <MusteriDetayCard data={c.data as any} />
     case 'gider_liste':    return <GiderListeCard data={c.data as any[]} meta={c.meta} />
     case 'basit':          return <BasitCard data={c.data} />
+    case 'yeni_siparis':   return <YeniSiparisCard data={c.data as any} />
     default:               return null
   }
 }
@@ -229,6 +231,41 @@ function BasitCard({ data }: { data: unknown }) {
           <span className="text-gray-800 text-right truncate font-medium">{String(v)}</span>
         </div>
       ))}
+    </motion.div>
+  )
+}
+
+// ── Yeni Sipariş Oluşturuldu ──────────────────────────────────────────────────
+function YeniSiparisCard({ data }: { data: any }) {
+  const setMode = useModeStore(s => s.setMode)
+  if (!data) return null
+  return (
+    <motion.div className="rounded-2xl bg-green-50 border border-green-200 overflow-hidden text-sm" {...card}>
+      <div className="px-4 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-lg shrink-0">
+          ✅
+        </div>
+        <div className="flex-1">
+          <div className="font-semibold text-green-800">Sipariş #{data.id} oluşturuldu</div>
+          <div className="text-xs text-green-600 mt-0.5">Alınacak siparişlere eklendi</div>
+        </div>
+        <Badge variant="warn">Alınacak</Badge>
+      </div>
+      {(data.teslim_tarihi || data.siparis_notu) && (
+        <div className="px-4 pb-2 flex gap-4 text-xs text-green-700">
+          {data.teslim_tarihi && <span>📅 Teslim: {fmtTarihKisa(data.teslim_tarihi)}</span>}
+          {data.siparis_notu  && <span>📝 {data.siparis_notu}</span>}
+        </div>
+      )}
+      <div className="px-4 pb-3">
+        <button
+          onClick={() => setMode('panel')}
+          className="w-full text-xs font-semibold text-green-700 bg-green-100 hover:bg-green-200
+            active:scale-95 transition-all py-2 rounded-xl"
+        >
+          Siparişleri Gör →
+        </button>
+      </div>
     </motion.div>
   )
 }

@@ -2,12 +2,23 @@ import type { GTool } from '../engine/groq'
 import { sb } from '../lib/supabase'
 import { bugun } from '../lib/utils'
 
+// AI bazen Türkçe karakterli veya beklenmedik değer gönderebilir — normalize et
+function normServisTip(raw: unknown): 'hali' | 'koltuk' | 'perde' {
+  const s = String(raw || '')
+    .toLowerCase()
+    .replace(/ı/g, 'i').replace(/ü/g, 'u').replace(/ö/g, 'o')
+    .replace(/ş/g, 's').replace(/ç/g, 'c').replace(/ğ/g, 'g')
+  if (s.includes('koltuk')) return 'koltuk'
+  if (s.includes('perde'))  return 'perde'
+  return 'hali'  // varsayılan
+}
+
 export const siparisTools: GTool[] = [
   { type:'function', function:{ name:'siparis_sorgula', description:'Siparişleri filtreler.', parameters:{ type:'object', properties:{ musteri_ad:{type:'string'}, tel:{type:'string'}, durum:{type:'string',enum:['alinacak','alindi','yikanıyor','hazir','dagitimda','teslim']}, tarih_bas:{type:'string'}, tarih_bit:{type:'string'}, odendi:{type:'boolean'}, limit:{type:'number'} } } } },
   { type:'function', function:{ name:'siparis_detay', description:'Siparişin tüm detayları: müşteri, kalemler, m2, fiyat, notlar.', parameters:{ type:'object', properties:{ siparis_id:{type:'number'} }, required:['siparis_id'] } } },
   { type:'function', function:{ name:'siparis_ara', description:'Serbest metin ile sipariş ara (müşteri adı, tel veya id).', parameters:{ type:'object', properties:{ sorgu:{type:'string'} }, required:['sorgu'] } } },
   { type:'function', function:{ name:'siparis_gecmis', description:'Müşterinin tüm geçmiş siparişleri.', parameters:{ type:'object', properties:{ musteri_id:{type:'number'} }, required:['musteri_id'] } } },
-  { type:'function', function:{ name:'siparis_olustur', description:'Yeni sipariş oluşturur (durum: alinacak). Ürün GİRİLMEZ.', parameters:{ type:'object', properties:{ musteri_id:{type:'number'}, adres_mahalle:{type:'string'}, adres_sokak:{type:'string'}, adres_bina:{type:'string'}, adres_daire:{type:'string'}, servis_tip:{type:'string',enum:['hali','koltuk','perde']}, teslim_tarihi:{type:'string'}, siparis_notu:{type:'string'} }, required:['musteri_id'] } } },
+  { type:'function', function:{ name:'siparis_olustur', description:'Yeni sipariş oluşturur. ZORUNLU: musteri_id daha önce musteri_sorgula ile bulunmuş gerçek bir ID olmalı. Asla tahmin etme veya uydurma.', parameters:{ type:'object', properties:{ musteri_id:{type:'number'}, adres_mahalle:{type:'string'}, adres_sokak:{type:'string'}, adres_bina:{type:'string'}, adres_daire:{type:'string'}, servis_tip:{type:'string',enum:['hali','koltuk','perde']}, teslim_tarihi:{type:'string'}, siparis_notu:{type:'string'} }, required:['musteri_id'] } } },
   { type:'function', function:{ name:'siparis_alindi_gec', description:'alinacak→alindi geçişi ve ürün girişi.', parameters:{ type:'object', properties:{ siparis_id:{type:'number'}, kalemler:{type:'array',items:{type:'object',properties:{ cins_ad:{type:'string'}, adet:{type:'number'}, m2:{type:'number'}, m2_sonra:{type:'boolean'} },required:['cins_ad','adet']}} }, required:['siparis_id','kalemler'] } } },
   { type:'function', function:{ name:'siparis_durum_guncelle', description:'Sipariş durumunu günceller.', parameters:{ type:'object', properties:{ siparis_id:{type:'number'}, yeni_durum:{type:'string',enum:['alindi','yikanıyor','hazir','dagitimda','teslim']} }, required:['siparis_id','yeni_durum'] } } },
   { type:'function', function:{ name:'siparis_toplu_durum', description:'Birden fazla siparişin durumunu aynı anda günceller.', parameters:{ type:'object', properties:{ siparis_idler:{type:'array',items:{type:'number'}}, yeni_durum:{type:'string',enum:['alindi','yikanıyor','hazir','dagitimda','teslim']} }, required:['siparis_idler','yeni_durum'] } } },
@@ -112,6 +123,13 @@ async function siparis_gecmis(args: Record<string, unknown>) {
 }
 
 async function siparis_olustur(args: Record<string, unknown>) {
+  const mid = Number(args.musteri_id)
+  if (!mid || mid <= 0) {
+    return {
+      success: false,
+      error: 'musteri_id geçersiz. ÖNCE: 1) müşteri adını kullanıcıdan al 2) telefon numarasını al 3) musteri_sorgula ile ID\'yi bul. Sonra siparis_olustur çağır.',
+    }
+  }
   if (args.adres_mahalle || args.adres_sokak) {
     await sb.from('np_musteriler').update({
       adres_mahalle: args.adres_mahalle || null,
@@ -123,11 +141,10 @@ async function siparis_olustur(args: Record<string, unknown>) {
   const { data, error } = await sb.from('np_siparisler').insert({
     musteri_id:    args.musteri_id,
     durum:         'alinacak',
-    servis_tip:    args.servis_tip || 'hali',
+    servis_tip:    normServisTip(args.servis_tip),
     tarih:         bugun(),
     teslim_tarihi: args.teslim_tarihi || null,
     siparis_notu:  args.siparis_notu  || null,
-    olusturma:     new Date().toISOString(),
   }).select().single()
   if (error) return { success: false, error: error.message }
   return { success: true, data, mesaj: `✅ Sipariş #${data.id} oluşturuldu` }
