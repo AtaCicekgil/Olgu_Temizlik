@@ -3948,8 +3948,12 @@ function ggFilterSiparisler() {
   const now = new Date();
   return data.siparisler.filter(s => {
     if (!s.odendi) return false;
-    if ((s.odemeTarih||s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
-    const d = new Date(s.odemeTarih || s.teslimTarihi || s.tarih);
+    const isKoltuk = s.servisTip === 'koltuk';
+    const efektif = isKoltuk
+      ? (s.odemeTarih || s.teslimGerceklesmeTarihi || '')
+      : (s.odemeTarih || s.teslimTarihi || s.tarih || '');
+    if (!efektif || efektif < VERI_BASLANGIC) return false;
+    const d = new Date(efektif);
     if (ggPeriod==='gun') return d.toDateString()===now.toDateString();
     if (ggPeriod==='hafta') { const w=new Date(now); w.setDate(now.getDate()-now.getDay()+1); w.setHours(0,0,0,0); return d>=w && d<=now; }
     if (ggPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
@@ -7289,8 +7293,13 @@ function renderKasa() {
   const _aralikBit = () => { const d=new Date(document.getElementById('kasa-aralik-bit')?.value||''); d.setHours(23,59,59); return d; };
 
   function inPeriod(s) {
-    if ((s.odemeTarih||s.teslimTarihi||s.tarih||'') < VERI_BASLANGIC) return false;
-    const d = new Date(s.odemeTarih || s.teslimTarihi || s.tarih);
+    // Koltuk için tarih (randevu günü) değil, ödeme/tamamlanma tarihi kullanılır
+    const isKoltuk = s.servisTip === 'koltuk';
+    const efektif = isKoltuk
+      ? (s.odemeTarih || s.teslimGerceklesmeTarihi || '')
+      : (s.odemeTarih || s.teslimTarihi || s.tarih || '');
+    if (!efektif || efektif < VERI_BASLANGIC) return false;
+    const d = new Date(efektif);
     if (kasaPeriod==='gun') return d.toDateString()===secilenGun.toDateString();
     if (kasaPeriod==='hafta') return d>=_haftaBasi() && d<=now;
     if (kasaPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
