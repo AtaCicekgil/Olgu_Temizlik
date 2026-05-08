@@ -1801,6 +1801,12 @@ iframe[title*="chat" i] { display: none !important; }
     <div class="page" id="page-kasa">
 
       <!-- ════ KASA HEADER ════ -->
+      <!-- Veri başlangıç notu -->
+      <div style="font-size:11px;color:var(--text3);background:var(--white);border:1px solid var(--border);border-radius:10px;padding:7px 12px;margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+        <span>📅</span>
+        <span>Gelir ve teslim kayıtları <b>1 Mayıs 2026</b>'dan itibaren gösterilmektedir. "Bu Yıl" seçeneği de bu tarihten başlar.</span>
+      </div>
+
       <div style="margin-bottom:16px;">
 
         <!-- Dönem Chip'leri -->
@@ -3957,9 +3963,9 @@ function ggFilterSiparisler() {
     if (ggPeriod==='gun') return d.toDateString()===now.toDateString();
     if (ggPeriod==='hafta') { const w=new Date(now); w.setDate(now.getDate()-now.getDay()+1); w.setHours(0,0,0,0); return d>=w && d<=now; }
     if (ggPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-    if (ggPeriod==='yil') return d.getFullYear()===now.getFullYear();
+    if (ggPeriod==='yil') return d.getFullYear()===now.getFullYear() && efektif>=VERI_BASLANGIC;
     if (ggPeriod==='aralik') { const b=document.getElementById('gg-aralik-bas')?.value; const e=document.getElementById('gg-aralik-bit')?.value; if(b&&e) return d>=new Date(b) && d<=new Date(e+'T23:59:59'); }
-    return true;
+    return efektif>=VERI_BASLANGIC; // tumu modu
   });
 }
 
@@ -4712,6 +4718,8 @@ function renderSiparisListesi(cid, durum) {
   if (selectedDate) liste = liste.filter(s => s.tarih === selectedDate);
   // Teslim sayfasında fiili teslim tarihine göre sırala (yeni üste), diğerlerinde alım/oluşturma tarihine göre
   if (durum === 'teslim') {
+    // VERI_BASLANGIC öncesi teslim edilenler gizlenir — liste 1 Mayıs'tan başlar
+    liste = liste.filter(s => (s.teslimGerceklesmeTarihi || s.teslimTarihi || s.tarih || '') >= VERI_BASLANGIC);
     liste = [...liste].sort((a, b) => {
       const ta = a.teslimGerceklesmeTarihi || a.tarih || '';
       const tb = b.teslimGerceklesmeTarihi || b.tarih || '';
@@ -7303,9 +7311,9 @@ function renderKasa() {
     if (kasaPeriod==='gun') return d.toDateString()===secilenGun.toDateString();
     if (kasaPeriod==='hafta') return d>=_haftaBasi() && d<=now;
     if (kasaPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-    if (kasaPeriod==='yil') return d.getFullYear()===now.getFullYear();
+    if (kasaPeriod==='yil') return d.getFullYear()===now.getFullYear() && efektif>=VERI_BASLANGIC;
     if (kasaPeriod==='aralik') return d>=_aralikBas() && d<=_aralikBit();
-    return true;
+    return efektif>=VERI_BASLANGIC; // tumu modu
   }
   function giderInPeriod(g) {
     if ((g.tarih||'') < VERI_BASLANGIC) return false;
