@@ -153,6 +153,13 @@ async function siparis_olustur(args: Record<string, unknown>) {
 async function siparis_alindi_gec(args: Record<string, unknown>) {
   const id = args.siparis_id as number
   const kalemler = args.kalemler as Array<{ cins_ad: string; adet: number; m2?: number; m2_sonra?: boolean }>
+
+  // Zaten kalem varsa tekrar ekleme (çift çağrım koruması)
+  const { data: mevcutKalemler } = await sb.from('np_siparis_kalemleri').select('id').eq('siparis_id', id)
+  if (mevcutKalemler && mevcutKalemler.length > 0) {
+    return { success: false, error: `Sipariş #${id} zaten ${mevcutKalemler.length} kaleme sahip. Kalem eklemek için siparis_kalem_ekle kullan.` }
+  }
+
   const cinsler = await getCins()
 
   const kalemRows = kalemler.map(k => {

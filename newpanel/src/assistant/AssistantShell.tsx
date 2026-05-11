@@ -4,6 +4,7 @@ import { ChatWindow } from './ChatWindow'
 import { InputBar } from './InputBar'
 import { useChatStore } from '../store/chat.store'
 import { runOrchestrator } from '../engine/orchestrator'
+import { tryCommand } from '../engine/command-router'
 import { toast } from '../components/ui/Toast'
 import type { ChatMessage } from '../types/tools'
 
@@ -39,6 +40,14 @@ export function AssistantShell({ compact }: Props) {
     setLoading(true)
 
     try {
+      // Önce kural tabanlı router'ı dene (LLM gerektirmez)
+      const cmdResult = await tryCommand(text)
+      if (cmdResult) {
+        addMessage({ role: 'assistant', content: cmdResult.reply, card: cmdResult.card })
+        return
+      }
+
+      // Eşleşme yok → LLM orchestrator
       const { reply, toolMessages, card } = await runOrchestrator(messages, text, ctrl.signal)
 
       for (const tm of toolMessages) {
