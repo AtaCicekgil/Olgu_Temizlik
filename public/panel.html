@@ -5649,7 +5649,9 @@ function openKartDetay(sid) {
   const ekstraRow = `<div style="display:flex;gap:8px;">${acilBtn}${kopyalaBtn}</div>`;
   document.getElementById('kd-butonlar').innerHTML = `${iletisimRow}${aksiyonRow}${ekstraRow}`;
 
-  document.getElementById('modal-kart-detay').classList.add('open');
+  const mkd = document.getElementById('modal-kart-detay');
+  mkd._savedScroll = window.scrollY;
+  mkd.classList.add('open');
 }
 
 function sonrakiDurum(d, servisTip) {
@@ -9722,11 +9724,17 @@ function closeModal(id){
   }
   el.classList.remove('open');
   if(el._onClose){el._onClose();el._onClose=null;}
-  // iOS Safari: after keyboard dismisses, viewport can shift — force scroll reset
+  const savedScroll = el._savedScroll;
+  el._savedScroll = undefined;
   requestAnimationFrame(()=>{
-    window.scrollTo(0,0);
-    document.documentElement.scrollTop=0;
-    document.body.scrollTop=0;
+    if (savedScroll != null) {
+      window.scrollTo(0, savedScroll);
+    } else {
+      // iOS Safari: after keyboard dismisses, viewport can shift — force scroll reset
+      window.scrollTo(0,0);
+      document.documentElement.scrollTop=0;
+      document.body.scrollTop=0;
+    }
   });
 }
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
