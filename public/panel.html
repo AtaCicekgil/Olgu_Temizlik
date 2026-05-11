@@ -3498,8 +3498,6 @@ async function _syncToSupabase() {
     console.warn('Supabase sync:', err.message);
     _setSyncState('error');
     toast('⚠️ Kaydedilemedi: ' + (err.message || 'Bağlantı hatası'));
-    // 10 saniye sonra otomatik retry
-    setTimeout(() => { if (_getSb()) _syncToSupabase(); }, 10000);
   }
 }
 
@@ -3629,10 +3627,6 @@ async function _loadFromSupabase() {
         .map(s=>parseInt((s.kurumNo||'').replace('C',''))||0)
         .reduce((a,b)=>Math.max(a,b), 0);
       data.counters.kurumsal = Math.max(data.counters.kurumsal||0, maxKurumsal);
-      // localStorage'dan kurtarılan odeme_tarih değerleri varsa Supabase'e geri yaz (tek seferlik onarım)
-      if (data.siparisler.some(s=>s.odendi && _lsOdeme[s.id]?.odemeTarih)) {
-        setTimeout(_debouncedSync, 2000);
-      }
     }
     if (giderler?.length) {
       data.giderler = giderler.map(g => ({id:g.id, kategori:g.kategori||(g.aciklama?'':null)||null, aciklama:g.aciklama||'', tutar:g.tutar, tarih:g.tarih}));
