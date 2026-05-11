@@ -39,14 +39,23 @@ async function handleWizard(text: string): Promise<CommandResult> {
 
     case 'ask_phone': {
       const tel = (n === 'yok' || n === 'yok tel') ? null : text.trim()
-      // Müşteri DB'de var mı?
+      const normTel = (t: string) => t.replace(/[\s\-().]/g, '').replace(/^0/, '')
+
+      // Müşteri DB'de var mı? — önce telefon (kesin eşleşme), sonra ad
       const { data: musteriler } = await sb.from('np_musteriler').select('*').order('ad')
       const araAd = norm(w.ad)
-      let bulunan = (musteriler || []).find((m: any) =>
-        norm(m.ad).includes(araAd) || araAd.includes(norm(m.ad))
-      )
-      if (!bulunan && tel) {
-        bulunan = (musteriler || []).find((m: any) => m.tel?.replace(/\s/g,'').includes(tel.replace(/\s/g,'')))
+      let bulunan: any = null
+
+      if (tel) {
+        const nTel = normTel(tel)
+        bulunan = (musteriler || []).find((m: any) =>
+          m.tel && normTel(m.tel) === nTel
+        )
+      }
+      if (!bulunan) {
+        bulunan = (musteriler || []).find((m: any) =>
+          norm(m.ad) === araAd || norm(m.ad).startsWith(araAd) || araAd.startsWith(norm(m.ad))
+        )
       }
 
       if (bulunan) {
@@ -70,13 +79,12 @@ async function handleWizard(text: string): Promise<CommandResult> {
     case 'confirm_address': {
       const musteri = w.musteri as any
       if (n.match(/evet|tamam|dogru|guncel|ayni|kalsin|ok/)) {
-        // Mevcut adresle sipariş oluştur
         wizard = null
-        return await olusturSiparis(musteri.id, musteri)
+        return await olusturSiparis(musteri.id, musteri.ad)
       }
       // Yeni adres yazıldı
       wizard = { step: 'ask_address', ad: musteri.ad, tel: musteri.tel, musteri_id: musteri.id, yeni_musteri: false }
-      return handleWizard(text)  // adresi kaydet
+      return handleWizard(text)
     }
 
     case 'ask_address': {
@@ -85,12 +93,12 @@ async function handleWizard(text: string): Promise<CommandResult> {
         await sb.from('np_musteriler').update({ adres_mahalle: adres }).eq('id', w.musteri_id)
       }
       wizard = null
-      return await olusturSiparis(w.musteri_id, { adres_mahalle: adres })
+      return await olusturSiparis(w.musteri_id, w.ad)
     }
   }
 }
 
-async function olusturSiparis(musteriId: number, adresBilgi: any): Promise<CommandResult> {
+async function olusturSiparis(musteriId: number, musteriAd: string): Promise<CommandResult> {
   const { data, error } = await sb.from('np_siparisler').insert({
     musteri_id: musteriId,
     durum: 'alinacak',
@@ -100,8 +108,8 @@ async function olusturSiparis(musteriId: number, adresBilgi: any): Promise<Comma
 
   if (error) return { reply: `⚠️ Sipariş oluşturulamadı: ${error.message}` }
   return {
-    reply: `✅ Sipariş **#${data.id}** oluşturuldu, alınacaklar listesine eklendi.`,
-    card: { type: 'yeni_siparis', data },
+    reply: '',
+    card: { type: 'yeni_siparis', data: { ...data, musteri_ad: musteriAd } },
   }
 }
 
