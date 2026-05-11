@@ -1,10 +1,108 @@
 import { sb } from '../lib/supabase'
-import { fmtTL, fmtTarihKisa } from '../lib/utils'
+import { fmtTL, fmtTarihKisa, bugun } from '../lib/utils'
 import type { ResultCard } from '../types/tools'
 
 export interface CommandResult {
   reply: string
   card?: ResultCard
+}
+
+// ── Sipariş oluşturma wizard state ───────────────────────────────────────────
+
+type WizardStep =
+  | { step: 'ask_name' }
+  | { step: 'ask_phone'; ad: string }
+  | { step: 'ask_address'; ad: string; tel: string | null; musteri_id: number; yeni_musteri: boolean }
+  | { step: 'confirm_address'; ad: string; tel: string | null; musteri: Record<string, unknown> }
+
+let wizard: WizardStep | null = null
+
+export function resetWizard() { wizard = null }
+
+async function handleWizard(text: string): Promise<CommandResult> {
+  const n = norm(text.trim())
+  const w = wizard!
+
+  // İptal
+  if (n.match(/^(iptal|vazgec|dur|hayir hayir)$/)) {
+    wizard = null
+    return { reply: '↩️ Sipariş oluşturma iptal edildi.' }
+  }
+
+  switch (w.step) {
+    case 'ask_name': {
+      const ad = text.trim()
+      if (ad.length < 2) return { reply: 'Lütfen geçerli bir ad girin:' }
+      wizard = { step: 'ask_phone', ad }
+      return { reply: `Telefon numarası? (yoksa "yok" yazın)` }
+    }
+
+    case 'ask_phone': {
+      const tel = (n === 'yok' || n === 'yok tel') ? null : text.trim()
+      // Müşteri DB'de var mı?
+      const { data: musteriler } = await sb.from('np_musteriler').select('*').order('ad')
+      const araAd = norm(w.ad)
+      let bulunan = (musteriler || []).find((m: any) =>
+        norm(m.ad).includes(araAd) || araAd.includes(norm(m.ad))
+      )
+      if (!bulunan && tel) {
+        bulunan = (musteriler || []).find((m: any) => m.tel?.replace(/\s/g,'').includes(tel.replace(/\s/g,'')))
+      }
+
+      if (bulunan) {
+        wizard = { step: 'confirm_address', ad: bulunan.ad, tel: bulunan.tel, musteri: bulunan }
+        const adresBilgi = bulunan.adres_mahalle
+          ? `📍 Kayıtlı adres: ${[bulunan.adres_mahalle, bulunan.adres_sokak, bulunan.adres_bina].filter(Boolean).join(', ')}`
+          : '📍 Kayıtlı adres yok.'
+        return { reply: `✅ **${bulunan.ad}** bulundu. ${adresBilgi}\nBu adrese sipariş oluşturulsun mu? (evet / adres yaz)` }
+      }
+
+      // Yeni müşteri oluştur
+      const { data: yeniM, error } = await sb.from('np_musteriler').insert({
+        ad: w.ad, tel: tel || null, tipi: 'bireysel',
+      }).select().single()
+      if (error) { wizard = null; return { reply: `⚠️ Müşteri oluşturulamadı: ${error.message}` } }
+
+      wizard = { step: 'ask_address', ad: yeniM.ad, tel: yeniM.tel, musteri_id: yeniM.id, yeni_musteri: true }
+      return { reply: `✅ Yeni müşteri **${yeniM.ad}** oluşturuldu.\nAdres (mahalle)? (yoksa "yok" yazın)` }
+    }
+
+    case 'confirm_address': {
+      const musteri = w.musteri as any
+      if (n.match(/evet|tamam|dogru|guncel|ayni|kalsin|ok/)) {
+        // Mevcut adresle sipariş oluştur
+        wizard = null
+        return await olusturSiparis(musteri.id, musteri)
+      }
+      // Yeni adres yazıldı
+      wizard = { step: 'ask_address', ad: musteri.ad, tel: musteri.tel, musteri_id: musteri.id, yeni_musteri: false }
+      return handleWizard(text)  // adresi kaydet
+    }
+
+    case 'ask_address': {
+      const adres = (n === 'yok' || n === 'yok adres') ? null : text.trim()
+      if (adres) {
+        await sb.from('np_musteriler').update({ adres_mahalle: adres }).eq('id', w.musteri_id)
+      }
+      wizard = null
+      return await olusturSiparis(w.musteri_id, { adres_mahalle: adres })
+    }
+  }
+}
+
+async function olusturSiparis(musteriId: number, adresBilgi: any): Promise<CommandResult> {
+  const { data, error } = await sb.from('np_siparisler').insert({
+    musteri_id: musteriId,
+    durum: 'alinacak',
+    servis_tip: 'hali',
+    tarih: bugun(),
+  }).select().single()
+
+  if (error) return { reply: `⚠️ Sipariş oluşturulamadı: ${error.message}` }
+  return {
+    reply: `✅ Sipariş **#${data.id}** oluşturuldu, alınacaklar listesine eklendi.`,
+    card: { type: 'yeni_siparis', data },
+  }
 }
 
 // Türkçe normalize (eşleşme kolaylığı için)
@@ -40,6 +138,21 @@ const DURUM_LABEL: Record<string, string> = {
 
 export async function tryCommand(text: string): Promise<CommandResult | null> {
   const n = norm(text.trim())
+
+  // ── 0. Aktif wizard varsa ona yönlendir ─────────────────────────────────────
+  if (wizard !== null) return handleWizard(text)
+
+  // ── 0b. Sipariş oluşturma tetikleyicisi ─────────────────────────────────────
+  if (n.match(/siparis\s*(olustur|ac|yeni|ekle|oluştur|aç)|yeni\s*siparis/)) {
+    // Mesajda doğrudan isim var mı? "Ahmet için sipariş oluştur"
+    const icin = text.match(/(.+?)\s+i[cç]in\s+sipari[sş]/i)
+    if (icin) {
+      wizard = { step: 'ask_phone', ad: icin[1].trim() }
+      return { reply: `**${icin[1].trim()}** için sipariş — telefon numarası? ("yok" yazabilirsiniz)` }
+    }
+    wizard = { step: 'ask_name' }
+    return { reply: '📦 Sipariş oluşturuyoruz.\nMüşteri adı?' }
+  }
 
   // ── 1. Durum güncelleme: "#42 teslim", "S42 yıkamaya" ──────────────────────
   const durumEntry = Object.entries(DURUM_MAP).find(([kw]) => n.includes(kw))
