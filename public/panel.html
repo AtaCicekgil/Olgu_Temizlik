@@ -1697,7 +1697,6 @@ iframe[title*="chat" i] { display: none !important; }
       <div style="display:flex;gap:8px;margin-bottom:12px;">
         <button type="button" class="koltuk-tab-btn active" id="ktab-randevu"    onclick="koltukTabSec('randevu',this)"   >📅 Randevu</button>
         <button type="button" class="koltuk-tab-btn"        id="ktab-tamamlandi" onclick="koltukTabSec('tamamlandi',this)">✅ Tamamlandı</button>
-        <button type="button" class="koltuk-tab-btn"        id="ktab-teslim"     onclick="koltukTabSec('teslim',this)"   >📦 Teslim</button>
       </div>
       <div id="list-koltuk-randevu"></div>
     </div>
@@ -2779,8 +2778,8 @@ iframe[title*="chat" i] { display: none !important; }
   </div>
 </div>
 
-<div class="modal-overlay" id="modal-musteri-edit" style="z-index:850;">
-  <div class="modal">
+<div class="modal-overlay" id="modal-musteri-edit" style="z-index:9200;">
+  <div class="modal" style="z-index:9210; position:relative;">
     <div class="modal-title">✏️ Müşteri Düzenle <button class="modal-close" onclick="closeModal('modal-musteri-edit')">×</button></div>
     <input type="hidden" id="musteri-edit-id">
     <div style="display:flex;gap:8px;">
@@ -2898,31 +2897,120 @@ iframe[title*="chat" i] { display: none !important; }
 
     <!-- Gönder butonları -->
     <div style="padding:8px 14px 16px;flex-shrink:0;">
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
         <button onclick="_mesajGonder('wa')"
           style="background:#f0fff4;color:#25d366;border:1.5px solid #86efbf;border-radius:12px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:Inter,sans-serif;">
-          <span style="font-size:22px;line-height:1;">💬</span>
-          <span style="font-size:11px;font-weight:700;color:#25d366;">WhatsApp</span>
+          <span style="font-size:20px;line-height:1;">💬</span>
+          <span style="font-size:10px;font-weight:700;color:#25d366;">WhatsApp</span>
         </button>
         <button onclick="_mesajGonder('wabusiness')"
           style="background:#e8f5e9;color:#2e7d32;border:1.5px solid #a5d6a7;border-radius:12px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:Inter,sans-serif;">
-          <span style="font-size:22px;line-height:1;">🏢</span>
-          <span style="font-size:11px;font-weight:700;color:#2e7d32;">WA İşletme</span>
+          <span style="font-size:20px;line-height:1;">🏢</span>
+          <span style="font-size:10px;font-weight:700;color:#2e7d32;">WA İşletme</span>
+        </button>
+        <button onclick="_mesajGonder('sms')"
+          style="background:#fefce8;color:#b45309;border:1.5px solid #fde68a;border-radius:12px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:Inter,sans-serif;">
+          <span style="font-size:20px;line-height:1;">📱</span>
+          <span style="font-size:10px;font-weight:700;color:#b45309;">SMS</span>
         </button>
         <button onclick="_mesajGonder('kopyala')"
           style="background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:Inter,sans-serif;">
-          <span style="font-size:22px;line-height:1;">📋</span>
-          <span style="font-size:11px;font-weight:700;">Kopyala</span>
+          <span style="font-size:20px;line-height:1;">📋</span>
+          <span style="font-size:10px;font-weight:700;">Kopyala</span>
         </button>
       </div>
     </div>
-
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+// ── Madde 6: Merkezi Backup Sistemi (Global Erişim Garantisi) ───────────────
+async function createBackup(reason, backupType = 'manual', options = {}) {
+  const sb = typeof _getSb === 'function' ? _getSb() : null;
+  if (!sb) return false;
+  try {
+    const snapshot = JSON.parse(JSON.stringify(typeof data !== 'undefined' ? data : {}));
+    const { error } = await sb.from('panel_backups').insert([{
+      backup_type: backupType,
+      reason: reason,
+      data_snapshot: snapshot,
+      version: typeof localKnownVersion !== 'undefined' ? localKnownVersion : null,
+      client_info: navigator.userAgent,
+      app_version: typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'panel'
+    }]);
+    if (error) { console.warn('Yedekleme Hatası:', error.message); return false; }
+    return true;
+  } catch (err) { console.warn('Yedekleme hatası:', err.message); return false; }
+}
+async function ensureCriticalBackup(reason) {
+  const ok = await createBackup(reason, 'critical');
+  if (!ok) { alert("Yedek alınamadı. Güvenlik için işlem durduruldu."); return false; }
+  return true;
+}
+async function ensureDailyBackup() {
+  try {
+    const KEY = 'olgu_last_daily_backup';
+    const today = new Date().toISOString().split('T')[0];
+    const last = localStorage.getItem(KEY);
+    if (last === today) return;
+    const ok = await createBackup('daily_auto', 'daily');
+    if (ok) { localStorage.setItem(KEY, today); console.log('Günlük yedek alındı.'); }
+  } catch (e) { console.warn('Daily backup error:', e); }
+}
+// Global atamalar (En tepede)
+window.createBackup = createBackup;
+window.debugBackup = createBackup;
+window.ensureDailyBackup = ensureDailyBackup;
+window.ensureCriticalBackup = ensureCriticalBackup;
+
+let detayKnownUpdatedAt = null;
+
+async function ensureSiparisFresh(sid) {
+  const sb = typeof _getSb === 'function' ? _getSb() : null;
+  if (!sb) return true; // Offline/local mode
+  try {
+    const numId = parseInt(String(sid).replace(/[^0-9]/g,''));
+    const { data: serverRec, error } = await sb.from('siparisler').select('id, updated_at').eq('id', numId).maybeSingle();
+    if (error) throw error;
+
+    const sLocal = data.siparisler.find(x => x.id == sid);
+    const known = detayKnownUpdatedAt || (sLocal ? sLocal.updatedAt : null);
+
+    let fail = false;
+    let reason = '';
+    let msg = '';
+
+    if (!serverRec) {
+      fail = true; reason = 'deleted';
+      msg = 'Bu sipariş başka bir sekme veya cihazda silinmiş. Eski ekranla tekrar kaydedilemez. Lütfen sayfayı yenileyin.';
+    } else if (known && serverRec.updated_at && serverRec.updated_at > known) {
+      fail = true; reason = 'stale';
+      msg = 'Bu sipariş başka bir sekme veya cihazda güncellenmiş. Eski ekranla kaydederseniz yeni bilgiler silinebilir. Lütfen sayfayı yenileyin.';
+    }
+
+    if (fail) {
+      // Local draft backup
+      try {
+        const draftKey = 'olgu_conflict_siparis_' + sid;
+        localStorage.setItem(draftKey, JSON.stringify({
+          timestamp: new Date().toISOString(),
+          siparisId: sid,
+          reason: reason,
+          localDraft: sLocal
+        }));
+      } catch(e) {}
+      alert(msg);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.warn('Freshness check error:', err.message);
+    return true; // Hata durumunda işlemi engellemiyoruz (fallback)
+  }
+}
+
 // ============================================================
 // GİRİŞ — Supabase Auth
 // ============================================================
@@ -3024,6 +3112,90 @@ function _appBaslat(){
   document.getElementById('headerDate').textContent=new Date().toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long'});
   buildDateStrip();
   showPage('dashboard');
+}
+
+let localKnownVersion = 1;
+let isConflictState = false;
+
+// Madde 5B: Incremental Sync (Kayıt Bazlı Senkronizasyon) Altyapısı
+const USE_INCREMENTAL_SYNC = false;
+
+let dirty = {
+  musteriler: new Set(),
+  siparisler: new Set(),
+  giderler:   new Set(),
+  cinsler:    new Set(),
+  stok:       new Set(),
+  settings:   false,
+  counters:   false
+};
+
+let deleted = {
+  musteriler: new Set(),
+  siparisler: new Set(),
+  giderler:   new Set(),
+  cinsler:    new Set(),
+  stok:       new Set()
+};
+
+function markDirty(table, id) {
+  try {
+    if (!dirty[table]) return;
+    if (dirty[table] instanceof Set) {
+      if (id) dirty[table].add(id);
+    } else {
+      dirty[table] = true;
+    }
+  } catch(e) { console.warn('markDirty error:', e); }
+}
+
+function markDeleted(table, id) {
+  try {
+    if (!deleted[table] || !id) return;
+    deleted[table].add(id);
+    // Eğer dirty listesinde varsa çıkar
+    if (dirty[table] instanceof Set) dirty[table].delete(id);
+  } catch(e) { console.warn('markDeleted error:', e); }
+}
+
+function clearDirty() {
+  Object.keys(dirty).forEach(k => {
+    if (dirty[k] instanceof Set) dirty[k].clear();
+    else dirty[k] = false;
+  });
+  Object.keys(deleted).forEach(k => deleted[k].clear());
+}
+
+function debugDirty() {
+  console.log('--- DIRTY RECORDS ---');
+  Object.keys(dirty).forEach(k => {
+    const val = dirty[k] instanceof Set ? Array.from(dirty[k]) : dirty[k];
+    if (val === true || (Array.isArray(val) && val.length > 0)) console.log(k + ':', val);
+  });
+  console.log('--- DELETED RECORDS ---');
+  Object.keys(deleted).forEach(k => {
+    const val = Array.from(deleted[k]);
+    if (val.length > 0) console.log(k + ':', val);
+  });
+}
+window.debugDirty = debugDirty;
+
+function showConflictAlert() {
+  if (document.getElementById('conflict-alert')) return;
+  const div = document.createElement('div');
+  div.id = 'conflict-alert';
+  div.style = 'position:fixed;top:0;left:0;right:0;background:var(--red);color:#fff;padding:15px;text-align:center;z-index:9999;font-weight:700;box-shadow:0 2px 10px rgba(0,0,0,0.2);font-family:Inter,sans-serif;';
+  div.innerHTML = `
+    <div style="max-width:800px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:15px;">
+      <span style="font-size:24px;">⚠️</span>
+      <div style="text-align:left;font-size:14px;line-height:1.4;">
+        Bu panel başka bir cihazda veya sekmede güncellenmiş. Eski ekranla kaydederseniz yeni veriler silinebilir.<br>
+        <b>Lütfen sayfayı yenileyin.</b>
+      </div>
+      <button onclick="location.reload()" style="background:#fff;color:var(--red);border:none;padding:8px 15px;border-radius:6px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;">ŞİMDİ YENİLE</button>
+    </div>
+  `;
+  document.body.prepend(div);
 }
 
 let data = {
@@ -3388,6 +3560,8 @@ async function saveMusteriToSupabase(musteriData, callback) {
     };
     data.musteriler.push(yeni);
     data.counters.musteri = Math.max(data.counters.musteri, inserted.id);
+    markDirty('musteriler', inserted.id);
+    markDirty('counters');
     save();
     renderAll();
     toast('Müşteri eklendi: U' + inserted.id);
@@ -3427,7 +3601,23 @@ function save() {
 
 async function _syncToSupabase() {
   const sb = _getSb(); if(!sb) return;
+
+  // Madde 5: Conflict kontrolü
+  if (isConflictState) { showConflictAlert(); return; }
+
   try {
+    // Server versiyonunu kontrol et
+    const { data: serverAyar, error: vErr } = await sb.from('ayarlar').select('version').single();
+    if (!vErr && serverAyar) {
+      const serverVersion = parseInt(serverAyar.version) || 1;
+      if (serverVersion > localKnownVersion) {
+        isConflictState = true;
+        showConflictAlert();
+        console.warn('Sync conflict: Server version ('+serverVersion+') > Local version ('+localKnownVersion+')');
+        return;
+      }
+    }
+
     // Müşteriler — toplu upsert
     if (data.musteriler.length > 0) {
       const mRows = data.musteriler.map(m => ({
@@ -3439,8 +3629,8 @@ async function _syncToSupabase() {
       if (mErr) throw new Error('Müşteri sync: ' + mErr.message);
     }
 
-    // Siparişler — toplu upsert (tek istek)
-    const siparisRows = data.siparisler.map(s => {
+    // Siparişler — toplu upsert (Sadece dirty olanlar)
+    const siparisRows = data.siparisler.filter(s => dirty.siparisler.has(s.id)).map(s => {
       const sid = parseInt(String(s.id).replace(/[^0-9]/g,'')) || null;
       if (!sid) return null;
       return {
@@ -3451,6 +3641,7 @@ async function _syncToSupabase() {
         teslim_tarihi: s.teslimTarihi||null,
         teslim_gerceklesme_tarihi: s.teslimGerceklesmeTarihi||null,
         koltuk_no: s.koltukNo||null, kurum_no: s.kurumNo||null,
+        hali_no: s.haliNo||null,
         lokasyon: s.lokasyon||null, hizmet: s.hizmet||null,
         m2: s.m2||null, fiyat: s.fiyat||null, sabit_ucret: s.sabitUcret||null,
         not_: s.not||null, odendi: s.odendi||false,
@@ -3465,8 +3656,9 @@ async function _syncToSupabase() {
       if (sErr) throw new Error('Sipariş sync: ' + sErr.message);
     }
 
-    // Sipariş kalemleri — her sipariş için delete+insert
+    // Sipariş kalemleri — Sadece dirty olan siparişler için delete+insert
     for (const s of data.siparisler) {
+      if (!dirty.siparisler.has(s.id)) continue;
       const sid = parseInt(String(s.id).replace(/[^0-9]/g,'')) || null;
       if (!sid || !s.haliler?.length) continue;
       const { error: dErr } = await sb.from('siparis_kalemleri').delete().eq('siparis_id', sid);
@@ -3485,14 +3677,28 @@ async function _syncToSupabase() {
       if (gErr) console.warn('Gider sync:', gErr.message);
     }
 
-    // Ayarlar
+    // Server versiyonunu tekrar kontrol et ve artır
+    const { data: serverAyarCheck, error: vErr2 } = await sb.from('ayarlar').select('version').single();
+    const currentServerVersion = vErr2 ? localKnownVersion : (parseInt(serverAyarCheck?.version) || localKnownVersion);
+    const newVersion = currentServerVersion + 1;
+
+    // Ayarlar & Version Artırımı
     const { error: aErr } = await sb.from('ayarlar').update({
       isletme_ad: data.settings.isletmeAd||'', isletme_tel: data.settings.isletmeTel||'',
       iban_isim: data.settings.ibanIsim||'', iban_no: data.settings.ibanNo||'',
-      iban_banka: data.settings.ibanBanka||'', mesajlar: data.settings.mesajlar||{}
+      iban_banka: data.settings.ibanBanka||'', mesajlar: data.settings.mesajlar||{},
+      version: newVersion
     }).eq('id',1);
-    if (aErr) console.warn('Ayar sync:', aErr.message);
 
+    if (aErr) {
+      isConflictState = true;
+      _setSyncState('error');
+      showConflictAlert();
+      toast('⚠️ Veriler kaydedildi ancak sürüm kilidi güncellenemedi. Güvenlik için lütfen sayfayı yenileyin.');
+      return;
+    }
+    
+    localKnownVersion = newVersion;
     _setSyncState('idle');
   } catch(err) {
     console.warn('Supabase sync:', err.message);
@@ -3523,23 +3729,19 @@ function _applyMigrations() {
   if (!data.settings.isletmeAd) data.settings.isletmeAd = 'Olgu Halı Yıkama';
   if (!data.settings.isletmeTel) data.settings.isletmeTel = '';
   if (!data.settings.mesajlar) data.settings.mesajlar = {};
-  if (!data.settings._mesajV9) {
+  if (!data.settings._mesajV11) {
     data.settings.mesajlar = {
-      alindi:     'Sayın {isim}, {urunler} teslim alınmıştır. İtinayla yıkanarak en kısa sürede teslim edilecektir.{imza}',
-      'yikanıyor':'Sayın {isim}, halılarınızın yıkaması tamamlanmıştır. Paketleme işlemi tamamlandığında fiyat ve teslimat için bilgilendirileceksiniz.{imza}',
-      hazir:      'Sayın {isim}, halılarınızın işlemi tamamlanmıştır. {detay} yıkama ücreti {toplam} TL\'dir.{imza}',
-      dagitimda:  'Sayın {isim}, {urunler} dağıtıma çıkarılmıştır. En kısa sürede adresinize teslim edilecektir.{imza}',
-      teslim:     'Sayın {isim}, {urunler} adresinize teslim edilmiştir. {toplam} TL ödeme alınmıştır. Bizi tercih ettiğiniz için teşekkür eder, iyi günler dileriz.{imza}',
-      randevu:    'Sayın {isim}, koltuk yıkama randevunuz alınmıştır. Randevu tarihiniz: {tarih}{saat_str}. İyi günler dileriz.{imza}',
-      tamamlandi: 'Sayın {isim}, {urunler} yıkaması tamamlanmıştır. Hizmet bedeli {toplam} TL\'dir.{imza}',
-      borc:       'Sayın {isim}, S{siparis_no} nolu siparişinize ait {toplam} TL borcunuz bulunmaktadır.{iban}{imza}',
-      ozel: ''
+      alindi:     'Sayın {isim}, {urunler} teslim alınmıştır. İtinayla yıkanarak en kısa sürede teslim edilecektir.\n\nOLGU HALI YIKAMA\n05332002662',
+      'yikanıyor':'Sayın {isim},\nHalılarınızın yıkaması tamamlanmıştır. Paketleme işlemi tamamlandığında fiyat ve teslimat için bilgilendirileceksiniz.\n\nOLGU HALI YIKAMA\n05332002662',
+      hazir:      'Sayın {isim}, halılarınızın işlemi tamamlanmıştır. {urunler} yıkama ücreti {toplam} TL\'dir.\n\nOLGU HALI YIKAMA\n05332002662',
+      dagitimda:  'Sayın {isim}, {urunler} dağıtıma çıkarılmıştır. En kısa sürede adresinize teslim edilecektir.\n\nOLGU HALI YIKAMA\n05332002662',
+      teslim_alindi: 'Sayın {isim}, {urunler} adresinize teslim edilmiştir. {toplam} TL ödeme alınmıştır. Bizi tercih ettiğiniz için teşekkür eder, iyi günler dileriz.\n\nOLGU HALI YIKAMA\n05332002662',
+      teslim_bekleyen: 'Sayın {isim}, {urunler} adresinize teslim edilmiştir. Yıkama Ücreti {toplam} TL\'dir. İban ile havale için;\n\nTR96 0013 4000 0227 4925 2000 01\n\nAta Çiçekgil\n\nDenizBANK\n\nBizi tercih ettiğiniz için teşekkür eder, iyi günler dileriz.\n\nOLGU HALI YIKAMA\n05332002662',
+      randevu:    'Sayın {isim}, koltuk yıkama randevunuz alınmıştır. Randevu tarihiniz: {tarih}{saat_str}. İyi günler dileriz.\n\nOLGU HALI YIKAMA\n05332002662',
+      tamamlandi: 'Sayın {isim}, {urunler} yıkaması tamamlanmıştır. Hizmet bedeli {toplam} TL\'dir.\n\nOLGU HALI YIKAMA\n05332002662',
+      iban:       'İban ile havale için;\n\nTR96 0013 4000 0227 4925 2000 01\n\nAta Çiçekgil\n\nDenizBANK\n\nOLGU HALI YIKAMA\n05332002662'
     };
-    data.settings._mesajV9 = true;
-  }
-  if (!data.settings.mesajlar.randevu) {
-    data.settings.mesajlar.randevu    = 'Sayın {isim}, randevunuz alındı. {tarih}{saat_str}.\n\nOLGU HALI YIKAMA\n05332002662';
-    data.settings.mesajlar.tamamlandi = 'Sayın {isim}, {urunler} tamamlandı. {toplam} TL.\n\nOLGU HALI YIKAMA\n05332002662';
+    data.settings._mesajV11 = true;
   }
 }
 
@@ -3589,8 +3791,10 @@ async function _loadFromSupabase() {
         sabitUcret:s.sabit_ucret||0,
         not:s.not_||'',
         etiketNo:s.etiket_no||'',
+        haliNo:s.hali_no||null,
         teknisyen:s.teknisyen||null,
         odendi:s.odendi||false, olusturma:s.olusturma,
+        updatedAt: s.updated_at || null,
         odemeTarih:s.odeme_tarih||_lsOdeme[s.id]?.odemeTarih||null,
         odemeyontemi:s.odemeyontemi||_lsOdeme[s.id]?.odemeyontemi||null,
         haliler:(kalemler||[]).filter(k=>k.siparis_id===s.id).map(k=>{
@@ -3615,12 +3819,21 @@ async function _loadFromSupabase() {
         }
       }));
       data.counters.siparis = Math.max(...siparisler.map(s=>parseInt(s.id)||0), 200);
+      
+      // Hali sayacını mevcut haliNo ve eski S+id fallback'lerinden recovery et
+      const maxHali = data.siparisler
+        .filter(s=>s.haliNo || (s.servisTip!=='koltuk' && !s.kurumNo && !s.koltukNo))
+        .map(s=>parseInt(s.haliNo || s.id)||0)
+        .reduce((a,b)=>Math.max(a,b), 0);
+      data.counters.hali = Math.max(data.counters.hali||0, maxHali);
+
       // Koltuk sayacını mevcut K numaralarından recovery et
       const maxKoltuk = data.siparisler
         .filter(s=>s.koltukNo)
         .map(s=>parseInt((s.koltukNo||'').replace('K',''))||0)
         .reduce((a,b)=>Math.max(a,b), 0);
       data.counters.koltuk = Math.max(data.counters.koltuk||0, maxKoltuk);
+
       // Kurumsal sayacını mevcut C numaralarından recovery et
       const maxKurumsal = data.siparisler
         .filter(s=>s.kurumNo)
@@ -3674,6 +3887,12 @@ async function _loadFromSupabase() {
         data.settings.mesajlar = ayarlar.mesajlar;
       if (Array.isArray(ayarlar.teknisyenler))
         data.settings.teknisyenler = ayarlar.teknisyenler;
+
+      // Madde 5: Versiyon kontrolü
+      localKnownVersion = parseInt(ayarlar.version) || 1;
+      isConflictState = false;
+      const alertEl = document.getElementById('conflict-alert');
+      if (alertEl) alertEl.remove();
     }
     localStorage.setItem('olgu_hali_v2', JSON.stringify(data));
     // Aktif sayfayı yenile
@@ -3687,6 +3906,9 @@ async function _loadFromSupabase() {
     if (!window._bildirimKontrolYapildi) { window._bildirimKontrolYapildi = true; setTimeout(_bildirimKontrol, 3000); }
     // Realtime aboneliği (sadece ilk yüklemede)
     if (!window._realtimeStarted) { window._realtimeStarted = true; _startRealtime(); }
+
+    // Madde 6: Daily Backup
+    ensureDailyBackup().catch(e => console.warn('Daily backup catch:', e));
   } catch(err) {
     console.warn('Supabase yükleme:', err.message);
     toast('⚠️ Veri yüklenemedi — ' + (err.message || 'Bağlantı hatası'));
@@ -3701,6 +3923,7 @@ function saveSettings() {
   const isletmeTel = document.getElementById('ay-isletme-tel');
   if (isletmeAd) data.settings.isletmeAd = isletmeAd.value||'';
   if (isletmeTel) data.settings.isletmeTel = isletmeTel.value||'';
+  markDirty('settings');
   save();
   toast('Kaydedildi');
 }
@@ -3710,6 +3933,7 @@ function saveMesaj(key) {
   if (!el) return;
   if (!data.settings.mesajlar) data.settings.mesajlar = {};
   data.settings.mesajlar[key] = el.value;
+  markDirty('settings');
   save();
   toast('Mesaj kaydedildi');
 }
@@ -3811,63 +4035,43 @@ function siparisOzet(s) {
 
 const MESAJLAR = {
   alindi: function(s,m) {
-    var isletme = data.settings.isletmeAd || 'Olgu Halı Yıkama';
     var ozet = urunOzetCumlesi(s);
     return 'Sayın ' + mIsim(m) + ', ' + (ozet||'ürünleriniz') + ' teslim alınmıştır. İtinayla yıkanarak en kısa sürede teslim edilecektir.\n\nOLGU HALI YIKAMA\n05332002662';
   },
-  yikanıyor: function(s,m) {
-    var isletme = data.settings.isletmeAd || 'Olgu Hal\u0131 Y\u0131kama';
-    return 'Say\u0131n ' + mIsim(m) + ', \u00FCr\u00FCnlerinizin y\u0131kama i\u015Flemi tamamlanm\u0131\u015Ft\u0131r. Kuruma i\u015Flemi bittikten sonra teslim i\u00E7in tekrar bilgilendirme yap\u0131lacakt\u0131r.\n\n' + isletme;
+  'yikanıyor': function(s,m) {
+    return 'Sayın ' + mIsim(m) + ',\nHalılarınızın yıkaması tamamlanmıştır. Paketleme işlemi tamamlandığında fiyat ve teslimat için bilgilendirileceksiniz.\n\nOLGU HALI YIKAMA\n05332002662';
   },
   hazir: function(s,m) {
-    var ozet = siparisOzet(s);
-    var toplam = hesaplaToplam(s);
-    var isletme = data.settings.isletmeAd || 'Olgu Hal\u0131 Y\u0131kama';
-    var tel = data.settings.isletmeTel ? '\nBilgi: ' + data.settings.isletmeTel : '';
-    var msg = 'Say\u0131n ' + mIsim(m) + ',\n\n\u00DCr\u00FCnleriniz y\u0131kanarak teslimata haz\u0131rlanm\u0131\u015Ft\u0131r. \uD83D\uDFE2';
-    if (ozet) msg += '\n\n\uD83D\uDCCB Sipari\u015F Detay\u0131:\n' + ozet + '\n\nToplam: \u20BA' + toplam.toLocaleString('tr-TR');
-    msg += tel + '\n\n' + isletme;
-    return msg;
+    var ozet = urunOzetCumlesi(s);
+    var toplam = hesaplaToplam(s).toLocaleString('tr-TR');
+    return 'Sayın ' + mIsim(m) + ', halılarınızın işlemi tamamlanmıştır. ' + (ozet||'Ürünleriniz') + ' yıkama ücreti ' + toplam + ' TL\'dir.\n\nOLGU HALI YIKAMA\n05332002662';
   },
   dagitimda: function(s,m) {
-    var ozet = siparisOzet(s);
-    var toplam = hesaplaToplam(s);
-    var isletme = data.settings.isletmeAd || 'Olgu Hal\u0131 Y\u0131kama';
-    var msg = 'Say\u0131n ' + mIsim(m) + ',\n\n\u00DCr\u00FCnleriniz da\u011F\u0131t\u0131ma \u00E7\u0131kar\u0131lm\u0131\u015Ft\u0131r. En k\u0131sa s\u00FCrede adresinize teslim edilecektir. \uD83D\uDE9A';
-    if (ozet) msg += '\n\n\uD83D\uDCCB Sipari\u015F Detay\u0131:\n' + ozet + '\n\nToplam: \u20BA' + toplam.toLocaleString('tr-TR');
-    msg += '\n\n' + isletme;
-    return msg;
+    var ozet = urunOzetCumlesi(s);
+    return 'Sayın ' + mIsim(m) + ', ' + (ozet||'ürünleriniz') + ' dağıtıma çıkarılmıştır. En kısa sürede adresinize teslim edilecektir.\n\nOLGU HALI YIKAMA\n05332002662';
   },
   teslim_alindi: function(s,m,yontem) {
-    var toplam=hesaplaToplam(s);
-    var ozet=siparisOzet(s);
-    var isletme=data.settings.isletmeAd||'Olgu Hal\u0131 Y\u0131kama';
-    var ozetBlok = ozet ? '\n\n\uD83D\uDCCB Sipari\u015F Detay\u0131:\n'+ozet : '';
-    if(yontem==='havale'){
-      var iban=data.settings.ibanNo||'\u2014';
-      var ad=data.settings.ibanIsim?'\nAd Soyad: '+data.settings.ibanIsim:'';
-      var banka=data.settings.ibanBanka?'\nBanka: '+data.settings.ibanBanka:'';
-      return 'Say\u0131n '+mIsim(m)+','+ozetBlok+'\n\nToplam: \u20BA'+toplam.toLocaleString('tr-TR')+'\n\u00D6deme: Havale / IBAN \u2705\n\nIBAN: '+iban+ad+banka+'\n\nTe\u015Fekk\u00FCrler \uD83D\uDE4F\n'+isletme;
-    }
-    return 'Say\u0131n '+mIsim(m)+','+ozetBlok+'\n\nToplam: \u20BA'+toplam.toLocaleString('tr-TR')+'\n\u00D6deme: Nakit al\u0131nm\u0131\u015Ft\u0131r. \u2705\n\nTe\u015Fekk\u00FCrler \uD83D\uDE4F\n'+isletme;
+    var ozet = urunOzetCumlesi(s);
+    var toplam = hesaplaToplam(s).toLocaleString('tr-TR');
+    return 'Sayın ' + mIsim(m) + ', ' + (ozet||'ürünleriniz') + ' adresinize teslim edilmiştir. ' + toplam + ' TL ödeme alınmıştır. Bizi tercih ettiğiniz için teşekkür eder, iyi günler dileriz.\n\nOLGU HALI YIKAMA\n05332002662';
   },
   teslim_bekleyen: function(s,m,yontem) {
-    var toplam=hesaplaToplam(s);
-    var ozet=siparisOzet(s);
-    var isletme=data.settings.isletmeAd||'Olgu Hal\u0131 Y\u0131kama';
-    var ozetBlok = ozet ? '\n\n\uD83D\uDCCB Sipari\u015F Detay\u0131:\n'+ozet : '';
-    if(yontem==='havale'){
-      var iban=data.settings.ibanNo||'\u2014';
-      var ad=data.settings.ibanIsim?'\nAd Soyad: '+data.settings.ibanIsim:'';
-      var banka=data.settings.ibanBanka?'\nBanka: '+data.settings.ibanBanka:'';
-      return 'Say\u0131n '+mIsim(m)+','+ozetBlok+'\n\nToplam: \u20BA'+toplam.toLocaleString('tr-TR')+'\n\u26A0\uFE0F \u00D6deme hen\u00FCz al\u0131nmam\u0131\u015Ft\u0131r.\n\nHavale ile \u00F6deme i\u00E7in:\nIBAN: '+iban+ad+banka+'\n\nTe\u015Fekk\u00FCrler \uD83D\uDE4F\n'+isletme;
-    }
-    return 'Say\u0131n '+mIsim(m)+','+ozetBlok+'\n\nToplam: \u20BA'+toplam.toLocaleString('tr-TR')+'\n\u26A0\uFE0F \u00D6deme hen\u00FCz al\u0131nmam\u0131\u015Ft\u0131r.\n\nEn k\u0131sa s\u00FCrede nakit \u00F6deme yapman\u0131z\u0131 rica ederiz.\n\nTe\u015Fekk\u00FCrler \uD83D\uDE4F\n'+isletme;
+    var ozet = urunOzetCumlesi(s);
+    var toplam = hesaplaToplam(s).toLocaleString('tr-TR');
+    return 'Sayın ' + mIsim(m) + ', ' + (ozet||'ürünleriniz') + ' adresinize teslim edilmiştir. Yıkama Ücreti ' + toplam + ' TL\'dir. İban ile havale için;\n\nTR96 0013 4000 0227 4925 2000 01\n\nAta Çiçekgil\n\nDenizBANK\n\nBizi tercih ettiğiniz için teşekkür eder, iyi günler dileriz.\n\nOLGU HALI YIKAMA\n05332002662';
   },
-  odeme_al: function(s,m,yontem) {
-    var isletme=data.settings.isletmeAd||'Olgu Halı Yıkama';
-    var tutar=hesaplaToplam(s).toLocaleString('tr-TR');
-    return 'Sayın '+mIsim(m)+', S'+s.id+' nolu siparişinizin '+tutar+' TL ödemesi alınmıştır. Bizi tercih ettiğiniz için teşekkür eder, iyi günler dileriz.\n\n'+isletme;
+  randevu: function(s,m) {
+    var tarihStr = s.tarih ? new Date(s.tarih+'T00:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'}) : '';
+    var saatStr  = s.saat ? ' saat '+s.saat : '';
+    return 'Sayın ' + mIsim(m) + ', koltuk yıkama randevunuz alınmıştır. Randevu tarihiniz: ' + tarihStr + saatStr + '. İyi günler dileriz.\n\nOLGU HALI YIKAMA\n05332002662';
+  },
+  tamamlandi: function(s,m) {
+    var ozet = urunOzetCumlesi(s);
+    var toplam = hesaplaToplam(s).toLocaleString('tr-TR');
+    return 'Sayın ' + mIsim(m) + ', ' + (ozet||'ürünleriniz') + ' yıkaması tamamlanmıştır. Hizmet bedeli ' + toplam + ' TL\'dir.\n\nOLGU HALI YIKAMA\n05332002662';
+  },
+  iban: function(s,m) {
+    return 'İban ile havale için;\n\nTR96 0013 4000 0227 4925 2000 01\n\nAta Çiçekgil\n\nDenizBANK\n\nOLGU HALI YIKAMA\n05332002662';
   }
 };
 
@@ -3912,6 +4116,34 @@ function showPage(id) {
 
 const VERI_BASLANGIC = '2026-05-01'; // Bu tarihten önceki kayıtlar hesaplara dahil edilmez
 
+// ── Madde 7: Finans Bariyeri Yardımcıları ───────────────────────────────────
+function getFinanceBarrierDate(s) {
+  if (!s) return null;
+  let d = null;
+  if (s.servisTip === 'koltuk') d = s.teslimGerceklesmeTarihi;
+  if (!d) d = s.teslimTarihi;
+  if (!d) d = s.tarih;
+  if (!d) d = s.olusturma;
+  if (!d) return null;
+  return String(d).substring(0, 10); // YYYY-MM-DD formatını garanti et
+}
+
+function isFinanceIncluded(s) {
+  const d = getFinanceBarrierDate(s);
+  if (!d) return false;
+  return d >= VERI_BASLANGIC;
+}
+
+// ── Madde 7: Finansal Efektif Tarih (Muhasebeleşme Tarihi) ──────────────────
+function getFinanceEffectiveDate(s) {
+  if (!s) return '';
+  const isKoltuk = s.servisTip === 'koltuk';
+  const d = isKoltuk
+    ? (s.odemeTarih || s.teslimGerceklesmeTarihi || s.tarih || '')
+    : (s.odemeTarih || s.teslimTarihi || s.tarih || '');
+  return d ? String(d).substring(0, 10) : '';
+}
+
 let ggPeriod = 'gun';
 
 function ggSetPeriod(period) {
@@ -3948,18 +4180,16 @@ function ggFilterSiparisler() {
   const now = new Date();
   return data.siparisler.filter(s => {
     if (!s.odendi) return false;
-    const isKoltuk = s.servisTip === 'koltuk';
-    const efektif = isKoltuk
-      ? (s.odemeTarih || s.teslimGerceklesmeTarihi || '')
-      : (s.odemeTarih || s.teslimTarihi || s.tarih || '');
-    if (!efektif || efektif < VERI_BASLANGIC) return false;
+    if (!isFinanceIncluded(s)) return false; // Madde 7: Eski kayıtları finans dışı bırak
+    const efektif = getFinanceEffectiveDate(s);
+    if (!efektif) return false;
     const d = new Date(efektif);
     if (ggPeriod==='gun') return d.toDateString()===now.toDateString();
     if (ggPeriod==='hafta') { const w=new Date(now); w.setDate(now.getDate()-now.getDay()+1); w.setHours(0,0,0,0); return d>=w && d<=now; }
     if (ggPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-    if (ggPeriod==='yil') return d.getFullYear()===now.getFullYear() && efektif>=VERI_BASLANGIC;
+    if (ggPeriod==='yil') return d.getFullYear()===now.getFullYear();
     if (ggPeriod==='aralik') { const b=document.getElementById('gg-aralik-bas')?.value; const e=document.getElementById('gg-aralik-bit')?.value; if(b&&e) return d>=new Date(b) && d<=new Date(e+'T23:59:59'); }
-    return efektif>=VERI_BASLANGIC; // tumu modu
+    return true; // tumu modu
   });
 }
 
@@ -4249,6 +4479,7 @@ async function saveGider() {
     }
     const idx = (data.giderler||[]).findIndex(g=>String(g.id)===String(editId));
     if (idx !== -1) data.giderler[idx] = {...data.giderler[idx], ...giderObj};
+    markDirty('giderler', editId);
     save(); closeModal('modal-gider'); renderKasa(); renderGelirGider();
     toast('Gider güncellendi');
   } else {
@@ -4267,6 +4498,8 @@ async function saveGider() {
     }
     data.giderler = data.giderler||[];
     data.giderler.push(giderObj);
+    markDirty('giderler', giderObj.id);
+    markDirty('counters');
     save(); closeModal('modal-gider'); renderKasa(); renderGelirGider();
     toast('Gider eklendi');
   }
@@ -4274,6 +4507,10 @@ async function saveGider() {
 
 async function silGider(id) {
   if (!confirm('Bu gideri silmek istiyor musunuz?')) return;
+
+  // Madde 6: Critical Backup
+  if (!(await ensureCriticalBackup('gider_delete'))) return;
+
   const sb = _getSb();
   if (sb) {
     try {
@@ -4282,8 +4519,8 @@ async function silGider(id) {
     } catch(e) { toast('Silinemedi: ' + e.message); return; }
   }
   data.giderler = (data.giderler||[]).filter(g=>g.id!==id);
-  save();
-  renderKasa(); renderGelirGider();
+  markDeleted('giderler', id);
+  save(); renderKasa(); renderGelirGider();
   toast('Gider silindi');
 }
 
@@ -4406,7 +4643,13 @@ function _realtimeReload() {
   clearTimeout(_realtimeDebounce);
   _realtimeDebounce = setTimeout(() => {
     // Modal açıkken reload ertelenir — race condition önlenir
-    if (document.querySelector('.modal-overlay.open')) return;
+    if (document.querySelector('.modal-overlay.open')) {
+      // Madde 5: Modal açıkken veri değiştiyse conflict durumuna geç
+      // Çünkü modal kapandığında yapılacak bir 'save' işlemi dışarıdaki yeni veriyi ezebilir.
+      isConflictState = true;
+      showConflictAlert();
+      return;
+    }
     _loadFromSupabase();
   }, 2000);
 }
@@ -4462,11 +4705,18 @@ function updateBadges() {
   data.siparisler.forEach(s=>{
     if(c[s.durum]===undefined) return;
     // Halı durum sayfaları sadece halı siparişlerini sayar
-    if(s.servisTip==='koltuk') return;
+    if(s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk')) return;
     c[s.durum]++;
   });
-  c.odenmedi  = data.siparisler.filter(s=>s.durum==='teslim'&&!s.odendi).length;
-  c.koltuk    = data.siparisler.filter(s=>s.servisTip==='koltuk'&&s.durum!=='teslim').length;
+  c.odenmedi  = data.siparisler.filter(s=>{
+    const sk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+    const isFinal = sk ? (s.durum==='tamamlandi'||s.durum==='teslim') : (s.durum==='teslim');
+    return isFinal && !s.odendi;
+  }).length;
+  c.koltuk    = data.siparisler.filter(s=>{
+    const sk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+    return sk && s.durum === 'randevu'; // Sadece aktif randevular badge'e yansır
+  }).length;
   c.kurumsal  = data.siparisler.filter(s=>s.servisTip==='kurumsal'&&s.durum!=='teslim').length;
   Object.keys(c).forEach(d=>{ const el=document.getElementById('b-'+d); if(el) el.textContent=c[d]||''; });
   updateMbnBadges();
@@ -4500,7 +4750,12 @@ function sortByTarih(liste) {
 
 // Sipariş görüntü numarası: kurumsal → C01, koltuk → K01, halı → S123
 function siparisNo(s) {
-  return s.kurumNo || s.koltukNo || ('S' + s.id);
+  if (!s) return '';
+  if (s.kurumNo) return s.kurumNo;
+  if (s.koltukNo) return s.koltukNo;
+  if (s.haliNo) return 'S' + s.haliNo;
+  // Geriye dönük uyumluluk: haliNo yoksa ve koltuk değilse S + id
+  return (s.servisTip === 'koltuk' ? 'K' : 'S') + s.id;
 }
 
 function tarihLabel(t) {
@@ -4572,7 +4827,9 @@ function renderSiparisArama() {
   // Durum filtresi (çoklu)
   if (!siparisAktifFiltreler.has('tumu')) {
     liste = liste.filter(s => {
-      if (siparisAktifFiltreler.has('odenmedi') && s.durum === 'teslim' && !s.odendi) return true;
+      const sk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+      const isFinal = sk ? (s.durum==='tamamlandi'||s.durum==='teslim') : (s.durum==='teslim');
+      if (siparisAktifFiltreler.has('odenmedi') && isFinal && !s.odendi) return true;
       const durumFiltreler = [...siparisAktifFiltreler].filter(f => f !== 'odenmedi');
       if (durumFiltreler.length && durumFiltreler.includes(s.durum)) return true;
       return false;
@@ -4835,8 +5092,10 @@ function siparisKarti(s, ctx) {
   }).join('');
 
   const _kismiTop = kismiOdemeToplamı(s);
-  const odemeBadge=s.odendi?`<span class="badge badge-odendi">✓ Ödendi</span>`:(_kismiTop>0?`<span style="background:#fef3c7;color:#b45309;font-size:9px;font-weight:800;padding:1px 5px;border-radius:4px;">💛 KISMI</span>`:(s.durum==='teslim'?`<span class="badge badge-odenmedi">⚠ Ödenmedi</span>`:''));
-  const sonrakiBtn=sonraki?`<button class="btn btn-primary btn-sm" onclick="openDurumModal('${s.id}')">→ ${STATUS_INFO[sonraki]?.label}</button>`:(s.durum==='teslim'&&!s.odendi?`<button class="btn btn-green btn-sm" onclick="odemeAl('${s.id}')">💰 Ödeme Al</button>`:'');
+  const isKoltukS = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+  const isFinal = isKoltukS ? (s.durum==='tamamlandi'||s.durum==='teslim') : (s.durum==='teslim');
+  const odemeBadge=s.odendi?`<span class="badge badge-odendi">✓ Ödendi</span>`:(_kismiTop>0?`<span style="background:#fef3c7;color:#b45309;font-size:9px;font-weight:800;padding:1px 5px;border-radius:4px;">💛 KISMI</span>`:(isFinal?`<span class="badge badge-odenmedi">⚠ Ödenmedi</span>`:''));
+  const sonrakiBtn=sonraki?`<button class="btn btn-primary btn-sm" onclick="openDurumModal('${s.id}')">→ ${STATUS_INFO[sonraki]?.label}</button>`:(isFinal&&!s.odendi?`<button class="btn btn-green btn-sm" onclick="odemeAl('${s.id}')">💰 Ödeme Al</button>`:'');
   const totalM2=s.haliler.reduce((a,h)=>h.tip==='ekucret'?a:a+(h.tip==='toplu'?(h.adet||1)*(h.m2||0):(h.m2||0)),0);
   const fotoCount=(s.fotolar?.alirken?.length||0)+(s.fotolar?.ederken?.length||0);
 
@@ -4872,8 +5131,7 @@ function siparisKarti(s, ctx) {
     </div>`;
 
   const totalAdet = s.haliler.filter(h=>h.tip!=='ekucret').reduce((a,h)=>a+(h.adet||1),0);
-  const isKoltuk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
-  const servisIcon = isKoltuk ? '🛋️' : '<img src="data:image/png;base64,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" width="16" height="16" style="display:inline-block;vertical-align:-3px;">';
+  const servisIcon = isKoltukS ? '🛋️' : '<img src="data:image/png;base64,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" width="16" height="16" style="display:inline-block;vertical-align:-3px;">';
   const odemeRenk = s.odendi ? 'var(--green)' : (s.durum==='teslim' ? 'var(--red)' : 'var(--blue)');
   const bugunStr = new Date().toISOString().split('T')[0];
   const geckTeslim = s.teslimTarihi && s.teslimTarihi < bugunStr && !['teslim'].includes(s.durum);
@@ -4881,7 +5139,8 @@ function siparisKarti(s, ctx) {
   const geckBadge = geckTeslim ? '<span style="background:#fef3c7;color:#b45309;font-size:9px;font-weight:800;padding:1px 5px;border-radius:4px;">⏰ GECİKTİ</span>' : '';
 
   const durum_renk = {alinacak:'#3b82f6',alindi:'#10b981','yikanıyor':'#8b5cf6',hazir:'#0e9f6e',dagitimda:'#f59e0b',teslim:'#94a3b8'};
-  const leftColor = isKoltuk ? '#7e3af2' : (durum_renk[s.durum] || 'var(--border)');
+  const leftColor = isKoltukS ? '#7e3af2' : (durum_renk[s.durum] || 'var(--border)');
+
   const _secili = topluSecimModu && secilenSiparisler.has(s.id);
   const _secimCB = topluSecimModu ? `<div style="width:22px;height:22px;border-radius:50%;border:2px solid ${_secili?'var(--blue)':'var(--border)'};background:${_secili?'var(--blue)':'var(--white)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:13px;margin-right:4px;">${_secili?'✓':''}</div>` : '';
   const _cardClick = topluSecimModu ? `topluSecimToggle('${s.id}',event)` : `openKartDetay('${s.id}')`;
@@ -4893,7 +5152,7 @@ function siparisKarti(s, ctx) {
           <span class="card-id">${servisIcon} ${siparisNo(s)}</span>
           <span class="badge ${si.badge}">${si.icon} ${si.label}</span>
           ${odemeBadge}
-          ${isKoltuk?'<span style="background:#f5f3ff;color:#7e3af2;font-size:9px;font-weight:800;padding:1px 5px;border-radius:4px;">KOLTUK</span>':''}
+          ${isKoltukS?'<span style="background:#f5f3ff;color:#7e3af2;font-size:9px;font-weight:800;padding:1px 5px;border-radius:4px;">KOLTUK</span>':''}
           ${acilBadge}${geckBadge}
         </div>
         <div style="margin-bottom:2px;"><span class="card-name" style="cursor:pointer;" onclick="event.stopPropagation();openProfil('${s.musteriId}')">${mIsim(m,'Bilinmiyor')}</span><span style="font-size:10px;color:var(--text3);font-weight:500;margin-left:5px;">U${s.musteriId}</span></div>
@@ -4906,7 +5165,7 @@ function siparisKarti(s, ctx) {
         ${s.not?`<div style="font-size:11px;color:var(--yellow);margin-top:3px;font-weight:600;background:var(--yellow-bg);padding:2px 6px;border-radius:4px;display:inline-block;">📝 ${s.not}</div>`:''}
         ${s.etiketNo?`<span style="font-size:11px;font-weight:700;background:#f0fdf4;color:#16a34a;padding:2px 7px;border-radius:4px;display:inline-block;margin-top:3px;margin-left:${s.not?'4px':'0'};">🏷 ${s.etiketNo}</span>`:''}
         <div style="font-size:10px;color:var(--text3);margin-top:3px;">
-          ${isKoltuk
+          ${isKoltukS
             ? `📅 Randevu: ${s.tarih||'—'}${s.saat?' ⏰'+s.saat:''}`
             : (s.durum==='teslim' && s.teslimGerceklesmeTarihi
                 ? `📥 Alındı: ${s.tarih||'—'} · 📦 Teslim: <b style="color:var(--green);">${s.teslimGerceklesmeTarihi}</b>`
@@ -5018,9 +5277,32 @@ function urunKategoriSec(kat) {
       <span style="font-size:13px;font-weight:700;color:var(--blue);flex-shrink:0;">${fiyatStr}</span>
     </button>`;
   }).join('');
-  urunAdimGoster('urun');
-}
 
+  // Madde 3: Koltuk siparişlerinde Ürün Listesi ekranına Ek Ücret / İndirim butonlarını ekle
+  let isKoltukUrun = false;
+  if (heSource === 'detay' && detaySid) {
+    const ds = data.siparisler.find(x => x.id == detaySid);
+    if (ds && ds.servisTip === 'koltuk') isKoltukUrun = true;
+  } else if (wState.servisTip === 'koltuk') {
+    isKoltukUrun = true;
+  }
+
+  if (isKoltukUrun) {
+    el.innerHTML += `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+        <button type="button" onclick="urunEkUcretAc('ekucret')"
+          style="padding:11px;border-radius:10px;border:2px dashed #fde68a;background:var(--white);font-size:13px;font-weight:700;color:#b45309;cursor:pointer;font-family:Inter,sans-serif;">
+          ⚡ Ek Ücret
+        </button>
+        <button type="button" onclick="urunEkUcretAc('indirim')"
+          style="padding:11px;border-radius:10px;border:2px dashed #bbf7d0;background:var(--white);font-size:13px;font-weight:700;color:var(--green);cursor:pointer;font-family:Inter,sans-serif;">
+          🏷️ İndirim
+        </button>
+      </div>`;
+  }
+
+  urunAdimGoster('urun');
+  }
 function urunUrunSec(cinsId) {
   urunSS.cinsId = cinsId;
   const cins = data.cinsler.find(c=>c.id===cinsId);
@@ -5200,8 +5482,8 @@ function dHeGuncelleFiyatLabel() {}
 function siparisDetay(sid) {
   const s = data.siparisler.find(x=>x.id==sid); if(!s)return;
   detaySid = sid;
-  document.getElementById('detay-siparis-id').value = sid;
-  document.getElementById('detay-not').value = s.not||'';
+  detayKnownUpdatedAt = s.updatedAt || null;
+  document.getElementById('detay-siparis-id').value = sid;  document.getElementById('detay-not').value = s.not||'';
   document.getElementById('detay-tarih').value = s.tarih||'';
   document.getElementById('detay-saat').value = s.saat||'';
   document.getElementById('detay-teslim-tarihi').value = s.teslimTarihi||'';
@@ -5246,10 +5528,11 @@ function dFotoRender(s) {
   });
 }
 
-function detayFotoSil(sid, tip, idx) {
-  const s = data.siparisler.find(x=>x.id==sid); if(!s) return;
-  const url = s.fotolar[tip][idx];
+async function detayFotoSil(sid, tip, idx) {
+  if (!(await ensureSiparisFresh(sid))) return;
+  const s = data.siparisler.find(x=>x.id==sid); if(!s) return;  const url = s.fotolar[tip][idx];
   s.fotolar[tip].splice(idx, 1);
+  markDirty('siparisler', sid);
   save(); dFotoRender(s); toast('Fotoğraf silindi');
   // DB ve Storage'dan sil
   const sb2 = _getSb();
@@ -5339,9 +5622,11 @@ function dHaliSatir(sid, h) {
 }
 
 // Bottom sheet: yeni ekleme
-function dHaliEkleKaydet() {
+async function dHaliEkleKaydet() {
+  if (heSource === 'detay' && detaySid) {
+    if (!(await ensureSiparisFresh(detaySid))) return;
+  }
   const isEkUcret = urunSS.adim === 'ekucret';
-
   if (isEkUcret) {
     const aciklama = document.getElementById('he-aciklama').value.trim();
     const tutar = parseFloat(document.getElementById('he-ektutar').value)||0;
@@ -5402,6 +5687,7 @@ function _urunKaydetCok(objler) {
   } else {
     const s = data.siparisler.find(x=>x.id==detaySid); if(!s)return;
     objler.forEach(o => s.haliler.push(o));
+    markDirty('siparisler', detaySid);
     save();
     closeModal('modal-hali-ekle');
     dHalilarRender();
@@ -5436,8 +5722,9 @@ function _urunKaydet(obj) {
   }
 }
 
-function dRemoveHali(sid, hid) {
-  const s = data.siparisler.find(x=>x.id==sid); if(!s)return;
+async function dRemoveHali(sid, hid) {
+  if (!(await ensureSiparisFresh(sid))) return;
+  const s = data.siparisler.find(x=>x.id==sid); if(!s) return;
   s.haliler = s.haliler.filter(h=>h.id!==hid);
   dHalilarRender();
 }
@@ -5449,15 +5736,17 @@ function dHesaplaToplam() {
   if (el) el.textContent = '₺'+t.toLocaleString('tr-TR');
 }
 
-function saveDetay() {
+async function saveDetay() {
   const sid = document.getElementById('detay-siparis-id').value;
-  const s = data.siparisler.find(x=>x.id==sid); if(!s)return;
-  s.not = document.getElementById('detay-not').value.trim();
+  if (!(await ensureSiparisFresh(sid))) return;
+
+  const s = data.siparisler.find(x=>x.id==sid); if(!s)return;  s.not = document.getElementById('detay-not').value.trim();
   s.tarih = document.getElementById('detay-tarih').value;
   s.saat = document.getElementById('detay-saat').value||null;
   s.teslimTarihi = document.getElementById('detay-teslim-tarihi').value||null;
   const tekSel = document.getElementById('detay-teknisyen');
   s.teknisyen = tekSel ? (tekSel.value||null) : (s.teknisyen||null);
+  markDirty('siparisler', sid);
   save();
   // Hedefli Supabase update — kalemler dahil
   _supabaseSiparisPatch(s, true);
@@ -5470,7 +5759,7 @@ async function _supabaseSiparisPatch(s, syncKalemler = false) {
   const numSid = parseInt(String(s.id).replace(/[^0-9]/g,''));
   if (!numSid) return;
   try {
-    const { error: updateErr } = await sb.from('siparisler').update({
+    const { data: updatedRecs, error: updateErr } = await sb.from('siparisler').update({
       tarih: s.tarih||null,
       saat: s.saat||null,
       teslim_tarihi: s.teslimTarihi||null,
@@ -5487,10 +5776,15 @@ async function _supabaseSiparisPatch(s, syncKalemler = false) {
       odendi: s.odendi||false,
       odeme_tarih: s.odemeTarih||null,
       odemeyontemi: s.odemeyontemi||null,
-      etiket_no: s.etiketNo||null
-    }).eq('id', numSid);
+      etiket_no: s.etiketNo||null,
+      hali_no: s.haliNo||null
+    }).eq('id', numSid).select('updated_at');
     if (updateErr) throw new Error('Sipariş güncelleme: ' + updateErr.message);
 
+    if (updatedRecs && updatedRecs[0]) {
+      s.updatedAt = updatedRecs[0].updated_at;
+      if (detaySid == s.id) detayKnownUpdatedAt = s.updatedAt;
+    }
     // Kalemler de güncellenmesini istediyse (saveDetay'dan çağrılınca)
     if (syncKalemler && s.haliler?.length > 0) {
       const { error: dErr } = await sb.from('siparis_kalemleri').delete().eq('siparis_id', numSid);
@@ -5594,7 +5888,9 @@ function openKartDetay(sid) {
   const isKoltukCard = s.servisTip === 'koltuk';
   const fmtTarih = (t) => t ? new Date((t.includes('T')?t:t+'T12:00:00')).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'}) : null;
   const kdBugunStr = new Date().toISOString().split('T')[0];
-  const kdGecikti = s.teslimTarihi && s.teslimTarihi < kdBugunStr && s.durum !== 'teslim';
+  const isKoltukD = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+  const isFinal = isKoltukD ? (s.durum==='tamamlandi'||s.durum==='teslim') : (s.durum==='teslim');
+  const kdGecikti = s.teslimTarihi && s.teslimTarihi < kdBugunStr && !isFinal;
   const tarihBolum = `<div style="display:flex;flex-direction:column;gap:6px;font-size:12px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:12px;">
     ${s.acil ? `<div style="background:#fee2e2;color:#dc2626;font-weight:700;font-size:11px;padding:4px 8px;border-radius:6px;text-align:center;">🔴 ACİL SİPARİŞ</div>` : ''}
     ${s.olusturma ? `<div style="display:flex;gap:6px;"><span style="color:var(--text3);flex-shrink:0;">🗓 Oluşturuldu:</span><b style="color:var(--text);">${fmtTarih(s.olusturma)}</b></div>` : ''}
@@ -5635,18 +5931,15 @@ function openKartDetay(sid) {
     : (s.durum==='teslim'&&!s.odendi?`<button class="btn btn-green" style="flex:1;" onclick="closeModal('modal-kart-detay');odemeAl('${s.id}')">💰 Ödeme Al</button>`:'');
   const telBtn = m?.tel?`<button class="btn btn-secondary" style="flex:1;" onclick="window.open('tel:${telIlk(m.tel)}')">📞 Ara</button>`:'';
   const waBtn = `<button class="btn btn-secondary" style="flex:1;" onclick="mesajAc('${s.id}')">💬 Mesaj</button>`;
-  const smsBtn = m?.tel ? `<button class="btn btn-secondary" style="flex:1;" onclick="smsMesajAc('${s.id}')">📱 SMS</button>` : '';
   window._kartAdres = m?.adres || '';
-  const yolBtn = m?.adres ? `<button class="btn btn-secondary" style="flex:1;" onclick="openMaps(window._kartAdres)">🗺️ Yol</button>` : '';
-  const duzenleBtn = `<button class="btn btn-secondary" style="flex:1;" onclick="closeModal('modal-kart-detay');siparisDetay('${s.id}')">✏️ Düzenle</button>`;
+  const yolBtn = m?.adres ? `<button class="btn btn-secondary" style="flex:1;" onclick="openMaps(window._kartAdres)">🗺️ Yol</button>` : '';  const duzenleBtn = `<button class="btn btn-secondary" style="flex:1;" onclick="closeModal('modal-kart-detay');siparisDetay('${s.id}')">✏️ Düzenle</button>`;
   const tasiBtn = `<button class="btn btn-secondary" style="flex:1;" onclick="closeModal('modal-kart-detay');tasiModal('${s.id}')">↕ Taşı</button>`;
   const silBtn = `<button class="btn btn-danger" style="flex-shrink:0;" onclick="closeModal('modal-kart-detay');silSiparis('${s.id}')">Sil</button>`;
   const acilBtn = `<button class="btn btn-secondary" style="flex:1;${s.acil?'background:#fee2e2;color:#dc2626;border-color:#fca5a5;':''}" onclick="acilToggle('${s.id}')">🔴 ${s.acil?'Acil Kaldır':'Acil İşaretle'}</button>`;
   const kopyalaBtn = `<button class="btn btn-secondary" style="flex:1;" onclick="closeModal('modal-kart-detay');kopyalaSiparis('${s.id}')">📋 Kopyala</button>`;
 
-  const iletisimRow = (telBtn||waBtn||smsBtn||yolBtn) ? `<div style="display:flex;gap:8px;">${telBtn}${waBtn}${smsBtn}${yolBtn}</div>` : '';
-  const aksiyonRow = `<div style="display:flex;gap:8px;">${sonrakiBtn}${duzenleBtn}${tasiBtn}${silBtn}</div>`;
-  const ekstraRow = `<div style="display:flex;gap:8px;">${acilBtn}${kopyalaBtn}</div>`;
+  const iletisimRow = (telBtn||waBtn||yolBtn) ? `<div style="display:flex;gap:8px;">${telBtn}${waBtn}${yolBtn}</div>` : '';
+  const aksiyonRow = `<div style="display:flex;gap:8px;">${sonrakiBtn}${duzenleBtn}${tasiBtn}${silBtn}</div>`;  const ekstraRow = `<div style="display:flex;gap:8px;">${acilBtn}${kopyalaBtn}</div>`;
   document.getElementById('kd-butonlar').innerHTML = `${iletisimRow}${aksiyonRow}${ekstraRow}`;
 
   const mkd = document.getElementById('modal-kart-detay');
@@ -5656,8 +5949,8 @@ function openKartDetay(sid) {
 
 function sonrakiDurum(d, servisTip) {
   if (servisTip==='koltuk' || DURUMLAR_KOLTUK.includes(d)) {
-    const i=DURUMLAR_KOLTUK.indexOf(d);
-    return i>=0&&i<DURUMLAR_KOLTUK.length-1?DURUMLAR_KOLTUK[i+1]:null;
+    if (d === 'randevu') return 'tamamlandi';
+    return null;
   }
   const i=DURUMLAR.indexOf(d); return i>=0&&i<DURUMLAR.length-1?DURUMLAR[i+1]:null;
 }
@@ -5948,11 +6241,18 @@ function renderDashboard() {
   const now = new Date();
 
   // -- Özet banner --
-  const aktifSiparisler = data.siparisler.filter(s=>s.durum!=='teslim');
+  const aktifSiparisler = data.siparisler.filter(s=>{
+    const sk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+    return sk ? (s.durum==='randevu') : (s.durum!=='teslim');
+  });
   const buAyGelir = data.siparisler
-    .filter(s=>s.odendi && (s.odemeTarih||s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC && (s.odemeTarih||s.teslimTarihi||s.tarih||'').startsWith(today.slice(0,7)))
+    .filter(s=>s.odendi && isFinanceIncluded(s) && getFinanceEffectiveDate(s).startsWith(today.slice(0,7)))
     .reduce((sum,s)=>sum+hesaplaToplam(s),0);
-  const bekleyenOdeme = data.siparisler.filter(s=>s.durum==='teslim'&&!s.odendi).reduce((sum,s)=>sum+hesaplaToplam(s),0);
+  const bekleyenOdeme = data.siparisler.filter(s=>{
+    const sk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+    const isFinal = sk ? (s.durum==='tamamlandi'||s.durum==='teslim') : (s.durum==='teslim');
+    return isFinal && !s.odendi && isFinanceIncluded(s);
+  }).reduce((sum,s)=>sum+hesaplaToplam(s),0);
 
   const grid = document.getElementById('dash-durum-grid');
   if (grid) {
@@ -6356,6 +6656,7 @@ function renderStok() {
 function stokGuncelle(idx, delta) {
   if (!data.stok[idx]) return;
   data.stok[idx].miktar = Math.max(0, (data.stok[idx].miktar || 0) + delta);
+  markDirty('stok', data.stok[idx].id || idx);
   save(); renderStok();
 }
 
@@ -6367,6 +6668,7 @@ function stokMiktarGir(idx) {
   const n = parseFloat(yeni);
   if (isNaN(n) || n < 0) { toast('Geçersiz miktar'); return; }
   s.miktar = n;
+  markDirty('stok', s.id || idx);
   save(); renderStok();
 }
 
@@ -6444,8 +6746,10 @@ function _stokKaydet(idx) {
   };
   if (idx !== null && idx !== undefined) {
     data.stok[idx] = { ...data.stok[idx], ...kayit };
+    markDirty('stok', data.stok[idx].id || idx);
   } else {
     data.stok.push(kayit);
+    markDirty('stok', kayit.id || (data.stok.length-1));
   }
   save();
   _stokModalKapat();
@@ -6455,6 +6759,8 @@ function _stokKaydet(idx) {
 
 function _stokSil(idx) {
   if (!confirm('Bu ürünü stoktan kaldırmak istiyor musunuz?')) return;
+  const s = data.stok[idx];
+  if (s) markDeleted('stok', s.id || idx);
   data.stok.splice(idx, 1);
   save();
   _stokModalKapat();
@@ -6545,7 +6851,9 @@ function _istatistikTeslimSure(siparisler) {
   const min = Math.min(...sureler);
   const gec = siparisler.filter(s=>{
     const bugun = new Date().toISOString().split('T')[0];
-    return s.teslimTarihi && s.teslimTarihi < bugun && s.durum !== 'teslim';
+    const sk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+    const isFinal = sk ? (s.durum==='tamamlandi'||s.durum==='teslim') : (s.durum==='teslim');
+    return s.teslimTarihi && s.teslimTarihi < bugun && !isFinal;
   }).length;
 
   return `
@@ -6649,17 +6957,22 @@ function _istatistikSadakat(siparisler) {
 function _istatistikOdenmemis(siparisler) {
   siparisler = siparisler || data.siparisler.filter(s=>(s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC);
   const bugun = new Date().toISOString().split('T')[0];
-  // Teslim edilmiş ama ödenmemiş siparişler
-  const odenmemis = siparisler.filter(s => s.durum === 'teslim' && !s.odendi);
+  // Teslim/Tamamlanmış ama ödenmemiş siparişler
+  const odenmemis = siparisler.filter(s => {
+    const sk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+    const isFinal = sk ? (s.durum==='tamamlandi'||s.durum==='teslim') : (s.durum==='teslim');
+    return isFinal && !s.odendi;
+  });
   if (!odenmemis.length) return '';
   const toplamAlacak = odenmemis.reduce((a,s)=>a+hesaplaToplam(s),0);
   const satirlar = odenmemis.map(s => {
     const m = data.musteriler.find(x=>x.id==s.musteriId);
-    const gun = s.teslimTarihi ? Math.floor((new Date(bugun)-new Date(s.teslimTarihi))/(86400000)) : null;
+    const bt = s.teslimGerceklesmeTarihi || s.teslimTarihi;
+    const gun = bt ? Math.floor((new Date(bugun)-new Date(bt))/(86400000)) : null;
     return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);" onclick="openKartDetay('${s.id}')" style="cursor:pointer;">
       <div>
         <div style="font-size:13px;font-weight:600;color:var(--text);">${m?.ad||'Bilinmiyor'}</div>
-        <div style="font-size:11px;color:var(--text3);">${gun!==null?gun+' gün önce teslim':''} ${m?.tel?`· <a href="tel:${m.tel}" style="color:var(--blue);text-decoration:none;">${m.tel}</a>`:''}</div>
+        <div style="font-size:11px;color:var(--text3);">${gun!==null?gun+' gün önce bitti':''} ${m?.tel?`· <a href="tel:${m.tel}" style="color:var(--blue);text-decoration:none;">${m.tel}</a>`:''}</div>
       </div>
       <span style="font-weight:700;color:var(--red);font-size:14px;">₺${hesaplaToplam(s).toLocaleString('tr-TR')}</span>
     </div>`;
@@ -6682,7 +6995,7 @@ let koltukAktifTab = 'randevu';
 
 function koltukTabSec(tab, btn) {
   koltukAktifTab = tab;
-  ['randevu','tamamlandi','teslim'].forEach(t => {
+  ['randevu','tamamlandi'].forEach(t => {
     const b = document.getElementById('ktab-'+t);
     if (!b) return;
     b.classList.toggle('active', t === tab);
@@ -6693,13 +7006,16 @@ function koltukTabSec(tab, btn) {
 function renderKoltukRandevular() {
   const el = document.getElementById('list-koltuk-randevu');
   if (!el) return;
-  let liste = data.siparisler.filter(s =>
-    (s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk'))
-    && s.durum === koltukAktifTab
-  );
+  let liste = data.siparisler.filter(s => {
+    const sk = (s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk'));
+    if (!sk) return false;
+    // Madde 8: 'tamamlandi' sekmesi hem yeni 'tamamlandi' hem de eski 'teslim' koltukları gösterir
+    if (koltukAktifTab === 'tamamlandi') return s.durum === 'tamamlandi' || s.durum === 'teslim';
+    return s.durum === koltukAktifTab;
+  });
   liste = [...liste].sort((a,b)=>(a.tarih||'').localeCompare(b.tarih||''));
   if (!liste.length) {
-    const labels = {randevu:'📅 Randevu yok', tamamlandi:'✅ Tamamlanan yok', teslim:'📦 Teslim edilen yok'};
+    const labels = {randevu:'📅 Randevu yok', tamamlandi:'✅ Tamamlanan yok'};
     el.innerHTML = `<div class="empty"><div class="empty-icon">🛋️</div>${labels[koltukAktifTab]||'Kayıt yok'}</div>`;
     return;
   }
@@ -7078,7 +7394,11 @@ function kurumsalSiparisSil(sid) {
 
 function renderOdenmedi() {
   const el=document.getElementById('list-odenmedi');
-  let liste=data.siparisler.filter(s=>s.durum==='teslim'&&!s.odendi);
+  let liste=data.siparisler.filter(s=>{
+    const sk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+    const isFinal = sk ? (s.durum==='tamamlandi'||s.durum==='teslim') : (s.durum==='teslim');
+    return isFinal && !s.odendi;
+  });
   if (selectedDate) liste=liste.filter(s=>s.tarih===selectedDate);
   liste=sortByTarih(liste);
   if (!liste.length) { el.innerHTML=`<div class="empty"><div class="empty-icon">✅</div>Bekleyen ödeme yok</div>`; return; }
@@ -7086,7 +7406,7 @@ function renderOdenmedi() {
   const banner = `<div style="display:flex;align-items:center;justify-content:space-between;background:#fef2f2;border:1.5px solid #fecaca;border-radius:12px;padding:12px 16px;margin-bottom:12px;">
     <div>
       <div style="font-size:13px;font-weight:700;color:var(--red);">💸 ${liste.length} ödeme bekliyor</div>
-      <div style="font-size:11px;color:var(--text3);margin-top:2px;">Teslim edildi ama ödeme alınmadı</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px;">Hizmet bitti ama ödeme alınmadı</div>
     </div>
     <div style="text-align:right;">
       <div style="font-size:18px;font-weight:800;color:var(--red);">₺${toplamAlacak.toLocaleString('tr-TR')}</div>
@@ -7098,7 +7418,11 @@ function renderOdenmedi() {
 
 function musteriTag(m) {
   const siparisler = data.siparisler.filter(s=>s.musteriId==m.id);
-  const borclu = siparisler.some(s=>s.durum==='teslim'&&!s.odendi);
+  const borclu = siparisler.some(s=>{
+    const sk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+    const isFinal = sk ? (s.durum==='tamamlandi'||s.durum==='teslim') : (s.durum==='teslim');
+    return isFinal && !s.odendi;
+  });
   const vip = siparisler.length >= 5;
   const yeni = siparisler.length === 0;
   if (borclu) return '<span class="tag tag-borclu">⚠ Borçlu</span>';
@@ -7297,19 +7621,16 @@ function renderKasa() {
   const _aralikBit = () => { const d=new Date(document.getElementById('kasa-aralik-bit')?.value||''); d.setHours(23,59,59); return d; };
 
   function inPeriod(s) {
-    // Koltuk için tarih (randevu günü) değil, ödeme/tamamlanma tarihi kullanılır
-    const isKoltuk = s.servisTip === 'koltuk';
-    const efektif = isKoltuk
-      ? (s.odemeTarih || s.teslimGerceklesmeTarihi || '')
-      : (s.odemeTarih || s.teslimTarihi || s.tarih || '');
-    if (!efektif || efektif < VERI_BASLANGIC) return false;
+    if (!isFinanceIncluded(s)) return false; // Madde 7: Eski kayıtları finans dışı bırak
+    const efektif = getFinanceEffectiveDate(s);
+    if (!efektif) return false;
     const d = new Date(efektif);
     if (kasaPeriod==='gun') return d.toDateString()===secilenGun.toDateString();
     if (kasaPeriod==='hafta') return d>=_haftaBasi() && d<=now;
     if (kasaPeriod==='ay') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-    if (kasaPeriod==='yil') return d.getFullYear()===now.getFullYear() && efektif>=VERI_BASLANGIC;
+    if (kasaPeriod==='yil') return d.getFullYear()===now.getFullYear();
     if (kasaPeriod==='aralik') return d>=_aralikBas() && d<=_aralikBit();
-    return efektif>=VERI_BASLANGIC; // tumu modu
+    return true; // tumu modu
   }
   function giderInPeriod(g) {
     if ((g.tarih||'') < VERI_BASLANGIC) return false;
@@ -7335,9 +7656,9 @@ function renderKasa() {
   const giderToplam = giderler.reduce((a,g)=>a+(g.tutar||0),0);
   const kasaNet = gelir - giderToplam;
 
-  // Bekleyen (dönemden bağımsız, VERI_BASLANGIC sonrası tüm bekleyenler)
+  // Bekleyen (dönemden bağımsız, Madde 7 bariyeri sonrası tüm bekleyenler)
   const bekleyen = data.siparisler
-    .filter(s=>!s.odendi && s.durum!=='teslim' && (s.teslimTarihi||s.tarih||'')>=VERI_BASLANGIC)
+    .filter(s=>!s.odendi && s.durum!=='teslim' && isFinanceIncluded(s))
     .reduce((a,s)=>a+hesaplaToplam(s),0);
 
   const fmt = n => '₺'+n.toLocaleString('tr-TR');
@@ -8464,8 +8785,8 @@ async function _fotoStorageaYukle(sipId, fotolar) {
 
 async function detayFotoEkle(input, tip) {
   const sid = document.getElementById('detay-siparis-id').value;
-  const s = data.siparisler.find(x=>x.id==sid); if(!s) return;
-  if (!s.fotolar) s.fotolar = {};
+  if (!(await ensureSiparisFresh(sid))) return;
+  const s = data.siparisler.find(x=>x.id==sid); if(!s) return;  if (!s.fotolar) s.fotolar = {};
   if (!s.fotolar[tip]) s.fotolar[tip] = [];
   const files = Array.from(input.files);
   toast('📷 Yükleniyor...');
@@ -8488,6 +8809,7 @@ async function detayFotoEkle(input, tip) {
       });
     }
   }
+  markDirty('siparisler', sid);
   save(); dFotoRender(s); toast('📷 Fotoğraf eklendi');
   input.value = '';
 }
@@ -8568,20 +8890,43 @@ async function wKaydet() {
     if (!wState.servisTip) { wizardGoto(0); toast('Sipariş türü seçin!'); return; }
     if (!wState.musteriId) { wizardGoto(1); toast('Müşteri seçin!'); return; }
 
-    if (!data.counters) data.counters = { musteri:100, siparis:700, gider:0, koltuk:0 };
+    if (!data.counters) data.counters = { musteri:100, siparis:700, gider:0, koltuk:0, hali:0, kurumsal:0 };
+    
+    // Teknik ID her zaman artar
     data.counters.siparis = (data.counters.siparis||700) + 1;
     const sid = data.counters.siparis;
+
     const isKoltukSiparis = wState.servisTip === 'koltuk';
     const isKurumsalSiparis = wState.servisTip === 'kurumsal';
+    
     let koltukNo = null;
     let kurumNo = null;
+    let haliNo = null;
+
     if (isKoltukSiparis) {
-      data.counters.koltuk = (data.counters.koltuk||0) + 1;
+      // Koltuk No hesapla
+      const maxK = data.siparisler
+        .filter(s=>s.koltukNo)
+        .map(s=>parseInt((s.koltukNo||'').replace('K',''))||0)
+        .reduce((a,b)=>Math.max(a,b), 0);
+      data.counters.koltuk = Math.max(data.counters.koltuk||0, maxK) + 1;
       koltukNo = 'K' + String(data.counters.koltuk).padStart(2, '0');
-    }
-    if (isKurumsalSiparis) {
-      data.counters.kurumsal = (data.counters.kurumsal||0) + 1;
+    } else if (isKurumsalSiparis) {
+      // Kurumsal No hesapla
+      const maxC = data.siparisler
+        .filter(s=>s.kurumNo)
+        .map(s=>parseInt((s.kurumNo||'').replace('C',''))||0)
+        .reduce((a,b)=>Math.max(a,b), 0);
+      data.counters.kurumsal = Math.max(data.counters.kurumsal||0, maxC) + 1;
       kurumNo = 'C' + String(data.counters.kurumsal).padStart(2, '0');
+    } else {
+      // Hali No hesapla
+      const maxH = data.siparisler
+        .filter(s=>s.haliNo)
+        .map(s=>parseInt(s.haliNo)||0)
+        .reduce((a,b)=>Math.max(a,b), 0);
+      data.counters.hali = Math.max(data.counters.hali||0, maxH) + 1;
+      haliNo = data.counters.hali;
     }
 
     // Fotoğrafları önce Storage'a yükle
@@ -8597,22 +8942,25 @@ async function wKaydet() {
       teslimTarihi: wState.teslimTarihi||null,
       not: wState.not||'',
       etiketNo: wState.etiketNo||'',
+      haliNo: haliNo,
+      koltukNo: koltukNo,
+      kurumNo: kurumNo,
       haliler: wState.halilar,
       fotolar: fotolar,
       durum: wState.servisTip==='koltuk' ? 'randevu' : 'alinacak',
-      koltukNo: koltukNo,
-      kurumNo: kurumNo,
       odendi: false,
       olusturma: new Date().toISOString()
     };
     data.siparisler.push(siparis);
+    markDirty('siparisler', sid);
+    markDirty('counters');
     save();
 
     // Supabase'e direkt yaz (debounce'u bekleme)
     const sb2 = _getSb();
     if (sb2) {
       // 1. Siparişi yaz
-      const { error: sipErr } = await sb2.from('siparisler').upsert({
+      const { data: insertedRecs, error: sipErr } = await sb2.from('siparisler').upsert({
         id: sid,
         musteri_id: siparis.musteriId ? parseInt(String(siparis.musteriId).replace(/[^0-9]/g,'')) : null,
         servis_tip: siparis.servisTip||'hali',
@@ -8622,12 +8970,17 @@ async function wKaydet() {
         teslim_tarihi: siparis.teslimTarihi||null,
         koltuk_no: siparis.koltukNo||null,
         kurum_no: siparis.kurumNo||null,
+        hali_no: siparis.haliNo||null,
         not_: siparis.not||null,
         odendi: false,
         olusturma: siparis.olusturma
-      }, {onConflict:'id'});
-      if (sipErr) { toast('⚠️ Sipariş DB hatası: ' + sipErr.message); }
+      }, {onConflict:'id'}).select('updated_at');
 
+      if (!sipErr && insertedRecs && insertedRecs[0]) {
+        siparis.updatedAt = insertedRecs[0].updated_at;
+      }
+
+      if (sipErr) { toast('⚠️ Sipariş DB hatası: ' + sipErr.message); }
       // 2. Kalemleri yaz
       const kalemRows = _halilerToKalemRows(sid, siparis.haliler);
       if (kalemRows.length > 0) {
@@ -8712,18 +9065,85 @@ function editCins(id){
   cinsTipSec(c.fiyatTip||'m2');
   document.getElementById('modal-cins').classList.add('open');
 }
-function saveCins(){
+async function saveCins(){
   const ad=document.getElementById('cins-ad').value.trim();
-  const f=parseFloat(document.getElementById('cins-fiyat').value);
+  let fStr=document.getElementById('cins-fiyat').value.replace(',', '.');
+  const f=parseFloat(fStr);
   const eid=document.getElementById('cins-edit-id').value;
   const tip=document.getElementById('cins-tip').value||'m2';
   const kat=(document.getElementById('cins-kategori').value.trim())||'Diğer';
+  
   if(!ad||isNaN(f)||f<=0){toast('Ad ve fiyat gerekli!');return;}
-  if(eid){const c=data.cinsler.find(x=>x.id===eid);if(c){c.ad=ad;c.fiyat=f;c.fiyatTip=tip;c.kategori=kat;}}
-  else data.cinsler.push({id:'c'+Date.now(),ad,fiyat:f,fiyatTip:tip,kategori:kat});
-  save();closeModal('modal-cins');renderFiyatListesi();toast('Kaydedildi');
+
+  const sb = _getSb();
+  if (sb) {
+    const row = {
+      ad,
+      fiyat: f,
+      fiyat_tip: tip,
+      kategori: kat,
+      aktif: true
+    };
+    if (eid) {
+      const numericId = parseInt(String(eid).replace('c', ''));
+      if (!isNaN(numericId)) row.id = numericId;
+    }
+
+    try {
+      const { data: saved, error } = await sb.from('cinsler').upsert(row).select().single();
+      if (error) throw error;
+      
+      const localId = 'c' + saved.id;
+      const updatedObj = { 
+        id: localId, 
+        ad: saved.ad, 
+        fiyat: saved.fiyat, 
+        fiyatTip: saved.fiyat_tip, 
+        kategori: saved.kategori 
+      };
+
+      if (eid) {
+        const idx = data.cinsler.findIndex(x => x.id === eid);
+        if (idx > -1) data.cinsler[idx] = updatedObj;
+        markDirty('cinsler', eid);
+      } else {
+        data.cinsler.push(updatedObj);
+        markDirty('cinsler', localId);
+      }
+      toast('✅ Ürün kaydedildi');
+    } catch (e) {
+      console.error('Cins sync hatası:', e);
+      toast('⚠️ Ürün fiyatı kaydedilemedi. Lütfen tekrar deneyin.');
+      return; 
+    }
+  } else {
+    if(eid){
+      const c=data.cinsler.find(x=>x.id===eid);
+      if(c){c.ad=ad;c.fiyat=f;c.fiyatTip=tip;c.kategori=kat;}
+      markDirty('cinsler', eid);
+    } else {
+      const newId = 'c'+Date.now();
+      data.cinsler.push({id:newId,ad,fiyat:f,fiyatTip:tip,kategori:kat});
+      markDirty('cinsler', newId);
+    }
+    toast('💾 Yerel olarak kaydedildi');
+  }
+
+  save();
+  closeModal('modal-cins');
+  renderFiyatListesi();
 }
-function silCins(id){data.cinsler=data.cinsler.filter(c=>c.id!==id);save();renderFiyatListesi();}
+async function silCins(id){
+  const c = data.cinsler.find(x => x.id === id);
+  if (!confirm(`"${c ? c.ad : id}" ürününü silmek istiyor musunuz?`)) return;
+
+  // Madde 6: Critical Backup
+  if (!(await ensureCriticalBackup('cins_delete'))) return;
+
+  data.cinsler=data.cinsler.filter(c=>c.id!==id);
+  markDeleted('cinsler', id);
+  save();renderFiyatListesi();
+}
 
 function openDurumModal(sid){
   const s=data.siparisler.find(x=>x.id==sid);if(!s)return;
@@ -8744,7 +9164,10 @@ function openDurumModal(sid){
       <span class="badge ${STATUS_INFO[hedef]?.badge}">${STATUS_INFO[hedef]?.icon} ${STATUS_INFO[hedef]?.label}</span>
     </div>`;
 
-  if(hedef==='teslim'){
+  const isKoltukM = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+  const isFinalStatus = hedef==='teslim' || (isKoltukM && hedef==='tamamlandi');
+
+  if(isFinalStatus){
     document.getElementById('durum-odeme-bolum').style.display='block';
     document.getElementById('durum-mesaj').style.display='none';
     const ib=document.getElementById('durum-iletisim-btns');if(ib)ib.style.display='none';
@@ -8768,50 +9191,66 @@ function openDurumModal(sid){
     else{msgEl.style.display='none';if(iletisimBtns)iletisimBtns.style.display='none';}
   }
   const btn=document.getElementById('durum-onayla-btn');
-  if(btn) btn.textContent = hedef==='teslim' ? '✓ Onayla & Mesaj' : '✓ Onayla & Mesaj Gönder';
+  if(btn) btn.textContent = isFinalStatus ? '✓ Onayla & Mesaj' : '✓ Onayla & Mesaj Gönder';
   document.getElementById('modal-durum').classList.add('open');
 }
 
 function durumMesajGuncelle(){
-  if(!pendingDurum||pendingDurum.hedef!=='teslim')return;
-  const s=data.siparisler.find(x=>x.id==pendingDurum.siparisId);if(!s)return;
+  if(!pendingDurum)return;
+  const {siparisId,hedef}=pendingDurum;
+  const s=data.siparisler.find(x=>x.id==siparisId);if(!s)return;
+  const isKoltukM = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+  const isFinalStatus = hedef==='teslim' || (isKoltukM && hedef==='tamamlandi');
+
+  if(!isFinalStatus)return;
+
   const m=data.musteriler.find(x=>x.id==s.musteriId);
   let mesaj='';
-  if(pendingOdemeAlindi===true) mesaj=MESAJLAR.teslim_alindi(s,m||{ad:'Müşteri',soyad:''},pendingOdemeYontem);
-  else if(pendingOdemeAlindi===false) mesaj=MESAJLAR.teslim_bekleyen(s,m||{ad:'Müşteri',soyad:''},pendingOdemeYontem);
+  if(hedef==='teslim') {
+    if(pendingOdemeAlindi===true) mesaj=MESAJLAR.teslim_alindi(s,m||{ad:'Müşteri',soyad:''},pendingOdemeYontem);
+    else if(pendingOdemeAlindi===false) mesaj=MESAJLAR.teslim_bekleyen(s,m||{ad:'Müşteri',soyad:''},pendingOdemeYontem);
+  } else if(hedef==='tamamlandi') {
+    mesaj=MESAJLAR.tamamlandi(s,m||{ad:'Müşteri',soyad:''});
+  }
+
   const el=document.getElementById('durum-mesaj-teslim');
   const wrap=document.getElementById('durum-mesaj-teslim-wrap');
   if(el) el.textContent=mesaj;
   if(wrap) wrap.style.display = mesaj ? 'block' : 'none';
 }
 
-function onaylaGecis(){
+async function onaylaGecis(){
   if(!pendingDurum)return;
   const {siparisId,hedef}=pendingDurum;
+  if (!(await ensureSiparisFresh(siparisId))) return;
+
   const s=data.siparisler.find(x=>x.id==siparisId);if(!s)return;
   const m=data.musteriler.find(x=>x.id==s.musteriId);
+  const isKoltukM = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+  const isFinalStatus = hedef==='teslim' || (isKoltukM && hedef==='tamamlandi');
 
-  if(hedef==='teslim' && pendingOdemeAlindi===null){
+  if(isFinalStatus && pendingOdemeAlindi===null){
     toast('Ödeme durumunu seçin');return;
   }
 
   s.durum=hedef;
   let mesaj='';
-  if(hedef==='teslim'){
+  if(isFinalStatus){
     s.odemeyontemi=pendingOdemeYontem;
-    s.teslimGerceklesmeTarihi = new Date().toISOString().split('T')[0]; // fiili teslim tarihi
+    s.teslimGerceklesmeTarihi = new Date().toISOString().split('T')[0]; // fiili teslim/tamamlanma tarihi
     if(pendingOdemeAlindi){
       s.odendi=true;
       s.odemeTarih=new Date().toISOString();
-      mesaj=MESAJLAR.teslim_alindi(s,m||{ad:'Müşteri',soyad:''},pendingOdemeYontem);
+      mesaj=(hedef==='teslim') ? MESAJLAR.teslim_alindi(s,m||{ad:'Müşteri',soyad:''},pendingOdemeYontem) : MESAJLAR.tamamlandi(s,m||{ad:'Müşteri',soyad:''});
     } else {
-      mesaj=MESAJLAR.teslim_bekleyen(s,m||{ad:'Müşteri',soyad:''},pendingOdemeYontem);
+      mesaj=(hedef==='teslim') ? MESAJLAR.teslim_bekleyen(s,m||{ad:'Müşteri',soyad:''},pendingOdemeYontem) : MESAJLAR.tamamlandi(s,m||{ad:'Müşteri',soyad:''});
     }
   } else {
     const tmpl2=data.settings.mesajlar?.[hedef];
     if(tmpl2) mesaj=mesajSablonuIsle(tmpl2,s,m||{ad:'Müşteri',soyad:''});
     else { const fn=MESAJLAR[hedef]; mesaj=fn?fn(s,m||{ad:'Müşteri',soyad:''}):'' }
   }
+  markDirty('siparisler', siparisId);
   save();
   _supabaseSiparisPatch(s);
   if(mesaj) navigator.clipboard.writeText(mesaj).then(()=>toast('✅ Mesaj kopyalandı!')).catch(()=>toast('Durum güncellendi'));
@@ -8836,13 +9275,14 @@ function durumAra() {
   window.open('tel:'+tel.replace(/\D/g,''));
 }
 // Etiket No düzenleme
-function etiketNoDuzenle(sid) {
-  const s = data.siparisler.find(x=>x.id==sid);
-  if (!s) return;
+async function etiketNoDuzenle(sid) {
+  if (!(await ensureSiparisFresh(sid))) return;
+  const s = data.siparisler.find(x=>x.id==sid);  if (!s) return;
   const mevcut = s.etiketNo || '';
   const yeni = prompt('Etiket No girin:', mevcut);
   if (yeni === null) return; // iptal
   s.etiketNo = yeni.trim();
+  markDirty('siparisler', sid);
   save();
   const sb = _getSb();
   if (sb) {
@@ -8890,10 +9330,10 @@ function kismiOdemeToggle(){
   document.getElementById('kismi-odeme-row').style.display = isKismi ? 'block' : 'none';
 }
 
-function odemeAlKaydet(){
+async function odemeAlKaydet(){
   if(!pendingOdemeAl)return;
-  const s=data.siparisler.find(x=>x.id==pendingOdemeAl);if(!s)return;
-  const m=data.musteriler.find(x=>x.id==s.musteriId);
+  if (!(await ensureSiparisFresh(pendingOdemeAl))) return;
+  const s=data.siparisler.find(x=>x.id==pendingOdemeAl);if(!s)return;  const m=data.musteriler.find(x=>x.id==s.musteriId);
   const isKismi = document.getElementById('kismi-odeme-cb')?.checked;
   const kismiTutar = isKismi ? parseFloat(document.getElementById('kismi-odeme-tutar')?.value||0) : 0;
   const genelToplam = hesaplaToplam(s);
@@ -8902,14 +9342,16 @@ function odemeAlKaydet(){
     // Kısmi ödeme kaydı
     if (!s.kismiOdemeler) s.kismiOdemeler = [];
     s.kismiOdemeler.push({tutar: kismiTutar, yontem: pendingOdemeAlYontem, tarih: new Date().toISOString()});
+    markDirty('siparisler', pendingOdemeAl);
     save();
     toast(`✅ Kısmi ödeme kaydedildi: ₺${kismiTutar.toLocaleString('tr-TR')} · Kalan: ₺${(genelToplam-kismiOdemeToplamı(s)).toLocaleString('tr-TR')}`);
   } else {
     s.odendi=true;
     s.odemeTarih=new Date().toISOString();
     s.odemeyontemi=pendingOdemeAlYontem;
+    markDirty('siparisler', pendingOdemeAl);
     save();
-    const mesaj=MESAJLAR.odeme_al(s,m||{ad:'Müşteri',soyad:''},pendingOdemeAlYontem);
+    const mesaj=MESAJLAR.teslim_alindi(s,m||{ad:'Müşteri',soyad:''},pendingOdemeAlYontem);
     navigator.clipboard.writeText(mesaj).then(()=>toast('Ödeme kaydedildi, mesaj kopyalandı!')).catch(()=>toast('Ödeme kaydedildi ✓'));
   }
   // Checkboxu sıfırla
@@ -8929,15 +9371,15 @@ let _mesajSid = null;
 let _mesajTel = null;
 
 const MESAJ_KANAL_ETIKETLER = {
-  alindi:     { icon:'📦', label:'Alındı' },
-  'yikanıyor':{ icon:'🫧', label:'Yıkandı' },
-  hazir:      { icon:'✅', label:'Hazır' },
-  dagitimda:  { icon:'🚚', label:'Dağıtımda' },
-  teslim:     { icon:'🏠', label:'Teslim' },
-  randevu:    { icon:'📅', label:'Randevu' },
-  tamamlandi: { icon:'🎉', label:'Tamamlandı' },
-  borc:       { icon:'💳', label:'Borç' },
-  ozel:       { icon:'✏️', label:'Özel Mesaj' }
+  alindi:          { icon:'📦', label:'Alındı' },
+  'yikanıyor':     { icon:'🫧', label:'Yıkandı' },
+  hazir:           { icon:'✅', label:'Hazır' },
+  dagitimda:       { icon:'🚚', label:'Dağıtımda' },
+  teslim_alindi:   { icon:'🏠', label:'Teslim/Ödeme' },
+  teslim_bekleyen: { icon:'⏳', label:'Teslim/Bekleyen' },
+  randevu:         { icon:'📅', label:'Randevu' },
+  tamamlandi:      { icon:'🎉', label:'Tamamlandı' },
+  iban:            { icon:'🏦', label:'IBAN' }
 };
 
 // Ana açış fonksiyonu — her yerden burası çağrılır
@@ -8964,11 +9406,16 @@ function mesajAc(sid, varsayilanMetin) {
 
   // Şablon chip'leri
   const chips = document.getElementById('mesaj-sablon-chips');
-  const keys = ['alindi','yikanıyor','hazir','dagitimda','teslim','randevu','tamamlandi','borc'];
+  const isKoltukMsgModal = s?.servisTip === 'koltuk';
+  const keys = isKoltukMsgModal
+    ? ['randevu','tamamlandi']
+    : ['alindi','yikanıyor','hazir','dagitimda','teslim_alindi','teslim_bekleyen','randevu','tamamlandi','iban'];
+
   chips.innerHTML = keys.map(key => {
     const info = MESAJ_KANAL_ETIKETLER[key];
     const tmpl = data.settings.mesajlar?.[key];
-    if (!tmpl) return '';
+    // IBAN sabit şablon olduğu için her zaman görünür, diğerleri için tmpl kontrolü yapılır
+    if (key !== 'iban' && !tmpl) return '';
     const aktif = key === s.durum;
     return `<button onclick="mesajSablonSec('${key}')" id="msablon-chip-${key}"
       style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;
@@ -8980,7 +9427,6 @@ function mesajAc(sid, varsayilanMetin) {
       ${info.icon} ${info.label}${aktif?' ✦':''}
     </button>`;
   }).join('');
-
   // Önizleme kapat
   document.getElementById('mesaj-onizle-wrap').style.display = 'none';
 
@@ -8989,25 +9435,33 @@ function mesajAc(sid, varsayilanMetin) {
   if (!varsayilan) {
     const tmpl = data.settings.mesajlar?.[s.durum];
     if (tmpl) varsayilan = mesajSablonuIsle(tmpl, s, m);
+    else if (typeof MESAJLAR[s.durum] === 'function') varsayilan = MESAJLAR[s.durum](s, m);
   }
   document.getElementById('mesaj-metin').value = varsayilan;
   document.getElementById('modal-mesaj').classList.add('open');
-}
+  }
 
-let _secilenSablon = null;
-function mesajSablonSec(key) {
+  let _secilenSablon = null;
+  function mesajSablonSec(key) {
   const s = data.siparisler.find(x=>x.id==_mesajSid);
   const m = data.musteriler.find(x=>x.id==s?.musteriId);
   const info = MESAJ_KANAL_ETIKETLER[key];
   const tmpl = data.settings.mesajlar?.[key];
-  if (!tmpl || !s || !m) return;
+  if (!s || !m) return;
 
-  const msg = mesajSablonuIsle(tmpl, s, m);
+  let msg = '';
+  if (tmpl) {
+    msg = mesajSablonuIsle(tmpl, s, m);
+  } else if (typeof MESAJLAR[key] === 'function') {
+    msg = MESAJLAR[key](s, m);
+  } else {
+    return;
+  }
 
   // Chip aktif yap
   document.querySelectorAll('[id^="msablon-chip-"]').forEach(c => {
-    const ck = c.id.replace('msablon-chip-','');
-    const isThis = ck === key;
+      const ck = c.id.replace('msablon-chip-','');
+      const isThis = ck === key;
     c.style.borderColor = isThis ? 'var(--blue)' : 'var(--border)';
     c.style.background = isThis ? 'var(--blue-light)' : 'var(--white)';
     c.style.color = isThis ? 'var(--blue)' : 'var(--text2)';
@@ -9036,9 +9490,9 @@ function _mesajGonder(kanal) {
   } else if (kanal === 'wa') {
     window.open('https://wa.me/' + t + '?text=' + encodeURIComponent(mesaj), '_blank');
   } else if (kanal === 'wabusiness') {
-    window.open('https://wa.me/' + t + '?text=' + encodeURIComponent(mesaj), '_blank');
-  } else if (kanal === 'kopyala') {
-    navigator.clipboard.writeText(mesaj).then(() => toast('✅ Kopyalandı'));
+    // WhatsApp Business için özel scheme deniyoruz
+    window.open('whatsapp-business://send?phone=' + t + '&text=' + encodeURIComponent(mesaj), '_blank');
+  } else if (kanal === 'kopyala') {    navigator.clipboard.writeText(mesaj).then(() => toast('✅ Kopyalandı'));
     closeModal('modal-mesaj');
     return;
   }
@@ -9230,6 +9684,7 @@ async function saveMusteriEdit() {
   m.soyad = document.getElementById('musteri-edit-soyad').value.trim();
   m.tel = newTel;
   m.adres = document.getElementById('musteri-edit-adres').value.trim();
+  markDirty('musteriler', id);
   save();
   closeModal('modal-musteri-edit');
   if (profilMusteriId) openProfil(profilMusteriId);
@@ -9293,6 +9748,7 @@ function profilNotKaydet(musteriId, deger) {
   _profilNotTimer = setTimeout(() => {
     const m = data.musteriler.find(x=>x.id==musteriId); if(!m) return;
     m.not = deger;
+    markDirty('musteriler', musteriId);
     save();
     // Supabase'e de yaz
     const sb = _getSb();
@@ -9340,6 +9796,7 @@ function musteriNotEkle(musteriId) {
   m.notlar = m.notlar || [];
   m.notlar.push({ metin, tarih: new Date().toISOString() });
   inp.value = '';
+  markDirty('musteriler', musteriId);
   save();
   const sb = _getSb();
   if (sb) sb.from('musteriler').update({ notlar: m.notlar }).eq('id', parseInt(musteriId))
@@ -9353,6 +9810,7 @@ function musteriNotSil(musteriId, idx) {
   if (!m || !m.notlar) return;
   if (!confirm('Bu notu silmek istiyor musunuz?')) return;
   m.notlar.splice(idx, 1);
+  markDirty('musteriler', musteriId);
   save();
   const sb = _getSb();
   if (sb) sb.from('musteriler').update({ notlar: m.notlar }).eq('id', parseInt(musteriId))
@@ -9389,8 +9847,10 @@ function musteriSilProfil() {
     if (!confirm(`${mIsim(m)} müşterisini silmek istiyor musunuz?`)) return;
   }
   // Siparişleri ve müşteriyi local'den kaldır
+  data.siparisler.filter(s=>s.musteriId==musteriId).forEach(s => markDeleted('siparisler', s.id));
   data.siparisler = data.siparisler.filter(s=>s.musteriId!=musteriId);
   data.musteriler = data.musteriler.filter(x=>x.id!=musteriId);
+  markDeleted('musteriler', musteriId);
   save();
   closeModal('modal-profil');
   renderAll();
@@ -9474,19 +9934,28 @@ function _birlestirAra() {
   `).join('') || '<div class="empty" style="padding:20px 0;font-size:13px;color:var(--text3);text-align:center;">Sonuç bulunamadı</div>';
 }
 
-function musteriBlrlestirOnayla(kaynakId, hedefId) {
+async function musteriBlrlestirOnayla(kaynakId, hedefId) {
   const kaynak = data.musteriler.find(x=>x.id==kaynakId);
   const hedef = data.musteriler.find(x=>x.id==hedefId);
   if (!kaynak || !hedef) return;
   const onay = confirm(`${mIsim(kaynak)} müşterisinin tüm siparişleri ${mIsim(hedef)} müşterisine aktarılacak.\n\n${mIsim(kaynak)} silinecek. Devam?`);
   if (!onay) return;
+
+  // Madde 6: Critical Backup
+  if (!(await ensureCriticalBackup('musteri_merge'))) return;
+
   // Siparişleri aktar
-  data.siparisler.filter(s=>s.musteriId==kaynakId).forEach(s=>{ s.musteriId = hedefId; });
+  data.siparisler.filter(s=>s.musteriId==kaynakId).forEach(s=>{ 
+    s.musteriId = hedefId; 
+    markDirty('siparisler', s.id);
+  });
   // Notları birleştir
   hedef.notlar = hedef.notlar || [];
   (kaynak.notlar||[]).forEach(n=>hedef.notlar.push(n));
   // Kaynağı sil
   data.musteriler = data.musteriler.filter(x=>x.id!=kaynakId);
+  markDeleted('musteriler', kaynakId);
+  markDirty('musteriler', hedefId);
   save();
   // Supabase
   const sb = _getSb();
@@ -9509,7 +9978,11 @@ function closeBirlestirModal() {
 
 function profilWaMesaj(musteriId) {
   // Müşterinin son aktif siparişini bul
-  const siparisler = data.siparisler.filter(s=>s.musteriId==musteriId && s.durum !== 'teslim');
+  const siparisler = data.siparisler.filter(s=>{
+    const sk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+    const isFinal = sk ? (s.durum==='tamamlandi'||s.durum==='teslim') : (s.durum==='teslim');
+    return s.musteriId==musteriId && !isFinal;
+  });
   const s = siparisler.sort((a,b)=>(b.olusturma||'').localeCompare(a.olusturma||''))[0];
   if (s) {
     mesajAc(s.id);
@@ -9548,15 +10021,23 @@ function closeProfil() {
 }
 
 
-function silMusteri(id){
+async function silMusteri(id){
+  const m = data.musteriler.find(x=>x.id==id);
+  if(!m) return;
+  if(!confirm(`${mIsim(m)} müşterisi silinecek. Emin misiniz?`)) return;
+
   const n=data.siparisler.filter(s=>s.musteriId==id).length;
   if(n>0){toast(`Bu müşterinin ${n} siparişi var, önce siparişleri silin`);return;}
-  const m = data.musteriler.find(x=>x.id==id);
+
+  // Madde 6: Critical Backup
+  if (!(await ensureCriticalBackup('musteri_delete'))) return;
+
   // Google Rehber'den sil
   if (m?.google_resource_name && gcIsLoggedIn()) {
     gcDeleteContact(m.google_resource_name);
   }
   data.musteriler=data.musteriler.filter(m=>m.id!=id);
+  markDeleted('musteriler', id);
   localStorage.setItem('olgu_hali_v2', JSON.stringify(data));
   // Supabase'den de sil
   const numId = parseInt(String(id).replace(/[^0-9]/g,''));
@@ -9565,8 +10046,14 @@ function silMusteri(id){
   renderAll();toast('Müşteri silindi');
 }
 
-function silSiparis(id){
+async function silSiparis(id){
   const s=data.siparisler.find(x=>x.id==id);if(!s)return;
+  const no = siparisNo(s);
+  if(!confirm(`Sipariş ${no} silinecek. Emin misiniz?`)) return;
+
+  // Madde 6: Critical Backup
+  if (!(await ensureCriticalBackup('siparis_delete'))) return;
+
   s.silinmeTarih=new Date().toISOString();
   data.silinenler.unshift(s);
   if(data.silinenler.length>30)data.silinenler=data.silinenler.slice(0,30);
@@ -9575,6 +10062,7 @@ function silSiparis(id){
   const sb2 = _getSb();
   if (sb2) sb2.from('siparisler').delete().eq('id', numId).then(() => {});
   data.siparisler=data.siparisler.filter(x=>x.id!=id);
+  markDeleted('siparisler', id);
   save();renderAll();toast('Silindi — Silinenler sekmesinden geri alabilirsin');
 }
 
@@ -9618,9 +10106,10 @@ function smsMesajKopyala() {
   }).catch(()=>toast('SMS metni kopyalandı'));
 }
 
-function acilToggle(sid){
-  const s=data.siparisler.find(x=>x.id==sid);if(!s)return;
-  s.acil=!s.acil;
+async function acilToggle(sid){
+  if (!(await ensureSiparisFresh(sid))) return;
+  const s=data.siparisler.find(x=>x.id==sid);if(!s)return;  s.acil=!s.acil;
+  markDirty('siparisler', sid);
   save();renderAll();
   openKartDetay(sid);
   toast(s.acil?'🔴 Acil işaretlendi':'Acil kaldırıldı');
@@ -9649,6 +10138,8 @@ function kopyalaSiparis(sid){
     fotolar:{alirken:[],ederken:[]}
   };
   data.siparisler.unshift(yeni);
+  markDirty('siparisler', yeni.id);
+  markDirty('counters');
   save();renderAll();
   toast('📋 Kopyalandı: '+siparisNo(yeni));
   openKartDetay(yeni.id);
@@ -9699,6 +10190,7 @@ function tasiSiparis(sid,hedef){
   }
   const s=data.siparisler.find(x=>x.id==sid);if(!s)return;
   s.durum=hedef;
+  markDirty('siparisler', sid);
   const m2=data.musteriler.find(x=>x.id==s.musteriId);
   const tmplTasi=data.settings.mesajlar?.[hedef];
   const fnTasi=MESAJLAR[hedef];
@@ -10461,10 +10953,17 @@ function _bildirimGonder(baslik, mesaj, tag) {
 function _bildirimKontrol() {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
   const bugun = new Date().toISOString().split('T')[0];
-  const geciken = (data.siparisler||[]).filter(s =>
-    s.teslimTarihi && s.teslimTarihi < bugun && s.durum !== 'teslim'
-  );
-  const acil = (data.siparisler||[]).filter(s => s.acil && s.durum !== 'teslim');
+  const geciken = (data.siparisler||[]).filter(s => {
+    const sk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+    const isFinal = sk ? (s.durum==='tamamlandi'||s.durum==='teslim') : (s.durum==='teslim');
+    return s.teslimTarihi && s.teslimTarihi < bugun && !isFinal;
+  });
+  const acil = (data.siparisler||[]).filter(s => {
+    const sk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+    const isFinal = sk ? (s.durum==='tamamlandi'||s.durum==='teslim') : (s.durum==='teslim');
+    return s.acil && !isFinal;
+  });
+
   if (geciken.length > 0) {
     _bildirimGonder(
       `⏰ ${geciken.length} geciken sipariş`,
@@ -10478,10 +10977,13 @@ function _bildirimKontrol() {
   if (acil.length > 0 && geciken.length === 0) {
     _bildirimGonder(`🔴 ${acil.length} acil sipariş var`, acil.map(s=>{const m=data.musteriler.find(x=>x.id===s.musteriId);return m?.ad||'Müşteri';}).join(', '), 'acil');
   }
-  // Teslim edilmiş ama 7+ gün ödemesi alınmamış siparişler
+  // Teslim/Tamamlanmış ama 7+ gün ödemesi alınmamış siparişler
   const odenmemis7 = (data.siparisler||[]).filter(s => {
-    if (s.durum !== 'teslim' || s.odendi) return false;
-    const gun = s.tarih ? Math.floor((Date.now()-new Date(s.tarih))/(86400000)) : 0;
+    const sk = s.servisTip==='koltuk' || s.haliler?.some(h=>data.cinsler.find(c=>c.id===h.cinsId)?.kategori==='Koltuk');
+    const isFinal = sk ? (s.durum==='tamamlandi'||s.durum==='teslim') : (s.durum==='teslim');
+    if (!isFinal || s.odendi) return false;
+    const bt = s.teslimGerceklesmeTarihi || s.teslimTarihi || s.tarih;
+    const gun = bt ? Math.floor((Date.now()-new Date(bt))/(86400000)) : 0;
     return gun >= 7;
   });
   if (odenmemis7.length > 0) {
