@@ -1495,6 +1495,13 @@ html[data-tema="karanlik"] .koltuk-tab-btn.active {
 .tawk-bubble,
 iframe[id^="tawk-"],
 iframe[title*="chat" i] { display: none !important; }
+#he-adet::-webkit-inner-spin-button,
+#he-adet::-webkit-outer-spin-button,
+#he-m2::-webkit-inner-spin-button,
+#he-m2::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 </style>
 </head>
 <body>
@@ -2699,7 +2706,7 @@ iframe[title*="chat" i] { display: none !important; }
         <label class="form-label">Adet</label>
         <div style="display:flex;align-items:center;gap:8px;">
           <button type="button" onclick="dHeStep('he-adet',-1,1)" style="width:48px;height:48px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:24px;font-weight:700;cursor:pointer;flex-shrink:0;">−</button>
-          <input type="number" id="he-adet" class="form-input" value="1" min="1" style="margin:0;text-align:center;font-size:22px;font-weight:800;height:48px;" oninput="dHeGuncelle()">
+          <input type="number" id="he-adet" class="form-input" value="1" min="1" style="margin:0;text-align:center;font-size:22px;font-weight:800;height:48px;appearance:textfield;-moz-appearance:textfield;" oninput="dHeGuncelle()">
           <button type="button" onclick="dHeStep('he-adet',1,1)" style="width:48px;height:48px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:24px;font-weight:700;cursor:pointer;flex-shrink:0;">+</button>
         </div>
       </div>
@@ -2722,7 +2729,7 @@ iframe[title*="chat" i] { display: none !important; }
         <label class="form-label" id="he-m2-label">m² <span style="color:var(--text3);font-size:11px;">(toplam)</span></label>
         <div style="display:flex;align-items:center;gap:8px;">
           <button type="button" onclick="dHeStep('he-m2',-0.5,0)" style="width:48px;height:48px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:24px;font-weight:700;cursor:pointer;flex-shrink:0;">−</button>
-          <input type="number" id="he-m2" class="form-input" placeholder="0" min="0" step="0.5" style="margin:0;text-align:center;font-size:22px;font-weight:800;height:48px;" oninput="dHeGuncelle()">
+          <input type="number" id="he-m2" class="form-input" placeholder="0" min="0" step="0.5" style="margin:0;text-align:center;font-size:22px;font-weight:800;height:48px;appearance:textfield;-moz-appearance:textfield;" oninput="dHeGuncelle()">
           <button type="button" onclick="dHeStep('he-m2',0.5,0)" style="width:48px;height:48px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:24px;font-weight:700;cursor:pointer;flex-shrink:0;">+</button>
         </div>
         <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-top:8px;padding:8px 12px;background:var(--yellow-bg);border:1.5px solid #fde68a;border-radius:8px;">
@@ -3660,7 +3667,7 @@ async function _syncToSupabase() {
     for (const s of data.siparisler) {
       if (!dirty.siparisler.has(s.id)) continue;
       const sid = parseInt(String(s.id).replace(/[^0-9]/g,'')) || null;
-      if (!sid || !s.haliler?.length) continue;
+      if (!sid) continue;
       const { error: dErr } = await sb.from('siparis_kalemleri').delete().eq('siparis_id', sid);
       if (!dErr) {
         const { error: kErr } = await sb.from('siparis_kalemleri').insert(_halilerToKalemRows(sid, s.haliler));
@@ -3805,7 +3812,7 @@ async function _loadFromSupabase() {
           return {
             id:'H'+k.id, tip:k.tip_||'tekli',
             cinsAd:k.cins_ad||'', ad:k.cins_ad||'',
-            kategori:k.kategori||'Halı',
+            kategori:k.kategori || (data.cinsler.find(c=>c.ad===k.cins_ad)?.kategori) || 'Halı',
             m2:k.m2||0, adet:k.adet||1,
             m2Sonra: k.not_==='sonra',
             birimFiyat:k.birim_fiyat||0, fiyat:k.birim_fiyat||0,
@@ -5049,7 +5056,7 @@ function siparisKarti(s, ctx) {
   const katGruplari = {};
   s.haliler.forEach(h => {
     const c = data.cinsler.find(x=>x.id===h.cinsId);
-    const kat = h.tip==='ekucret' ? '_ek' : (c?.kategori||'Diğer');
+    const kat = h.tip==='ekucret' ? '_ek' : (h.kategori || c?.kategori || 'Diğer');
     if (!katGruplari[kat]) katGruplari[kat] = [];
     katGruplari[kat].push(h);
   });
@@ -5621,10 +5628,21 @@ function dHaliSatir(sid, h) {
   </div>`;
 }
 
+let _freshCheckCache = {}; // { sid: { ts, result } } — 15s TTL
+let _isHaliSubmitting = false;
 // Bottom sheet: yeni ekleme
 async function dHaliEkleKaydet() {
+  if (_isHaliSubmitting) return;
+  _isHaliSubmitting = true;
+  try {
   if (heSource === 'detay' && detaySid) {
-    if (!(await ensureSiparisFresh(detaySid))) return;
+    const _now = Date.now();
+    const _cached = _freshCheckCache[detaySid];
+    if (!_cached || (_now - _cached.ts) > 15000) {
+      const _fresh = await ensureSiparisFresh(detaySid);
+      _freshCheckCache[detaySid] = { ts: _now, result: _fresh };
+      if (!_fresh) return;
+    } else if (!_cached.result) { return; }
   }
   const isEkUcret = urunSS.adim === 'ekucret';
   if (isEkUcret) {
@@ -5676,6 +5694,9 @@ async function dHaliEkleKaydet() {
     birimFiyat: _fp, fiyat: _fp, toplam: _toplam
   };
   _urunKaydet(obj);
+  } finally {
+    _isHaliSubmitting = false;
+  }
 }
 
 function _urunKaydetCok(objler) {
@@ -5726,6 +5747,8 @@ async function dRemoveHali(sid, hid) {
   if (!(await ensureSiparisFresh(sid))) return;
   const s = data.siparisler.find(x=>x.id==sid); if(!s) return;
   s.haliler = s.haliler.filter(h=>h.id!==hid);
+  markDirty('siparisler', Number(sid));
+  save();
   dHalilarRender();
 }
 
@@ -5820,7 +5843,7 @@ function openKartDetay(sid) {
   const gruplari = {};
   s.haliler.forEach(h => {
     const c = data.cinsler.find(x=>x.id===h.cinsId);
-    const kat = h.tip==='ekucret' ? '_ek' : (c?.kategori||'Diğer');
+    const kat = h.tip==='ekucret' ? '_ek' : (h.kategori || c?.kategori || 'Diğer');
     if (!gruplari[kat]) gruplari[kat] = [];
     gruplari[kat].push(h);
   });
@@ -5908,7 +5931,7 @@ function openKartDetay(sid) {
 
   const kismiTop = kismiOdemeToplamı(s);
   const odemeStr = s.odendi
-    ? `<div style="font-size:12px;color:var(--green);font-weight:600;margin-top:4px;">✅ Ödendi${s.odemeTarih?' · '+s.odemeTarih:''}${s.odemeyontemi?' · '+s.odemeyontemi:''}</div>`
+    ? `<div style="font-size:12px;color:var(--green);font-weight:600;margin-top:4px;">✅ Ödendi${s.odemeTarih?' · '+_tarihFormat(s.odemeTarih):''}${s.odemeyontemi?' · '+(s.odemeyontemi.charAt(0).toUpperCase()+s.odemeyontemi.slice(1)):''}</div>`
     : (kismiTop > 0
       ? `<div style="font-size:12px;color:#d97706;font-weight:600;margin-top:4px;">💛 Kısmi ödeme: ₺${kismiTop.toLocaleString('tr-TR')} · Kalan: ₺${(toplam-kismiTop).toLocaleString('tr-TR')}</div>`
       : (s.durum==='teslim'?`<div style="font-size:12px;color:var(--red);font-weight:600;margin-top:4px;">⚠️ Ödenmedi</div>`:''));
@@ -8417,7 +8440,7 @@ function wHalilarRender() {
   const gruplari = {};
   wState.halilar.forEach(h => {
     const c = data.cinsler.find(x=>x.id===h.cinsId);
-    const kat = h.tip==='ekucret' ? '_ek' : (c?.kategori||'Diğer');
+    const kat = h.tip==='ekucret' ? '_ek' : (h.kategori || c?.kategori || 'Diğer');
     if (!gruplari[kat]) gruplari[kat] = [];
     gruplari[kat].push(h);
   });
@@ -8884,8 +8907,11 @@ function wOzetRender() {
   document.getElementById('ozet-foto-say').textContent = fotoSay ? `📷 ${fotoSay} fotoğraf eklendi` : '';
 }
 
+let _isSiparisSubmitting = false;
 // -- KAYDET --
 async function wKaydet() {
+  if (_isSiparisSubmitting) return;
+  _isSiparisSubmitting = true;
   try {
     if (!wState.servisTip) { wizardGoto(0); toast('Sipariş türü seçin!'); return; }
     if (!wState.musteriId) { wizardGoto(1); toast('Müşteri seçin!'); return; }
@@ -9003,6 +9029,8 @@ async function wKaydet() {
   } catch(e) {
     toast('Hata: ' + e.message);
     console.error('wKaydet error:', e);
+  } finally {
+    _isSiparisSubmitting = false;
   }
 }
 
@@ -9342,14 +9370,14 @@ async function odemeAlKaydet(){
     // Kısmi ödeme kaydı
     if (!s.kismiOdemeler) s.kismiOdemeler = [];
     s.kismiOdemeler.push({tutar: kismiTutar, yontem: pendingOdemeAlYontem, tarih: new Date().toISOString()});
-    markDirty('siparisler', pendingOdemeAl);
+    markDirty('siparisler', Number(pendingOdemeAl));
     save();
     toast(`✅ Kısmi ödeme kaydedildi: ₺${kismiTutar.toLocaleString('tr-TR')} · Kalan: ₺${(genelToplam-kismiOdemeToplamı(s)).toLocaleString('tr-TR')}`);
   } else {
     s.odendi=true;
     s.odemeTarih=new Date().toISOString();
     s.odemeyontemi=pendingOdemeAlYontem;
-    markDirty('siparisler', pendingOdemeAl);
+    markDirty('siparisler', Number(pendingOdemeAl));
     save();
     const mesaj=MESAJLAR.teslim_alindi(s,m||{ad:'Müşteri',soyad:''},pendingOdemeAlYontem);
     navigator.clipboard.writeText(mesaj).then(()=>toast('Ödeme kaydedildi, mesaj kopyalandı!')).catch(()=>toast('Ödeme kaydedildi ✓'));
